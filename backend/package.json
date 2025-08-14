@@ -1,0 +1,49 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend",
+  "license": "ISC",
+  "author": "Muhammad Mukhtar Suleiman",
+  "type": "module",
+  "main": "src/index",
+  "scripts": {
+    "dev": "SET NODE_ENV=development&& nodemon",
+    "prod": "SET NODE_ENV=production&& nodemon",
+    "test": "test"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "axios": "^1.11.0",
+    "bcryptjs": "^3.0.2",
+    "cheerio": "^1.1.2",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "jsdom": "^26.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.18.0",
+    "mongoose": "^8.16.4",
+    "nodemailer": "^7.0.5",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "validator": "^13.15.15"
+  },
+  "devDependencies": {
+    "@types/express-mongo-sanitize": "^1.3.2",
+    "@types/express-rate-limit": "^5.1.3",
+    "@types/helmet": "^0.0.48",
+    "@types/hpp": "^0.2.6",
+    "@types/jsdom": "^21.1.7",
+    "@types/mongodb": "^4.0.6",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "^24.1.0",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.16",
+    "@types/validator": "^13.15.2",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2"
+  }
+}
