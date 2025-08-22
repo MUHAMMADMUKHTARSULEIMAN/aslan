@@ -1,14 +1,12 @@
-import { Header } from '@/components/header'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_header-layout/')({
   component: App,
 })
 
 function App() {
   return (
     <div>
-					<Header />
 					<div className='w-full min-h-20 text-slate-800 flex items-center justify-center bg-accent-foreground'>
 						<h1 className='font-semibold text-3xl'>Accent foreground</h1>
 					</div>

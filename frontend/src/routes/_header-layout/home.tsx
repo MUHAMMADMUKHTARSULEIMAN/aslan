@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArticleCard } from "@/components/article-card";
 
-export const Route = createFileRoute("/home")({
+export const Route = createFileRoute("/_header-layout/home")({
   component: RouteComponent,
 });
 
@@ -12,7 +11,6 @@ function RouteComponent() {
   const name = "Muhammad Mukhtar";
   return (
     <div>
-      <Header />
       <section className="mx-3 mt-8 mb-24">
         <h3 className="font-semibold">Good morning, {name}!</h3>
         <div className="my-3">
@@ -26,7 +24,7 @@ function RouteComponent() {
           <Card className="p-2 border-5 border-border/10 dark:border-input/10">
             <div className="grid grid-cols-[4fr_5fr] gap-2">
                 <img
-                  className="rounded-md w-full aspect-3/2 object-cover"
+                  className="rounded-sm w-full aspect-3/2 object-cover"
                   src="https://i0.wp.com/www.themarginalian.org/wp-content/uploads/2013/05/einstein1.jpg?w=680&ssl=1"
                   alt=""
                 />

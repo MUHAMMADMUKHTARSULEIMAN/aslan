@@ -9,68 +9,269 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as HomeRouteImport } from './routes/home'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as HeaderLayoutRouteImport } from './routes/_header-layout'
+import { Route as HeaderLayoutIndexRouteImport } from './routes/_header-layout/index'
+import { Route as HeaderLayoutTagsRouteImport } from './routes/_header-layout/tags'
+import { Route as HeaderLayoutSavesRouteImport } from './routes/_header-layout/saves'
+import { Route as HeaderLayoutHomeRouteImport } from './routes/_header-layout/home'
+import { Route as HeaderLayoutHighlightsRouteImport } from './routes/_header-layout/highlights'
+import { Route as HeaderLayoutFavouritesRouteImport } from './routes/_header-layout/favourites'
+import { Route as HeaderLayoutExportRouteImport } from './routes/_header-layout/export'
+import { Route as HeaderLayoutDiscoverRouteImport } from './routes/_header-layout/discover'
+import { Route as HeaderLayoutCollectionsRouteImport } from './routes/_header-layout/collections'
+import { Route as HeaderLayoutArchiveRouteImport } from './routes/_header-layout/archive'
 
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
+const HeaderLayoutRoute = HeaderLayoutRouteImport.update({
+  id: '/_header-layout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const HeaderLayoutIndexRoute = HeaderLayoutIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const HeaderLayoutTagsRoute = HeaderLayoutTagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const HeaderLayoutSavesRoute = HeaderLayoutSavesRouteImport.update({
+  id: '/saves',
+  path: '/saves',
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const HeaderLayoutHomeRoute = HeaderLayoutHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const HeaderLayoutHighlightsRoute = HeaderLayoutHighlightsRouteImport.update({
+  id: '/highlights',
+  path: '/highlights',
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const HeaderLayoutFavouritesRoute = HeaderLayoutFavouritesRouteImport.update({
+  id: '/favourites',
+  path: '/favourites',
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const HeaderLayoutExportRoute = HeaderLayoutExportRouteImport.update({
+  id: '/export',
+  path: '/export',
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const HeaderLayoutDiscoverRoute = HeaderLayoutDiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const HeaderLayoutCollectionsRoute = HeaderLayoutCollectionsRouteImport.update({
+  id: '/collections',
+  path: '/collections',
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const HeaderLayoutArchiveRoute = HeaderLayoutArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
+  getParentRoute: () => HeaderLayoutRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/home': typeof HomeRoute
+  '/archive': typeof HeaderLayoutArchiveRoute
+  '/collections': typeof HeaderLayoutCollectionsRoute
+  '/discover': typeof HeaderLayoutDiscoverRoute
+  '/export': typeof HeaderLayoutExportRoute
+  '/favourites': typeof HeaderLayoutFavouritesRoute
+  '/highlights': typeof HeaderLayoutHighlightsRoute
+  '/home': typeof HeaderLayoutHomeRoute
+  '/saves': typeof HeaderLayoutSavesRoute
+  '/tags': typeof HeaderLayoutTagsRoute
+  '/': typeof HeaderLayoutIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/home': typeof HomeRoute
+  '/archive': typeof HeaderLayoutArchiveRoute
+  '/collections': typeof HeaderLayoutCollectionsRoute
+  '/discover': typeof HeaderLayoutDiscoverRoute
+  '/export': typeof HeaderLayoutExportRoute
+  '/favourites': typeof HeaderLayoutFavouritesRoute
+  '/highlights': typeof HeaderLayoutHighlightsRoute
+  '/home': typeof HeaderLayoutHomeRoute
+  '/saves': typeof HeaderLayoutSavesRoute
+  '/tags': typeof HeaderLayoutTagsRoute
+  '/': typeof HeaderLayoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/home': typeof HomeRoute
+  '/_header-layout': typeof HeaderLayoutRouteWithChildren
+  '/_header-layout/archive': typeof HeaderLayoutArchiveRoute
+  '/_header-layout/collections': typeof HeaderLayoutCollectionsRoute
+  '/_header-layout/discover': typeof HeaderLayoutDiscoverRoute
+  '/_header-layout/export': typeof HeaderLayoutExportRoute
+  '/_header-layout/favourites': typeof HeaderLayoutFavouritesRoute
+  '/_header-layout/highlights': typeof HeaderLayoutHighlightsRoute
+  '/_header-layout/home': typeof HeaderLayoutHomeRoute
+  '/_header-layout/saves': typeof HeaderLayoutSavesRoute
+  '/_header-layout/tags': typeof HeaderLayoutTagsRoute
+  '/_header-layout/': typeof HeaderLayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home'
+  fullPaths:
+    | '/archive'
+    | '/collections'
+    | '/discover'
+    | '/export'
+    | '/favourites'
+    | '/highlights'
+    | '/home'
+    | '/saves'
+    | '/tags'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home'
-  id: '__root__' | '/' | '/home'
+  to:
+    | '/archive'
+    | '/collections'
+    | '/discover'
+    | '/export'
+    | '/favourites'
+    | '/highlights'
+    | '/home'
+    | '/saves'
+    | '/tags'
+    | '/'
+  id:
+    | '__root__'
+    | '/_header-layout'
+    | '/_header-layout/archive'
+    | '/_header-layout/collections'
+    | '/_header-layout/discover'
+    | '/_header-layout/export'
+    | '/_header-layout/favourites'
+    | '/_header-layout/highlights'
+    | '/_header-layout/home'
+    | '/_header-layout/saves'
+    | '/_header-layout/tags'
+    | '/_header-layout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  HomeRoute: typeof HomeRoute
+  HeaderLayoutRoute: typeof HeaderLayoutRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
+    '/_header-layout': {
+      id: '/_header-layout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof HeaderLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_header-layout/': {
+      id: '/_header-layout/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof HeaderLayoutIndexRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
+    '/_header-layout/tags': {
+      id: '/_header-layout/tags'
+      path: '/tags'
+      fullPath: '/tags'
+      preLoaderRoute: typeof HeaderLayoutTagsRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
+    '/_header-layout/saves': {
+      id: '/_header-layout/saves'
+      path: '/saves'
+      fullPath: '/saves'
+      preLoaderRoute: typeof HeaderLayoutSavesRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
+    '/_header-layout/home': {
+      id: '/_header-layout/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HeaderLayoutHomeRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
+    '/_header-layout/highlights': {
+      id: '/_header-layout/highlights'
+      path: '/highlights'
+      fullPath: '/highlights'
+      preLoaderRoute: typeof HeaderLayoutHighlightsRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
+    '/_header-layout/favourites': {
+      id: '/_header-layout/favourites'
+      path: '/favourites'
+      fullPath: '/favourites'
+      preLoaderRoute: typeof HeaderLayoutFavouritesRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
+    '/_header-layout/export': {
+      id: '/_header-layout/export'
+      path: '/export'
+      fullPath: '/export'
+      preLoaderRoute: typeof HeaderLayoutExportRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
+    '/_header-layout/discover': {
+      id: '/_header-layout/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof HeaderLayoutDiscoverRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
+    '/_header-layout/collections': {
+      id: '/_header-layout/collections'
+      path: '/collections'
+      fullPath: '/collections'
+      preLoaderRoute: typeof HeaderLayoutCollectionsRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
+    '/_header-layout/archive': {
+      id: '/_header-layout/archive'
+      path: '/archive'
+      fullPath: '/archive'
+      preLoaderRoute: typeof HeaderLayoutArchiveRouteImport
+      parentRoute: typeof HeaderLayoutRoute
     }
   }
 }
 
+interface HeaderLayoutRouteChildren {
+  HeaderLayoutArchiveRoute: typeof HeaderLayoutArchiveRoute
+  HeaderLayoutCollectionsRoute: typeof HeaderLayoutCollectionsRoute
+  HeaderLayoutDiscoverRoute: typeof HeaderLayoutDiscoverRoute
+  HeaderLayoutExportRoute: typeof HeaderLayoutExportRoute
+  HeaderLayoutFavouritesRoute: typeof HeaderLayoutFavouritesRoute
+  HeaderLayoutHighlightsRoute: typeof HeaderLayoutHighlightsRoute
+  HeaderLayoutHomeRoute: typeof HeaderLayoutHomeRoute
+  HeaderLayoutSavesRoute: typeof HeaderLayoutSavesRoute
+  HeaderLayoutTagsRoute: typeof HeaderLayoutTagsRoute
+  HeaderLayoutIndexRoute: typeof HeaderLayoutIndexRoute
+}
+
+const HeaderLayoutRouteChildren: HeaderLayoutRouteChildren = {
+  HeaderLayoutArchiveRoute: HeaderLayoutArchiveRoute,
+  HeaderLayoutCollectionsRoute: HeaderLayoutCollectionsRoute,
+  HeaderLayoutDiscoverRoute: HeaderLayoutDiscoverRoute,
+  HeaderLayoutExportRoute: HeaderLayoutExportRoute,
+  HeaderLayoutFavouritesRoute: HeaderLayoutFavouritesRoute,
+  HeaderLayoutHighlightsRoute: HeaderLayoutHighlightsRoute,
+  HeaderLayoutHomeRoute: HeaderLayoutHomeRoute,
+  HeaderLayoutSavesRoute: HeaderLayoutSavesRoute,
+  HeaderLayoutTagsRoute: HeaderLayoutTagsRoute,
+  HeaderLayoutIndexRoute: HeaderLayoutIndexRoute,
+}
+
+const HeaderLayoutRouteWithChildren = HeaderLayoutRoute._addFileChildren(
+  HeaderLayoutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  HomeRoute: HomeRoute,
+  HeaderLayoutRoute: HeaderLayoutRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

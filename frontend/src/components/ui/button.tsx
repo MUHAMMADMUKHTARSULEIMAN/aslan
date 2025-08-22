@@ -20,6 +20,7 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+				"card-save-ghost": "bg-inherit text-inherit hover:bg-secondary/85 dark:hover:bg-secondary hover:text-secondary-foreground border-2 border-border/20 dark:border-input/20 hover:border-none"
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

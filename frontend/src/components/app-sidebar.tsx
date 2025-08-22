@@ -103,7 +103,7 @@ export const AppSidebar = () => {
                     >
                       <SidebarMenuButton
                         onClick={toggleSidebar}
-                        className="px-3 py-2 cursor-pointer hover:bg-sidebar-primary/80 hover:text-sidebar-primary-foreground rounded-none ring-transparent"
+                        className="px-3 py-2 cursor-pointer hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground rounded-none ring-transparent"
                       >
                         <item.icon className="h-5 w-5 stroke-2.5" />
                         <span className="font-semibold text-lg">
