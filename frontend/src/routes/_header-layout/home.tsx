@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArticleCard } from "@/components/article-card";
+import { CarouselCard } from "@/components/carousel-card";
 
 export const Route = createFileRoute("/_header-layout/home")({
   component: RouteComponent,
@@ -40,14 +41,17 @@ function RouteComponent() {
             </div>
           </Card>
         </div>
-				<div className="py-8">
+				<div className="my-8">
 					<h1 className="font-bold text-3xl">
 						Trousers-Worthy Reads
 					</h1>
-					<p className="pb-4">
+					<p className="mb-4">
 						Stories to fuel your mind
 					</p>
+					<div className="flex flex-col gap-6">
 					<ArticleCard />
+					<CarouselCard />
+					</div>
 				</div>
       </section>
     </div>
