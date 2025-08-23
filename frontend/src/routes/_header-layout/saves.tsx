@@ -1,9 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { SavesCard } from "@/components/saves-card";
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/_header-layout/saves')({
+export const Route = createFileRoute("/_header-layout/saves")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  return <div>Hello "/saves"!</div>
+  return (
+    <section className="mx-3 mt-8 mb-24">
+      <SavesCard />
+    </section>
+  );
 }

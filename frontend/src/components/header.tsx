@@ -8,7 +8,7 @@ export const Header = () => {
   // const logged = true;
   return (
     <div className="sticky w-full min-w-screen bg-background top-0 left-0 right-0 z-50">
-      <div className="py-2 px-3">
+      <div className="my-2 mx-3">
         <div className="flex items-center justify-between">
           <div>
             <Link to="/">

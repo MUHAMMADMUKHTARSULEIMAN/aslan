@@ -21,7 +21,7 @@ import {
   Highlighter,
   Tags,
   ArrowDownLeftFromSquare,
-  X,
+	ChevronLeft,
 } from "lucide-react";
 
 import { Link } from "@tanstack/react-router";
@@ -81,7 +81,7 @@ export const AppSidebar = () => {
     <Sidebar side="right">
       <SidebarHeader className="my-3.5 p-0 mx-4">
         <div className="flex justify-end">
-          <X
+          <ChevronLeft
             className="w-6 h-6 stroke-[2.6px] hover:text-accent"
             onClick={toggleSidebar}
           />
