@@ -1,13 +1,15 @@
 import { Ellipsis } from "lucide-react";
 import { Card } from "./ui/card";
 import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuItem,
-  ContextMenuContent,
-} from "./ui/context-menu";
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuContent,
+} from "./ui/dropdown-menu";
+import { useState } from "react";
 
 export const SavesCard = () => {
+	const [open, setOpen] = useState(false)
   return (
     <Card className="p-2 border-5 border-border/10 dark:border-input/10">
       <div className="flex flex-col gap-2">
@@ -31,18 +33,18 @@ export const SavesCard = () => {
             </h3>
             <h3 className="text-muted-foreground text-sm">4 min</h3>
           </div>
-          <ContextMenu>
-            <ContextMenuTrigger asChild>
-              <Ellipsis className="hover:text-accent active:text-secondary" />
-            </ContextMenuTrigger>
-						<ContextMenuContent>
-							<ContextMenuItem>Archive</ContextMenuItem>
-							<ContextMenuItem>Favourite</ContextMenuItem>
-							<ContextMenuItem>Add Tags</ContextMenuItem>
-							<ContextMenuItem>Add to Collection</ContextMenuItem>
-							<ContextMenuItem>Delete</ContextMenuItem>
-						</ContextMenuContent>
-          </ContextMenu>
+          <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenuTrigger asChild>
+              <Ellipsis data-open={open} className="hover:text-accent data-[open=true]:text-secondary" />
+            </DropdownMenuTrigger>
+						<DropdownMenuContent className="mx-4 ">
+							<DropdownMenuItem>Archive</DropdownMenuItem>
+							<DropdownMenuItem>Favourite</DropdownMenuItem>
+							<DropdownMenuItem>Add Tags</DropdownMenuItem>
+							<DropdownMenuItem>Add to Collection</DropdownMenuItem>
+							<DropdownMenuItem>Delete</DropdownMenuItem>
+						</DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </Card>
