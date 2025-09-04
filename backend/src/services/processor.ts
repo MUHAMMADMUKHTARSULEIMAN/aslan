@@ -2,7 +2,6 @@ import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import axios from "axios";
 import { JSDOM } from "jsdom";
 import * as cheerio from "cheerio";
-import fs from "fs";
 
 interface Article {
   title: string;
@@ -70,10 +69,7 @@ class Processor {
     document.querySelectorAll("script").forEach((el) => el.remove());
 
     const reader = new Readability(document);
-		const readable = isProbablyReaderable(document, {
-			// minContentLength: 1000,
-			minScore: 100,
-		})
+		const readable = isProbablyReaderable(document)
     let article;
     if (readable) {
       article = reader.parse();

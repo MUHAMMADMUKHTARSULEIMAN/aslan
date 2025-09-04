@@ -15,7 +15,7 @@ export const ArticleCard = () => {
           Do Scientists Pray? Einstein Answers a Little Girl’s Question about
           Science vs. Religion
         </h3>
-        <p className="mb-2">
+        <p className="mb-2 font-alegreya">
           However, we must concede that our actual knowledge of these forces is
           imperfect, so that in the end the belief in the existence of a final,
           ultimate spirit rests on a kind of faith.

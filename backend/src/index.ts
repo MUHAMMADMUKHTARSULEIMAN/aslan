@@ -4,4 +4,4 @@ import passport from "passport";
 const app = express();
 export default app;
 
-app.use(passport.initialize())
+app.use(passport.initialize());
