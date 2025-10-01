@@ -184,4 +184,39 @@ class MetadataParser {
     }
 }
 
+
+// const processor = new Processor();
+// for(let i = 0; i < feedList.length; i++) {
+// 	const feed = await processor.fetchFeed(feedList[i].url)
+// 	if(feed) {
+// 		for(let j = 0; j < feedList[i].categories.length; j++) {
+// 			const category = feedList[i].categories[j].replaceAll(" ", "")
+// 			fs.writeFile(`feeds/${feedList[i].categories[j]}/${feedList[i].name}.json`, JSON.stringify(feed), () => {
+// 				console.log(`${feedList[i].name} added succesfully`);
+// 			});
+// 		}
+// 	}
+// }
+
+
+// for (let i = 0; i < firstItems.length; i++) {
+// 	if (firstItems[i].category === "travel") {
+// 		console.log("step 1")
+// 		const fetchie = await processor.fetchHTML(firstItems[i].link)
+// 		console.log("step 2")
+// 		if (fetchie) {
+// 			console.log("step 3")
+// 			const article = processor.extractContent(fetchie);
+// 			console.log("step 4")
+// 			if (article) {
+// 				fs.writeFile(`articles/${firstItems[i].category}/${firstItems[i].name}.json`, JSON.stringify(article), () => {
+// 					console.log(`${firstItems[i].name} added succesfully`);
+// 				});
+// 				fs.writeFile(`articles/${firstItems[i].category}/${firstItems[i].name}.md`, article.content, () => {
+// 				});
+// 			}
+// 		}
+// 	}
+// }
+
 export default MetadataParser;

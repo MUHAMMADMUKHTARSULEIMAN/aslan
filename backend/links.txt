@@ -1,0 +1,182 @@
+"https://news.google.com/rss/articles/CBMisAFBVV95cUxPTExYVk5xRWJJZ0tVWjBPdjA1aGVDYWkxMldzOHNnT3FYNE1xU19fRWdLUXBNdTR0LXl6eHQwQ1h6Y1gtMmNyOXR3R3RraGhVQmEwa1cyVGViOUx0X3hBY05uMlJjd056MDUxenBhODlzWUdTU1RGc01vYkc5Vl9hUXJqaHg5NkFvTHBkUDFsTnBjYXhxcFZ1VzNOdG1ZSHZla1ROaWVIS1N6VXVRUVpQRA?oc=5", business, bloomberg
+"https://news.crunchbase.com/venture/startup-billion-dollar-exits-growing-ma-ipo-august-2025/", business, crunchbase
+"https://fs.blog/knowledge-project-podcast/outliers-john-bragg/", business, farnamstreet
+"https://hbr.org/2025/08/should-you-delegate-that-decision-ask-these-4-questions", business, hbr
+"https://seths.blog/2025/08/job-churn/", business, sethgodin
+"https://techcrunch.com/2025/08/25/want-to-attend-techcrunch-disrupt-2025-for-free-volunteer-but-the-clocks-ticking/", business, techcrunch
+
+"https://fs.blog/knowledge-project-podcast/outliers-john-bragg/", career, farnamstreet
+"https://www.glassdoor.com/blog/employee-plus-side-hustles-vs-entrepreneurship/"career, glassdoor
+"https://jamesclear.com/habits-scorecard"career, jamesclear
+"https://lifehacker.com/entertainment/the-out-of-touch-adults-guide-to-kid-culture-kpop-demon-hunters?utm_medium=RSS"career, lifehacker
+
+"https://www.classcentral.com/report/free-certificates/", education, classcentral
+"https://blog.coursera.org/36-years-of-experience-and-still-learning-with-illinois-techs-online-m-b-a/", education, coursera
+"https://www.educationnext.org/ninja-lessons-an-impromptu-class-in-american-character/", education, educationnext
+"http://hackeducation.com/2024/10/05/the-return", education, hackeducation
+"https://www.openculture.com/2025/08/a-virtual-tour-of-shakespeares-globe-theatre.html", education, openculture
+"https://theedtechpodcast.libsyn.com/257-deep-skills-in-the-age-of-the-portfolio-career", education, theedtechpodcast
+"https://www.learningscientists.org/blog/2025/8/21", education, learningscientists
+
+"https://www.avclub.com/100-nights-of-hero-trailer-charli-xcx", entertainment, avclub
+"https://collider.com/the-4400-sci-fi-show/", entertainment, collider
+"https://consequence.net/2025/08/macaulay-culkin-nostalgic-2025-home-alone-35th-anniversary-tour-dates/", entertainment, consequenceofsound
+"https://www.indiewire.com/features/podcast/will-and-harper-how-will-ferrell-documentary-was-shot-1235141195/", entertainment, indiewire
+"https://www.nme.com/news/music/tomorrow-x-together-have-renewed-their-contracts-with-big-hit-3887438?utm_source=rss&utm_medium=rss&utm_campaign=tomorrow-x-together-have-renewed-their-contracts-with-big-hit", entertainment, nme
+"https://www.npr.org/2025/08/25/nx-s1-5517318/burning-man-2025-weather-storms", entertainment, npr
+"https://www.pastemagazine.com/hello-world?utm_source=rss&utm_medium=rss&utm_campaign=hello-world", entertainment, pastemagazine
+"https://pitchfork.com/news/lil-nas-x-pleads-not-guilty-to-felony-battery-charges", entertainment, pitchfork
+"https://www.rollingstone.com/culture/culture-news/marc-maron-criticizes-netflix-bill-maher-fascism-1235415178/", entertainment, rollingstone
+"https://screenrant.com/netflix-archive-81-horror-lovecraft/", entertainment, screenrant
+"https://www.slashfilm.com/1944979/star-trek-first-cardassian-actor-marc-alaimo-determined-look-alien-race/", entertainment, slashfilm
+"https://www.stereogum.com/2320577/saint-etienne-respond-to-winona-ryder-love-releasing-final-album-next-week/news/", entertainment, stereogum
+"https://theplaylist.net/we-were-literally-playing-god-tony-gilroy-on-building-the-emmy-nominated-andor-the-all-consuming-art-of-star-wars-20250825/", entertainment, theplaylist
+"https://variety.com/lists/most-anticipated-movies-2025/", entertainment, variety
+
+"https://www.101cookbooks.com/mediterranean-pasta-salad/", food, 101cookbooks
+"https://www.bonappetit.com/story/joel-mchale-kitchen-must-haves", food, bonappetit
+"https://civileats.com/2025/08/25/senate-ag-leaders-call-for-more-review-time-and-transparency-with-usda-reorganization-plan/", food, civileats
+"https://www.foodpolitics.com/2025/08/industry-funded-study-of-the-week-olipop-prebiotic-soda/", food, foodpolitics
+"https://minimalistbaker.com/cherry-tomato-white-bean-pasta/", food, minimalistbaker
+"https://smittenkitchen.com/2025/08/double-chocolate-zucchini-bread/", food, smittenkitchen
+
+"https://www.critical-distance.com/2025/08/25/august-24th/", gaming, criticaldistance
+"https://www.destructoid.com/skate-preview-big-city-bigger-skating-dreams/?utm_source=rss&utm_medium=rss&utm_campaign=skate-preview-big-city-bigger-skating-dreams", gaming, destructoid
+"https://www.gamedeveloper.com/marketing/xbox-explains-how-devs-can-make-the-most-of-streaming-showcase-spots", gaming, gamedeveloper
+"https://gameinformer.com/2025/08/27/scott-pilgrim-ex-adds-lucas-lee-and-roxie-richter-as-playable-characters", gaming, gameinformer
+"https://www.ign.com/articles/whether-leons-in-the-game-or-not-resident-evil-requiem-is-more-than-just-a-backwards-looking-nostalgia-fest-capcom-says-and-it-wasnt-originally-planned-as-a-30th-anniversary-release-at-all", gaming, ign
+"https://indiegamesplus.com/bend-jo-review/", gaming, indiegamesplus
+"https://itch.io/blog/869199/kick-off-2025-with-these-game-jams", gaming, itchio
+"https://www.killscreen.com/is-gerrymandering-cheating-or-just-a-good-strat/", gaming, killscreen
+"https://kotaku.com/vampire-masquerade-bloodlines-2-dlc-clans-locked-paywall-2000620705", gaming, kotaku
+"https://www.nintendolife.com/news/2025/08/video-kirby-and-the-forgotten-land-is-a-dream-on-switch-2-heres-our-side-by-side-comparison", gaming, nintendolife
+"https://www.pcgamer.com/software/windows/microsoft-locks-down-hq-as-anti-israel-protesters-live-stream-themselves-storming-the-company-presidents-office/", gaming, pcgamer
+"https://www.polygon.com/fallout-bakersfield-fan-mod-doom-first-person-retro/", gaming, polygon
+"https://www.rockpapershotgun.com/vaults-are-open-flames-are-thrown-and-ghouls-are-sick-as-doom-mod-fallout-bakersfield-shows-off-more-shootering", gaming, rockpapershotgun
+
+"https://www.bornfitness.com/feeling-stuck-in-your-fitness-journey/", health, bornfitness
+"https://breakingmuscle.com/best-smith-machine/", health, breakingmuscle
+"https://kffhealthnews.org/news/article/listen-to-the-latest-kff-health-news-minute-2025/", health, kffhealthnews
+"https://www.mindful.org/formal-vs-informal-mindfulness-2-ways-to-practice/", health, mindful
+"https://blog.myfitnesspal.com/carla-hall/", health, myfitnesspal
+"https://nutritionfacts.org/blog/hijacking-our-appetites/", health, nutritionfacts
+"https://www.precisionnutrition.com/what-is-ibs", health, precisionnutrition
+"https://www.sciencedaily.com/releases/2025/08/250826081915.htm", health, sciencedaily
+"https://www.sciencedaily.com/releases/2025/08/250826005215.htm", health, sciencedailymindbrain
+
+"https://www.additudemag.com/im-so-bored-how-to-cure-boredom-adhd/", parenting, additudemag
+"https://childmind.org/article/how-to-talk-to-your-child-about-being-adopted/", parenting, childmind
+"https://www.momjunction.com/articles/ceramides-in-a-bathing-bar_001348632/", parenting, momjunction
+"https://www.mother.ly/parenting/kids-call-for-mom-nonstop-dad-response/", parenting, motherly
+"https://www.janetlansbury.com/2025/08/healthy-body-image-eating-disorders-what-parents-need-to-know-with-grace-lautman-cn-lmhc/", parenting, respectfulparenting
+"https://www.scarymommy.com/parenting/the-trump-administration-drowning-preventing-cdc-program", parenting, scarymommy
+
+"https://affordanything.com/637-qa-can-you-open-an-ira-for-someone-elses-kid-and-should-you/", personalfinance, affordanything
+"https://behavioralscientist.org/why-we-spiral/", personalfinance, behavioralscientist
+"https://www.bogleheads.org/blog/2023/06/13/sacramento-local-chapter-video-from-meeting-97/", personalfinance, bogleheads
+"https://www.iwillteachyoutoberich.com/223-becca-nikki/?utm_source=rss&utm_medium=rss&utm_campaign=223-becca-nikki", personalfinance, iwillteachyoutoberich
+"https://moneysavingmom.com/hot-teeth-whitening-strips-deal/", personalfinance, moneysavingmom
+"https://www.mrmoneymustache.com/2025/06/13/tariffs-and-the-economy/", personalfinance, mrmoneymustache
+"https://ofdollarsanddata.com/why-im-bearish-on-us-stocks-for-the-second-time-since-2017/", personalfinance, ofdollarsanddata
+"https://www.fool.com/investing/2025/08/27/why-mongodb-stock-skyrocketed-higher-wednesday-mor/?source=iedfolrf0000001", personalfinance, themotleyfool
+"https://www.thesimpledollar.com/personal-finance/money-moves-smart-people-make-to-keep-more-of-their-hard-earned-cash/", personalfinance, thesimpledollar
+"https://www.wisebread.com/how-to-dispute-mistakes-on-your-credit-report", personalfinance, wisebread
+
+"https://www.aljazeera.com/economy/2025/8/28/intel-receives-5-7bn-as-trump-administration-buys-10-percent-stake?traffic_source=rss", politics, aljazeera
+"https://fivethirtyeight.com/features/americans-oppose-biden-impeachment-house-republicans/", politics, fivethirtyeight
+"https://www.foreignaffairs.com/germany/hitler-warnings-weimar-democracy-daniel-ziblatt", politics, foreignaffairs
+"https://www.theatlantic.com/national-security/archive/2025/08/us-russia-diplomacy-europe/684034/?utm_source=feed", politics, theatlantic
+"https://theconversation.com/the-harms-of-low-blow-political-satire-in-a-polarised-climate-255750", politics, theconversation
+"https://thehill.com/opinion/healthcare/5475745-vaccine-mandates-fall-short/", politics, thehill
+
+"https://aeon.co/essays/philosophers-must-reckon-with-the-meaning-of-thermodynamics?utm_source=rss-feed", science, aeon
+"https://apod.nasa.gov/apod/astropix.html", science, apod
+"https://arstechnica.com/science/2025/08/genetically-central-american-mammoths-were-weird/", science, arstechnica
+"https://www.bbc.com/news/articles/cy08j04je2jo?at_medium=RSS&at_campaign=rss", science, bbcscience
+"https://www.esa.int/ESA_Multimedia/Images/2025/08/Webb_observations_of_interstellar_comet_3I_ATLAS", science, esa
+"https://frontiersin.org/news/2025/08/28/frontiers-marine-science-whale-sharks-off-indonesian-papua-scars", science, frontiers
+"https://hakaimagazine.com/article-short/so-long-and-thanks-for-all-the-fish/", science, hakaimagazine
+"https://news.mongabay.com/2025/08/data-debunks-spike-in-sri-lankas-elephant-killings-points-at-media-hype/", science, mongabay
+"https://www.nasa.gov/news-release/nasa-awards-spaceflight-operations-systems-organization-contract/", science, nasa
+"https://www.nature.com/articles/s41586-025-09563-1", science, nature
+"https://nautil.us/print-edition-63-the-climates-issue-1234592/", science, nautilus
+"https://newatlas.com/materials/artificial-tongue-different-flavors/", science, newatlas
+"https://www.newscientist.com/article/2494299-go-to-therapy-for-chronic-sinus-condition-doesnt-work-that-well/?utm_campaign=RSS%7CNSNS&utm_source=NSNS&utm_medium=RSS&utm_content=home", science, newscientist
+"https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3003346", science, plosbiology
+"https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0331575", science, plosone
+"https://www.pnas.org/doi/abs/10.1073/iti3425122?af=R", science, pnas
+"https://www.quantamagazine.org/world-models-an-old-idea-in-ai-mount-a-comeback-20250902/", science, quantamagazine
+"https://www.sciencealert.com/stunning-discovery-deep-in-the-ocean-dwarfs-the-famous-lost-city", science, sciencealert
+"https://sciencebasedmedicine.org/nonsensiblemedicine/?utm_source=rss&utm_medium=rss&utm_campaign=nonsensiblemedicine", science, sciencebasedmedicine
+"https://www.sciencedaily.com/releases/2025/08/250826081915.htm", science, sciencedaily
+"https://www.sciencenews.org/article/tamed-horses-rideable-genetic-mutation", science, sciencenews
+"https://www.science.org/content/article/despite-supreme-court-win-nih-may-not-quickly-kill-again-some-900-grants-sensitive", science, scienceorg
+"https://www.space.com/space-exploration/launches-spacecraft/watch-burnt-and-battered-starship-splash-down-in-indian-ocean-to-wrap-up-historic-flight-10-video-photos", science, space
+"https://www.space.com/science/climate-change/inside-the-search-for-sustainable-aviation-fuels-which-are-on-the-federal-chopping-block", science, spacescience
+"https://www.theatlantic.com/science/2025/08/floods-extreme-rainfall-noaa/684035/?utm_source=feed", science, theatlantic
+"https://www.theguardian.com/society/2025/aug/28/shingles-vaccine-heart-cardiovascular-medical-research", science, theguardianscience
+"https://undark.org/2025/08/29/book-review-nature-and-the-mind/", science, undark
+"https://www.wired.com/story/how-to-see-the-total-lunar-eclipse-and-blood-moon-on-september-7/", science, wired
+
+"https://addicted2success.com/success-advice/7-mistakes-young-men-should-avoid-to-become-more-confident-in-the-digital-age/", selfimprovement, addicted2success
+"https://www.astralcodexten.com/p/what-is-man-that-thou-art-mindful", selfimprovement, astralcodexten
+"https://dynomight.net/liking/", selfimprovement, dynomight
+"https://fs.blog/knowledge-project-podcast/outliers-john-bragg/", selfimprovement, farnamstreet
+"https://gretchenrubin.com/articles/how-to-plan-your-perfect-reading-retreat/", selfimprovement, gretchenrubin
+"https://jamesclear.com/2019-annual-review", selfimprovement, jamesclear
+"https://www.lifehack.org/991165/cognitive-overload-symptoms", selfimprovement, lifehack
+"https://lifehacker.com/tech/how-to-type-faster-on-phone?utm_medium=RSS", selfimprovement, lifehacker
+"https://longreads.com/2025/09/01/disney-wealth-and-class/", selfimprovement, longreads
+"https://www.marcandangel.com/2025/09/01/try-again-how-to-restore-the-faith-you-once-had-in-yourself/", selfimprovement, marcandangel
+"https://marginalrevolution.com/marginalrevolution/2025/09/could-china-have-gone-christian.html?utm_source=rss&utm_medium=rss&utm_campaign=could-china-have-gone-christian", selfimprovement, marginalrevolution
+"https://www.mindful.org/formal-vs-informal-mindfulness-2-ways-to-practice/", selfimprovement, mindful
+"https://www.motivationmagazine.com/articles/fight-hardest-when-your-competition-is-resting", selfimprovement, motivationmagazine
+"https://www.notboring.co/p/weekly-dose-of-optimism-159", selfimprovement, notboring
+"https://www.positivityblog.com/short-halloween-quotes-sayings/", selfimprovement, positivityblog
+"https://www.quantamagazine.org/world-models-an-old-idea-in-ai-mount-a-comeback-20250902/", selfimprovement, quantamagazine
+"https://www.scotthyoung.com/blog/2025/08/26/organization-month-end/", selfimprovement, scotthyoung
+"https://sourcesofinsight.com/face-your-fears-to-shrink-them/", selfimprovement, sourcesofinsight
+"https://theblissfulmind.com/lessons-2024/", selfimprovement, theblissfulmind
+"https://www.themarginalian.org/2025/08/31/aztec-humboldt-darwin-emoji/", selfimprovement, themarginalian
+"https://theutopianlife.com/2024/05/01/meet-hannah-ryu-the-entrepreneur-with-business-lessons-learned-through-muay-thai/", selfimprovement, theutopianlife
+"https://timemanagementninja.com/2021/04/dont-let-your-phone-own-you/", selfimprovement, timemanagementninja
+"https://tinybuddha.com/blog/from-loss-to-hope-how-i-found-joy-again/", selfimprovement, tinybuddha
+"https://workbrighter.co/the-sims-self-care/", selfimprovement, workbrighter
+"https://zenhabits.net/reflect/", selfimprovement, zenhabits
+
+"https://www.90min.com/charly-launches-2025-heritage-collection-celebrating-mexico-football-culture?utm_source=RSS", sports, 90min
+"https://www.bbc.com/sport/football/articles/c80d0xx3l8zo?at_medium=RSS&at_campaign=rss", sports, bbcfootball
+"https://www.bbc.com/sport/football/articles/ceqyq52d2rvo?at_medium=RSS&at_campaign=rss", sports, bbcsports
+"https://www.caughtoffside.com/2025/09/02/report-plan-for-19-year-old-wolves-player-outlined-after-deadline-day-move/", sports, caughtoffside
+"https://www.espn.com/nfl/story/_/id/46128962/micah-parsons-trade-dallas-cowboys-green-bay-packers-2025-nfl-season", sports, espn
+"https://www.football-espana.net/2025/09/02/column-financial-fair-pnay-is-not-only-for-the-big-boys-ask-getafe", sports, footballespana
+"https://www.marca.com/en/nfl/philadelphia-eagles/2025/09/02/68b6dda8268e3e4f0d8b45db.html", sports, marcaenglish
+"https://www.marca.com/en/football/liverpool/2025/08/31/68b4bc7122601d53228b45ca.html", sports, marcapremierleague
+"https://www.skysports.com/football/news/12040/13423796/richard-hughes-how-liverpool-sporting-director-plotted-life-after-jurgen-klopp-and-record-breaking-summer-spend", sports, skysports
+"https://thefootballfaithful.com/gyokeres-player-power-isak-transfer/", sports, thefootballfaithful
+"https://www.theguardian.com/football/2025/sep/02/marc-guehi-angy-with-crystal-palaces-decision-to-block-move-to-liverpool", sports, theguardian
+
+"https://arstechnica.com/science/2025/08/genetically-central-american-mammoths-were-weird/", technology, arstechnica
+"https://www.engadget.com/gaming/googles-play-games-update-will-show-people-what-youre-playing-164549921.html?src=rss", technology, engadget
+"https://gizmodo.com/marvel-zombies-teases-a-high-energy-undead-adventure-2000651990", technology, gizmodo
+"https://www.theregister.com/2025/08/29/ai_web_crawlers_are_destroying/", technology, hackernews
+"https://mashable.com/article/researchers-find-secret-ties-vulnerabilities-in-popular-vpn-apps", technology, mashable
+"https://techcrunch.com/2025/09/02/teslas-dojo-a-timeline/", technology, techcrunch
+"https://www.technologyreview.com/2025/09/02/1122877/the-download-therapists-secretly-using-ai-and-apple-airpods-hearing-aid-potential/", technology, technologyreview
+"https://www.techradar.com/pro/security/new-malware-exploits-trusted-windows-drivers-to-get-around-security-systems-heres-how-to-stay-safe", technology, techradar
+"https://thenextweb.com/news/ai-vibe-coding-wont-replace-developers", technology, thenextweb
+"https://go.theregister.com/feed/www.theregister.com/2025/09/02/microsoft_rewarded_for_security_failures/", technology, theregister
+"https://www.theverge.com/news/769183/uber-eats-best-buy-partnership-deliveries", technology, theverge
+"https://www.wired.com/story/how-i-learned-to-stop-worrying-and-love-light-roast-espresso/", technology, wired
+
+"https://www.breakingtravelnews.com/news/article/cristiano-ronaldo-fronts-saudi-tourisms-stay-for-more-campaign/", travel, breakingtravelnews
+"https://www.businesstraveller.com/business-travel/2025/09/02/qantas-to-double-capacity-on-perth-rome-next-summer/", travel, businesstraveller
+"https://www.cntraveler.com/story/the-aircraft-graveyards-that-keep-aviation-alive", travel, cntraveler
+"https://greenglobaltravel.com/why-esims-are-essential-for-anyone-who-travels-abroad/", travel, greenglobaltravel
+"https://matadornetwork.com/read/is-sri-lanka-is-the-new-bali/", travel, matadornetwork
+"https://www.nomadicmatt.com/travel-blogs/ludington-mi-guide/", travel, nomadicmatt
+"https://skift.com/2025/09/02/aircraft-leasing-giant-air-lease-to-acquired-in-7-4-billion-deal/", travel, skift
+"https://stuckincustoms.com/2025/09/01/enterning-the-fjord/", travel, stuckincustoms
+"https://theplanetd.com/where-to-stay-in-paris/", travel, theplanetd
+"https://thepointsguy.com/credit-cards/citi-barclays-aadvantage-credit-card-application-rules/", travel, thepointsguy
+"https://travelfreak.com/best-delsey-luggage/", travel, travelfreak

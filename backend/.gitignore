@@ -1,6 +1,13 @@
 .vscode
 
+articles
+feeds
 log
+
+feed-list.md
+final-feed-list.md
+first-items.json
+rss-list.md
 
 node_modules
 

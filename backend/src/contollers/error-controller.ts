@@ -35,7 +35,6 @@ const devErrors = (error: CustomErrorType, res: Response) => {
 }
 
 const prodErrors = (error: CustomErrorType, res: Response) => {
-	console.log(error)
 	if(error.errorDetails) {
 		res.status(error.statusCode).json({
 			statusCode: error.statusCode,

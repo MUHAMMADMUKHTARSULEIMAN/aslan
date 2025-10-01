@@ -6,7 +6,7 @@ const getENVVariable = (name: keyof typeof process.env): string => {
 	process.env[name] = process.env[name].trim()
 
 	if(name === "NODE_ENV" && process.env[name] !== "development" && process.env[name] !== "production") {
-		throw new Error(`Invalid environment variable: ${name}`)
+		const error = new Error(`Invalid environment variable: ${name}`)
 	}
 	return process.env[name]
 }

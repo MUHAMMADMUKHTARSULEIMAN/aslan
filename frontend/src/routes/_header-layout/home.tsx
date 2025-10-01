@@ -43,7 +43,7 @@ function RouteComponent() {
         </div>
 				<div className="my-8">
 					<h1 className="font-bold text-3xl">
-						Trousers-Worthy Reads
+						Stories that Belong in the Sanctum
 					</h1>
 					<p className="mb-4">
 						Stories to fuel your mind

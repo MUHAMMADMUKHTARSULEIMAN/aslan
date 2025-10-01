@@ -1,0 +1,883 @@
+[
+  {
+    "url": "https://seths.blog/feed/",
+    "name": "Seth's Blog",
+    "categories": [
+      "Business"
+    ]
+  },
+  {
+    "url": "https://fs.blog/feed/",
+    "name": "Farnam Street",
+    "categories": [
+      "Business",
+      "Career",
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://techcrunch.com/startups/feed/",
+    "name": "TechCrunch",
+    "categories": [
+      "Business"
+    ]
+  },
+  {
+    "url": "http://feeds.harvardbusiness.org/harvardbusiness?format=xml",
+    "name": "Harvard Business Review",
+    "categories": [
+      "Business"
+    ]
+  },
+  {
+    "url": "https://lifehacker.com/rss",
+    "name": "Lifehacker",
+    "categories": [
+      "Career",
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://jamesclear.com/feed",
+    "name": "James Clear",
+    "categories": [
+      "Career",
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://blog.coursera.org/feed/",
+    "name": "Coursera Blog",
+    "categories": [
+      "Education"
+    ]
+  },
+  {
+    "url": "https://www.openculture.com/feed",
+    "name": "Open Culture",
+    "categories": [
+      "Education"
+    ]
+  },
+  {
+    "url": "https://www.learningscientists.org/blog?format=rss",
+    "name": "The Learning Scientists",
+    "categories": [
+      "Education"
+    ]
+  },
+  {
+    "url": "https://www.educationnext.org/feed/",
+    "name": "Education Next",
+    "categories": [
+      "Education"
+    ]
+  },
+  {
+    "url": "http://hackeducation.com/feed",
+    "name": "Hack Education",
+    "categories": [
+      "Education"
+    ]
+  },
+  {
+    "url": "https://theedtechpodcast.libsyn.com/rss",
+    "name": "The EdTech Podcast",
+    "categories": [
+      "Education"
+    ]
+  },
+  {
+    "url": "https://www.indiewire.com/feed/",
+    "name": "IndieWire",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://theplaylist.net/feed/",
+    "name": "The Playlist",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://collider.com/feed/",
+    "name": "Collider",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://variety.com/v/film/feed/",
+    "name": "Variety",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://pitchfork.com/feed/feed-news/rss",
+    "name": "Pitchfork",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://consequence.net/feed/",
+    "name": "Consequence",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://www.nme.com/feed",
+    "name": "NME",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://www.stereogum.com/feed/",
+    "name": "Stereogum",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://screenrant.com/feed/",
+    "name": "ScreenRant",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://www.slashfilm.com/feed/",
+    "name": "SlashFilm",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://www.rollingstone.com/culture/culture-news/feed/",
+    "name": "Rolling Stone",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://feeds.npr.org/1008/rss.xml",
+    "name": "NPR",
+    "categories": [
+      "Entertainment"
+    ]
+  },
+  {
+    "url": "https://smittenkitchen.com/feed/",
+    "name": "smitten kitchen",
+    "categories": [
+      "Food"
+    ]
+  },
+  {
+    "url": "https://minimalistbaker.com/feed",
+    "name": "Minimalist Baker",
+    "categories": [
+      "Food"
+    ]
+  },
+  {
+    "url": "https://www.bonappetit.com/feed/rss",
+    "name": "Bon Appetit",
+    "categories": [
+      "Food"
+    ]
+  },
+  {
+    "url": "https://www.critical-distance.com/feed/",
+    "name": "Critical Distance",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://www.polygon.com/rss/index.xml",
+    "name": "Polygon",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://kotaku.com/rss",
+    "name": "Kotaku",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://www.pcgamer.com/rss/",
+    "name": "PC Gamer",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://www.rockpapershotgun.com/feed",
+    "name": "Rock Paper Shotgun",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://www.gameinformer.com/rss.xml",
+    "name": "Game Informer",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://www.gamedeveloper.com/rss.xml",
+    "name": "Game Developer",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://feeds.ign.com/ign/games-all",
+    "name": "IGN",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://killscreen.com/feed/",
+    "name": "Killscreen",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://indiegamesplus.com/feed",
+    "name": "Indie Games Plus",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://itch.io/blog.rss",
+    "name": "Itch.io",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://www.nintendolife.com/feeds/latest",
+    "name": "Nintendo Life",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://www.destructoid.com/feed/",
+    "name": "Destructoid",
+    "categories": [
+      "Gaming"
+    ]
+  },
+  {
+    "url": "https://www.sciencedaily.com/rss/health_medicine.xml",
+    "name": "ScienceDaily",
+    "categories": [
+      "Health & Fitness"
+    ]
+  },
+  {
+    "url": "https://www.mindful.org/feed/",
+    "name": "Mindful",
+    "categories": [
+      "Health & Fitness",
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://kffhealthnews.org/feed/",
+    "name": "KFF Health News",
+    "categories": [
+      "Health & Fitness"
+    ]
+  },
+  {
+    "url": "https://breakingmuscle.com/feed/",
+    "name": "Breaking Muscle",
+    "categories": [
+      "Health & Fitness"
+    ]
+  },
+  {
+    "url": "https://www.precisionnutrition.com/blog/feed",
+    "name": "Precision Nutrition",
+    "categories": [
+      "Health & Fitness"
+    ]
+  },
+  {
+    "url": "https://nutritionfacts.org/feed/",
+    "name": "NutritionFacts",
+    "categories": [
+      "Health & Fitness"
+    ]
+  },
+  {
+    "url": "https://www.sciencedaily.com/rss/mind_brain.xml",
+    "name": "ScienceDaily (Mind & Brain)",
+    "categories": [
+      "Health & Fitness"
+    ]
+  },
+  {
+    "url": "https://www.janetlansbury.com/feed/",
+    "name": "Janet Lansbury",
+    "categories": [
+      "Parenting"
+    ]
+  },
+  {
+    "url": "https://www.scarymommy.com/feed",
+    "name": "Scary Mommy",
+    "categories": [
+      "Parenting"
+    ]
+  },
+  {
+    "url": "https://www.additudemag.com/feed/",
+    "name": "ADDitude",
+    "categories": [
+      "Parenting"
+    ]
+  },
+  {
+    "url": "https://www.thesimpledollar.com/feed/",
+    "name": "The Simple Dollar",
+    "categories": [
+      "Personal Finance"
+    ]
+  },
+  {
+    "url": "https://www.wisebread.com/feed",
+    "name": "Wise Bread",
+    "categories": [
+      "Personal Finance"
+    ]
+  },
+  {
+    "url": "https://www.mrmoneymustache.com/feed/",
+    "name": "Mr. Money Mustache",
+    "categories": [
+      "Personal Finance"
+    ]
+  },
+  {
+    "url": "https://www.fool.com/feeds/index.aspx",
+    "name": "The Motley Fool",
+    "categories": [
+      "Personal Finance"
+    ]
+  },
+  {
+    "url": "https://behavioralscientist.org/feed/",
+    "name": "Behavioral Scientist",
+    "categories": [
+      "Personal Finance"
+    ]
+  },
+  {
+    "url": "https://www.theatlantic.com/feed/channel/politics/",
+    "name": "The Atlantic",
+    "categories": [
+      "Politics"
+    ]
+  },
+  {
+    "url": "https://fivethirtyeight.com/politics/feed/",
+    "name": "FiveThirtyEight",
+    "categories": [
+      "Politics"
+    ]
+  },
+  {
+    "url": "https://www.foreignaffairs.com/rss.xml",
+    "name": "Foreign Affairs",
+    "categories": [
+      "Politics"
+    ]
+  },
+  {
+    "url": "https://www.aljazeera.com/xml/rss/all.xml",
+    "name": "Al Jazeera",
+    "categories": [
+      "Politics"
+    ]
+  },
+  {
+    "url": "https://theconversation.com/uk/politics/articles.atom",
+    "name": "The Conversation",
+    "categories": [
+      "Politics"
+    ]
+  },
+  {
+    "url": "https://thehill.com/rss/syndicator/19110",
+    "name": "The Hill",
+    "categories": [
+      "Politics"
+    ]
+  },
+  {
+    "url": "https://www.sciencedaily.com/rss/top/science.xml",
+    "name": "ScienceDaily",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.newscientist.com/feed/home/",
+    "name": "New Scientist",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+    "name": "NASA",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.space.com/feeds/all",
+    "name": "Space",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://feeds.arstechnica.com/arstechnica/science",
+    "name": "Ars Technica",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.quantamagazine.org/feed/",
+    "name": "Quanta Magazine",
+    "categories": [
+      "Science",
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://www.sciencenews.org/feed",
+    "name": "Science News",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.theatlantic.com/feed/channel/science/",
+    "name": "The Atlantic",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.wired.com/category/science/feed/",
+    "name": "WIRED",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://aeon.co/feed",
+    "name": "Aeon",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.sciencealert.com/feed",
+    "name": "ScienceAlert",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.theguardian.com/science/rss",
+    "name": "The Guardian",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
+    "name": "BBC",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://apod.nasa.gov/apod.rss",
+    "name": "APOD",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.space.com/feeds/tag/science",
+    "name": "Space (Science)",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.esa.int/rssfeed/Our_Activities/Space_Science",
+    "name": "ESA",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://hakaimagazine.com/feed/",
+    "name": "Hakai Magazine",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.nature.com/nature.rss",
+    "name": "Nature",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://www.frontiersin.org/news/rss",
+    "name": "Frontiers",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://journals.plos.org/plosbiology/feed/atom",
+    "name": "PLOS BIOLOGY",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://journals.plos.org/plosone/feed/atom",
+    "name": "PLOS ONE",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "https://newatlas.com/science/index.rss",
+    "name": "New Atlas",
+    "categories": [
+      "Science"
+    ]
+  },
+  {
+    "url": "http://feeds.feedburner.com/tinybuddha",
+    "name": "Tiny Buddha",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://www.positivityblog.com/feed/",
+    "name": "The Positivity Blog",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "http://feeds.feedburner.com/MarcAndAngel",
+    "name": "Marc and Angel Hack Life",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://feeds.lifehack.org/",
+    "name": "LifeHack",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://timemanagementninja.com/feed/",
+    "name": "Time Management Ninja",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://www.scotthyoung.com/blog/feed/",
+    "name": "Scott H Young",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://www.motivationmagazine.com/rssfeed/personal.htm",
+    "name": "Motivation Magazine",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://addicted2success.com/feed/",
+    "name": "Addcited 2 Success",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://longreads.com/feed/",
+    "name": "Longreads",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://feeds.feedburner.com/brainpickings/rss",
+    "name": "The Marginalian",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://dynomight.net/feed.xml",
+    "name": "DYNOMIGHT",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://astralcodexten.substack.com/feed",
+    "name": "Astral Codex Ten",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://www.notboring.co/feed",
+    "name": "Not Boring",
+    "categories": [
+      "Self Improvement"
+    ]
+  },
+  {
+    "url": "https://www.espn.com/espn/rss/news",
+    "name": "ESPN.com",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "http://feeds.bbci.co.uk/sport/rss.xml",
+    "name": "BBC Sport",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "http://feeds.bbci.co.uk/sport/football/rss.xml",
+    "name": "BBC Football",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "https://www.theguardian.com/football/rss",
+    "name": "The Guardian",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "https://www.90min.com/posts.rss",
+    "name": "90min.com",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "https://www.caughtoffside.com/feed",
+    "name": "CaughtOffside",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "https://www.football-espana.net/feed",
+    "name": "Football Espana",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "https://e00-marca.uecdn.es/rss/en/index.xml",
+    "name": "MARCA English",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "https://e00-marca.uecdn.es/rss/en/football/premier-league.xml",
+    "name": "MARCA Premier League",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "https://www.thefootballfaithful.com/feed",
+    "name": "The Football Faithful",
+    "categories": [
+      "Sports"
+    ]
+  },
+  {
+    "url": "https://techcrunch.com/feed/",
+    "name": "TechCrunch",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://www.theverge.com/rss/index.xml",
+    "name": "The Verge",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://www.wired.com/feed/rss",
+    "name": "WIRED",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://feeds.arstechnica.com/arstechnica/index",
+    "name": "Ars Technica",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://gizmodo.com/rss",
+    "name": "Gizmodo",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://www.engadget.com/rss.xml",
+    "name": "Engadget",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://www.techradar.com/rss",
+    "name": "TechRadar",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://mashable.com/feeds/rss/all",
+    "name": "Mashable",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://www.technologyreview.com/feed/",
+    "name": "MIT Technology Review",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://thenextweb.com/feed",
+    "name": "The Next Web",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://hnrss.org/frontpage",
+    "name": "Hacker News",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://www.theregister.com/headlines.rss",
+    "name": "The Register",
+    "categories": [
+      "Technology"
+    ]
+  },
+  {
+    "url": "https://www.cntraveler.com/feed/rss",
+    "name": "Conde Nest Traveller",
+    "categories": [
+      "Travel"
+    ]
+  },
+  {
+    "url": "https://thepointsguy.com/feed/",
+    "name": "The Points Guy",
+    "categories": [
+      "Travel"
+    ]
+  },
+  {
+    "url": "https://skift.com/feed/",
+    "name": "Skift",
+    "categories": [
+      "Travel"
+    ]
+  },
+  {
+    "url": "https://www.nomadicmatt.com/feed",
+    "name": "Nomadic Matt",
+    "categories": [
+      "Travel"
+    ]
+  },
+  {
+    "url": "https://theplanetd.com/feed",
+    "name": "The Planet D",
+    "categories": [
+      "Travel"
+    ]
+  },
+  {
+    "url": "https://matadornetwork.com/feed",
+    "name": "Matador Network",
+    "categories": [
+      "Travel"
+    ]
+  },
+  {
+    "url": "https://greenglobaltravel.com/feed/",
+    "name": "Green Global Travel",
+    "categories": [
+      "Travel"
+    ]
+  }
+]
