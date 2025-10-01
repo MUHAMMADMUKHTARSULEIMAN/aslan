@@ -46,7 +46,7 @@ export const createFeeds = asyncErrorHandler(
 			const feed = await processor.fetchFeed(url);
 			if (feed) {
 				if (feed.items.length > 0) {
-					for (let j = 0; j < 1; j++) {
+					for (let j = 0; j < feed.items.length; j++) {
 						const item = feed.items[j];
 						if (typeof item.link === "string") {
 							console.log(item.link)
