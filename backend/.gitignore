@@ -4,9 +4,10 @@ articles
 feeds
 log
 
-feed-list.md
-final-feed-list.md
+feed-list.json
+final-feed-list.json
 first-items.json
+links.txt
 rss-list.md
 
 node_modules
