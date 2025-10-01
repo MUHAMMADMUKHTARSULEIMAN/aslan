@@ -156,6 +156,7 @@ class Processor {
       $('meta[name="application-name"]').attr("content") ||
       $('meta[name="twitter:site:id"]').attr("content") ||
       schemaName ||
+      $('meta[itemprop="name"]').attr("content") ||
       $('meta[name="apple-mobile-web-app-title"]').attr("content") ||
       hostname
     );
@@ -178,6 +179,7 @@ class Processor {
       $('meta[name="article:published_time"]').attr("content") ||
       schemaDate ||
       $('meta[name="DC.date"]').attr("content") ||
+      $('meta[itemprop="datePublished"]').attr("content") ||
       $('meta[property="published_time"]').attr("content") ||
       $('meta[name="published_time"]').attr("content") ||
       ""
@@ -215,11 +217,13 @@ class Processor {
     }
     const schemaAuthor = scriptJSON?.author?.name;
     return (
+			schemaAuthor ||
+      $('meta[name="author"]').attr("content") ||
+			$('meta[property="article:author"]').attr('content') ||
+      $('meta[name="twitter:creator:id"]').attr("content") ||
       $("address").text() ||
       $("address a").text() ||
-      $('meta[name="author"]').attr("content") ||
-      $('meta[name="twitter:creator:id"]').attr("content") ||
-			schemaAuthor ||
+			$('[rel="author"]').first().text() ||
       ""
     );
   }
