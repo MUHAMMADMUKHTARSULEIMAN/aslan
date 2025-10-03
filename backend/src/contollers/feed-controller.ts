@@ -8,7 +8,7 @@ export const addFeedURL = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const url = req.body.url;
     const name = req.body.name;
-		const processor = new Processor()
+    const processor = new Processor();
 
     if (!url) {
       const error = new CustomError(400, "A valid URL must be provided");
@@ -21,28 +21,39 @@ export const addFeedURL = asyncErrorHandler(
       return next(error);
     }
 
-		if(feed.items.length > 0 && feed.items[0].link) {
-			const HTML = await processor.fetchHTML(feed.items[0].link)
-			if(!HTML) {
-				const error = new CustomError(500, `Unable to fetch HTML content from ${name}`)
-				return next(error)
-			}
-			const article = processor.extractContent(HTML)
-			if(!article) {
-				const error = new CustomError(500, `Unable to extract content from document`)
-				return next(error)
-			}
-		}
-		else {
-			const error = new CustomError(404, `No article was found in ${name}`)
-			return next(error)
-		}
+    if (feed.items.length > 0 && feed.items[0].link) {
+      const HTML = await processor.fetchHTML(feed.items[0].link);
+      if (!HTML) {
+        const error = new CustomError(
+          500,
+          `Unable to fetch HTML content from ${name}`
+        );
+        return next(error);
+      }
+      const article = processor.extractContent(HTML);
+      if (!article) {
+        const error = new CustomError(
+          500,
+          `Unable to extract content from document`
+        );
+        return next(error);
+      }
+    } else {
+      const error = new CustomError(404, `No article was found in ${name}`);
+      return next(error);
+    }
 
     const entry = await Feeds.create(req.body);
+    if (!entry) {
+      const error = new CustomError(
+        500,
+        `URL could not be added. Please try again later.`
+      );
+      return next(error);
+    }
 
     res.status(201).json({
       status: "OK",
-      data: null,
     });
   }
 );

@@ -125,13 +125,6 @@ class Processor {
       $('meta[property="og:image"]').attr("content") ||
       $('meta[name="og:image"]').attr("content") ||
       $('meta[name="twitter:image"]').attr("content") ||
-      ""
-    );
-  }
-
-  public findFirstImage(HTML: string): string {
-    const $ = cheerio.load(HTML);
-    return (
       $("main img").first().attr("src") ||
       $(".main img").first().attr("src") ||
       $("#main img").first().attr("src") ||
@@ -210,22 +203,50 @@ class Processor {
 
   public findAuthor(HTML: string) {
     const $ = cheerio.load(HTML);
-		const script = $('script[type="application/ld+json"]').html();
+    const script = $('script[type="application/ld+json"]').html();
     let scriptJSON;
     if (script) {
       scriptJSON = JSON.parse(script);
     }
     const schemaAuthor = scriptJSON?.author?.name;
     return (
-			schemaAuthor ||
+      schemaAuthor ||
       $('meta[name="author"]').attr("content") ||
-			$('meta[property="article:author"]').attr('content') ||
+      $('meta[property="article:author"]').attr("content") ||
       $('meta[name="twitter:creator:id"]').attr("content") ||
       $("address").text() ||
       $("address a").text() ||
-			$('[rel="author"]').first().text() ||
+      $('[rel="author"]').first().text() ||
       ""
     );
+  }
+
+  public findLength(HTML: string) {
+    const $ = cheerio.load(HTML);
+    let articleLength = 0;
+    let sectionLength = 0;
+    let divLength = 0;
+
+		$("article").each((_, el) => {
+			articleLength += $(el).text().length;
+		});
+		$("section").each((_, el) => {
+			sectionLength += $(el).text().length;
+		});
+    $("div").each((_, el) => {
+      divLength += $(el).text().length;
+    });
+		const mainLength = $("main").text().length
+		const bodyLength = $("body").text().length
+
+		return (
+			articleLength !== 0 ? articleLength : 
+			sectionLength !== 0 ? sectionLength :
+			divLength !== 0 ? divLength : 
+			mainLength ||
+			bodyLength ||
+			0
+		)
   }
 }
 

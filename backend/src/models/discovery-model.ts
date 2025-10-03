@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+import { format } from "date-fns";
 
 const discoverySchema = new mongoose.Schema({
-	link: {
-		type: String,
-		required: [true, "Link not provided"],
-	},
+  url: {
+    type: String,
+    required: [true, "Link not provided"],
+  },
   title: {
     type: String,
     required: [true, "Title not provided"],
@@ -21,23 +22,23 @@ const discoverySchema = new mongoose.Schema({
     type: String,
     required: [true, "Name of site not provided"],
   },
-	feedName: {
-		type: String,
-		required: [true, "Name of feed not provided"],
-	},
+  feedName: {
+    type: String,
+    required: [true, "Name of feed not provided"],
+  },
   length: {
     type: Number,
     required: [true, "Length of article not provided"],
   },
-  // publishedTime: {
-  //   type: String,
-  //   required: [false, "Time of publishing not provided"],
-  // },
   categories: {
     type: [String],
-    required: [true, "Categories not provided"]
+    required: [true, "Categories not provided"],
+  },
+  dateCreated: {
+    type: String,
+    default: format(new Date(), "yyyy-MM-dd")
   },
 });
 
-const Discoveries = mongoose.model("Discovery", discoverySchema)
+const Discoveries = mongoose.model("Discovery", discoverySchema);
 export default Discoveries;
