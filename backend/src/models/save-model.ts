@@ -22,15 +22,12 @@ const saveSchema = new mongoose.Schema({
   },
   dateCreated: {
     type: String,
-    default: new Date().toISOString,
+    default: new Date().toISOString(),
   },
   html: {
     type: String,
   },
-	tags: {
-		type: [String],
-	},
-	collections: {
+	highlights: {
 		type: [String],
 	},
 	favourite: {

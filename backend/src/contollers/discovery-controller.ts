@@ -26,16 +26,7 @@ export const createFeeds = asyncErrorHandler(
       const error = new CustomError(404, "No feed was found");
       return next(error);
     }
-    for (let i = 0; i < feeds.length; i++) {
-      const url = feeds[i].url;
-      const name = feeds[i].name;
-      const categories = feeds[i].categories;
-      if (!url || !name || !categories) {
-        const error = new CustomError(400, "Malformed feed collection");
-        return next(error);
-      }
-    }
-    let BingIotD;
+    let BingIotD = null;
     let discoveriesContainer: Array<Discovery> = [];
     for (let i = 0; i < feeds.length; i++) {
       const name = feeds[i].name;
@@ -51,7 +42,7 @@ export const createFeeds = asyncErrorHandler(
               if (HTML) {
                 const article = processor.extractContent(HTML);
                 if (article) {
-                  let image = "";
+                  let image = null;
                   if (item.mediaContent) {
                     image = item.mediaContent.$.url;
                   } else if (item.mediaThumbnail) {
@@ -63,8 +54,8 @@ export const createFeeds = asyncErrorHandler(
                     image = item.enclosure.url;
                   } else if (item.itunesImage) {
                     image = item.itunesImage.$.href;
-                  } else if (processor.findThumbnail(HTML) !== "") {
-                    image = processor.findThumbnail(HTML);
+                  } else if (processor.findThumbnail(HTML, item.link) !== null) {
+                    image = processor.findThumbnail(HTML, item.link);
                   } else {
                     if (!BingIotD) {
                       const fetchBingIotD = await axios(
@@ -75,12 +66,7 @@ export const createFeeds = asyncErrorHandler(
                     }
                     image = BingIotD;
                   }
-
-                  if (!image.startsWith("https://")) {
-                    const parsedLink = new URL(item.link);
-                    image = `${parsedLink.origin}${image}`;
-                  }
-                  const siteName = processor.findSiteName(HTML, item.link);
+                  const siteName = processor.findSiteName(HTML) || processor.getHostname(item.link);
                   const discovery: Discovery = {
                     url: item.link,
                     title: article.title,

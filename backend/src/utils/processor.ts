@@ -41,9 +41,10 @@ class Processor {
           `Couldn't fetch feed from ${URL}. Check URL and try again`
       );
       logger(JSON.stringify(err));
+      return null;
     }
   }
-  public async fetchHTML(URL: string): Promise<string | undefined> {
+  public async fetchHTML(URL: string): Promise<string | null> {
     try {
       const response = await axios.get(URL, {
         headers: {
@@ -70,10 +71,11 @@ class Processor {
         );
         logger(JSON.stringify(err));
       }
+      return null;
     }
   }
 
-  public extractContent(HTML: string) {
+  public extractContent(HTML: string): Article | null {
     const dom = new JSDOM(HTML);
     const document = dom.window.document;
     document.querySelectorAll("link").forEach((el) => el.remove());
@@ -82,6 +84,11 @@ class Processor {
     document.querySelectorAll("*").forEach((el) => {
       if (el.hasAttribute("style")) {
         el.removeAttribute("style");
+      }
+    });
+    document.querySelectorAll("*").forEach((el) => {
+      if (el.hasAttribute("id")) {
+        el.removeAttribute("id");
       }
     });
     document.querySelectorAll("*").forEach((el) => {
@@ -111,16 +118,18 @@ class Processor {
       } else {
         const error = new CustomError(500, "Content could not be extracted");
         logger(JSON.stringify(error));
+        return null;
       }
     } else {
       const error = new CustomError(400, "Document not readable");
       logger(JSON.stringify(error));
+      return null;
     }
   }
 
-  public findThumbnail(HTML: string): string {
+  public findThumbnail(HTML: string, url: string): string | null {
     const $ = cheerio.load(HTML);
-    return (
+    let image =
       $('meta[name="image"]').attr("content") ||
       $('meta[property="og:image"]').attr("content") ||
       $('meta[name="og:image"]').attr("content") ||
@@ -129,20 +138,22 @@ class Processor {
       $(".main img").first().attr("src") ||
       $("#main img").first().attr("src") ||
       $("img").first().attr("src") ||
-      ""
-    );
+      null;
+    if (image && !image.startsWith("https://")) {
+      const parsedURL = new URL(url);
+      image = `${parsedURL.origin}${image}`;
+    }
+    return image;
   }
 
-  public findSiteName(HTML: string, url: string): string {
+  public findSiteName(HTML: string): string | null {
     const $ = cheerio.load(HTML);
     const script = $('script[type="application/ld+json"]').html();
     let scriptJSON;
     if (script) {
       scriptJSON = JSON.parse(script);
     }
-    const schemaName = scriptJSON?.publisher?.name || scriptJSON?.name;
-    const link = new URL(url);
-    const hostname = link.hostname;
+    const schemaName: string = scriptJSON?.publisher?.name || scriptJSON?.name;
     return (
       $('meta[property="og:site_name"]').attr("content") ||
       $('meta[name="og:site_name"]').attr("content") ||
@@ -151,11 +162,11 @@ class Processor {
       schemaName ||
       $('meta[itemprop="name"]').attr("content") ||
       $('meta[name="apple-mobile-web-app-title"]').attr("content") ||
-      hostname
+      null
     );
   }
 
-  public findPublishedTime(HTML: string) {
+  public findPublishedTime(HTML: string): string | null {
     const $ = cheerio.load(HTML);
     const script = $('script[type="application/ld+json"]').html();
     let schemaDate;
@@ -175,11 +186,11 @@ class Processor {
       $('meta[itemprop="datePublished"]').attr("content") ||
       $('meta[property="published_time"]').attr("content") ||
       $('meta[name="published_time"]').attr("content") ||
-      ""
+      null
     );
   }
 
-  public findTitle(HTML: string, url: string) {
+  public findTitle(HTML: string): string | null {
     const $ = cheerio.load(HTML);
     const script = $('script[type="application/ld+json"]').html();
     let scriptJSON;
@@ -187,8 +198,6 @@ class Processor {
       scriptJSON = JSON.parse(script);
     }
     const schemaHeadline = scriptJSON?.headline;
-    const link = new URL(url);
-    const hostname = link.hostname;
     return (
       $("title").text() ||
       $("h1").first().text() ||
@@ -197,11 +206,11 @@ class Processor {
       $('meta[name="DC.title"]').attr("content") ||
       $('meta[name="twitter:title"]').attr("content") ||
       $('meta[name="og:title"]').attr("content") ||
-      hostname
+      null
     );
   }
 
-  public findAuthor(HTML: string) {
+  public findAuthor(HTML: string): string | null {
     const $ = cheerio.load(HTML);
     const script = $('script[type="application/ld+json"]').html();
     let scriptJSON;
@@ -217,36 +226,35 @@ class Processor {
       $("address").text() ||
       $("address a").text() ||
       $('[rel="author"]').first().text() ||
-      ""
+      null
     );
   }
 
-  public findLength(HTML: string) {
+  public findLength(HTML: string): number | null {
     const $ = cheerio.load(HTML);
     let articleLength = 0;
-    let sectionLength = 0;
     let divLength = 0;
 
-		$("article").each((_, el) => {
-			articleLength += $(el).text().length;
-		});
-		$("section").each((_, el) => {
-			sectionLength += $(el).text().length;
-		});
-    $("div").each((_, el) => {
+    $("body > article").each((_, el) => {
+      articleLength += $(el).text().length;
+    });
+    $("body > div").each((_, el) => {
       divLength += $(el).text().length;
     });
-		const mainLength = $("main").text().length
-		const bodyLength = $("body").text().length
+    const mainLength = $("main").text().length;
+    const bodyLength = $("body").text().length;
 
-		return (
-			articleLength !== 0 ? articleLength : 
-			sectionLength !== 0 ? sectionLength :
-			divLength !== 0 ? divLength : 
-			mainLength ||
-			bodyLength ||
-			0
-		)
+    return articleLength !== 0
+      ? articleLength
+      : divLength !== 0
+      ? divLength
+      : mainLength || bodyLength || null;
+  }
+
+  public getHostname(url: string): string {
+    const link = new URL(url);
+    const hostname = link.hostname;
+    return hostname;
   }
 }
 
