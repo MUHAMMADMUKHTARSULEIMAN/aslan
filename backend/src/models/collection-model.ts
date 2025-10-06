@@ -6,6 +6,9 @@ const collectionSchema = new mongoose.Schema({
 		required: true,
 		unique: true,
 	},
+	description: {
+		type: String
+	},
 	urls: {
 		type: [String],
 	},
