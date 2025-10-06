@@ -1,10 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
+
+const highlightSchema = new mongoose.Schema({
+  highlight: {
+    type: String,
+    required: true,
+  },
+});
 
 const saveSchema = new mongoose.Schema({
   url: {
     type: String,
     required: [true, "URL not provided"],
-		unique: [true, "Item already added"]
+    unique: [true, "Item already added"],
   },
   title: {
     type: String,
@@ -27,17 +34,15 @@ const saveSchema = new mongoose.Schema({
   html: {
     type: String,
   },
-	highlights: {
-		type: [String],
-	},
-	favourite: {
-		type: Boolean,
-		default: false
-	},
-	archived: {
-		type: Boolean,
-		default: false
-	},
+  highlights: [highlightSchema],
+  favourite: {
+    type: Boolean,
+    default: false,
+  },
+  archived: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Saves = mongoose.model("Save", saveSchema);
