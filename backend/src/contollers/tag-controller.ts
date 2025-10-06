@@ -129,7 +129,7 @@ export const deleteTags = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const tagsList = req.body.tags;
 
-    const deletedTags = Tags.updateMany({ name: { $in: tagsList } });
+    const deletedTags = Tags.deleteMany({ name: { $in: tagsList } });
     if (!deletedTags) {
       const error = new CustomError(
         500,
