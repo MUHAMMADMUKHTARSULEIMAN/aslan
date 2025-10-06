@@ -5,6 +5,10 @@ const highlightSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+	dateCreated: {
+    type: String,
+    default: new Date().toISOString(),
+  },
 });
 
 const saveSchema = new mongoose.Schema({

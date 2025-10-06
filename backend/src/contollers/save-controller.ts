@@ -15,11 +15,11 @@ export const getSaves = asyncErrorHandler(
 export const addSave = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const url = req.body.url;
+		const reqHTML = req.body?.html;
     if (!url) {
       const error = new CustomError(400, "A valid URL must be provided");
       return next(error);
     }
-    const reqHTML = req.body?.html;
     const processor = new Processor();
     let html = null;
     if (!reqHTML) {
@@ -56,12 +56,12 @@ export const addSave = asyncErrorHandler(
   }
 );
 
-export const updateSave = asyncErrorHandler(
+export const updateSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const urls = req.body.urls;
     const updateQuery = req.body.updates;
     if (!urls) {
-      const error = new CustomError(400, "URLs not provided.");
+      const error = new CustomError(400, `${urls.length === 1 ? "URL" : "URLs"} not provided.`);
       return next(error);
     }
 
@@ -73,7 +73,7 @@ export const updateSave = asyncErrorHandler(
     if (!updates) {
       const error = new CustomError(
         500,
-        `Articles could not be updated. Try again later.`
+        `${urls.length === 1 ? "Article" : "Articles"} could not be updated. Try again later.`
       );
       return next(error);
     }
@@ -84,11 +84,11 @@ export const updateSave = asyncErrorHandler(
   }
 );
 
-export const deleteSave = asyncErrorHandler(
+export const deleteSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const urls = req.body.urls;
     if (!urls) {
-      const error = new CustomError(400, "URLs not provided.");
+      const error = new CustomError(400, `${urls.length === 1 ? "URL" : "URLs"} not provided.`);
       return next(error);
     }
 
@@ -96,7 +96,7 @@ export const deleteSave = asyncErrorHandler(
     if (!deletes) {
       const error = new CustomError(
         404,
-        `No articles with the given urls were found.`
+        `No ${urls.length === 1 ? "article" : "articles"} with the given ${urls.length === 1 ? "URL" : "URLs"} ${urls.length === 1 ? "was" : "were"} found.`
       );
       return next(error);
     }
@@ -172,15 +172,13 @@ export const addHighlight = asyncErrorHandler(
 export const updateHighlight = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const url = req.body.url;
-    const id = req.body.id;
+    const id = req.body.highlightId;
     const highlight = req.body.highlight;
-    const updatedHighlight = await Saves.updateOne({
-      $and: [
+    const updatedHighlight = await Saves.updateOne(
         { url, "highlights._id": id },
         { $set: { "highlights.$.highlight": highlight } },
         { runValidators: true },
-      ],
-    });
+    );
     if (!updatedHighlight) {
       const error = new CustomError(500, `Unable to add highlight.`);
       return next(error);
