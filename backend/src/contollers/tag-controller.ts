@@ -3,6 +3,17 @@ import asyncErrorHandler from "../utils/async-error-handler";
 import Tags from "../models/tag-model";
 import CustomError from "../utils/custom-error";
 
+export const getTags = asyncErrorHandler(async(req: Request, res: Response, next: NextFunction) => {
+	const tags = await Tags.find()
+	
+	res.status(200).json({
+		status: "OK",
+		data: {
+			tags
+		}
+	})
+})
+
 export const addTags = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const urls = req.body.urls;

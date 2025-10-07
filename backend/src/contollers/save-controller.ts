@@ -8,7 +8,40 @@ import Collections from "../models/collection-model";
 
 export const getSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const saves = await Saves;
+    const saves = await Saves.find({archived: false});
+
+		res.status(200).json({
+			status: "OK",
+			data: {
+				saves
+			}
+		})
+  }
+);
+
+export const getArchives = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const archives = await Saves.find({archived: true});
+
+		res.status(200).json({
+			status: "OK",
+			data: {
+				archives
+			}
+		})
+  }
+);
+
+export const getFavourites = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const favourites = await Saves.find({favourite: true});
+
+		res.status(200).json({
+			status: "OK",
+			data: {
+				favourites
+			}
+		})
   }
 );
 

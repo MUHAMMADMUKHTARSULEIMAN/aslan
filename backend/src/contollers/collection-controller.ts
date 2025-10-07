@@ -3,6 +3,17 @@ import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
 import Collections from "../models/collection-model";
 
+export const getCollections = asyncErrorHandler(async(req: Request, res: Response, next: NextFunction) => {
+	const collections = await Collections.find()
+	
+	res.status(200).json({
+		status: "OK",
+		data: {
+			collections
+		}
+	})
+})
+
 export const createCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const collection = await Collections.create(req.body);
