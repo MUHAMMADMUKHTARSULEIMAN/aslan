@@ -14,7 +14,7 @@ export interface IUser extends Document {
   isVerified: boolean;
   role: "admin" | "user";
 
-	comparePasswords(candidatePassword: string): Promise<boolean>;
+  comparePasswords(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -71,8 +71,13 @@ userSchema.pre<IUser>("save", async function (next) {
   next();
 });
 
-userSchema.methods.comparePasswords = async function(candidatePassword: string): Promise<boolean> {
-	if(!this.password) return false;
-	const isAMatch = await bcrypt.compare(candidatePassword, this.password)
-	return isAMatch
-}
+userSchema.methods.comparePasswords = async function (
+  candidatePassword: string
+): Promise<boolean> {
+  if (!this.password) return false;
+  const isAMatch = await bcrypt.compare(candidatePassword, this.password);
+  return isAMatch;
+};
+
+const Users = new mongoose.Model("User", userSchema);
+export default Users;
