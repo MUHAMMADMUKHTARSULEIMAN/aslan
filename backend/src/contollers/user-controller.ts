@@ -186,12 +186,12 @@ export const refreshAccessToken = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req.signedCookies.jwt;
     if (!token) {
-      res.redirect("/sign-in");
+      next();
     }
 
     const parts = token.split(".");
     if (parts.length !== 3) {
-      res.redirect("/sign-in");
+      next();
     }
 
     const encodedPayload = parts[1];
@@ -202,11 +202,11 @@ export const refreshAccessToken = asyncErrorHandler(
     const user = await Users.findById(payload.id);
     if (exp && exp < Math.floor(Date.now() / 1000)) {
       if (!user) {
-        res.redirect("/sign-in");
+        next();
       } else {
         if (
           user.refreshTokenExpiry &&
-          Date.now() < user.refreshTokenExpiry?.getTime()
+          Date.now() < user.refreshTokenExpiry.getTime()
         ) {
           const token = user.generateAccessToken();
           await user.generateRefreshToken(next);
@@ -220,8 +220,8 @@ export const refreshAccessToken = asyncErrorHandler(
           });
           next();
         } else {
-					res.redirect("/sign-in")
-				}
+          next();
+        }
       }
     } else {
       next();
@@ -256,3 +256,13 @@ export const protectRoutes = asyncErrorHandler(
     }
   }
 );
+
+export const restrictUsers = (role: string): RequestHandler => {
+  return asyncErrorHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.user;
+      if (!user) {
+      }
+    }
+  );
+};
