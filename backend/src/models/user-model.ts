@@ -55,10 +55,10 @@ const userSchema = new Schema<IUser>(
     refreshTokenExpiry: {
       type: Date,
     },
-    role: {
-      type: String,
-      enum: ["admin", "user"],
-      default: "user",
+    level: {
+      type: Object,
+      enum: [{"user": 1}, {"admin": 2}, {"superuser": 3}],
+      default: {"user": 1},
     },
   },
   { timestamps: true }

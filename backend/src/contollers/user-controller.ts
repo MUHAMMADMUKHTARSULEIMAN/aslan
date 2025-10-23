@@ -257,11 +257,23 @@ export const protectRoutes = asyncErrorHandler(
   }
 );
 
-export const restrictUsers = (role: string): RequestHandler => {
+export const restrictUsers = (level: number): RequestHandler => {
   return asyncErrorHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const user = req.user;
       if (!user) {
+        res.redirect("/sign-in");
+      } else {
+        const key = Object.keys(user.level)[0];
+        if (user.level[key] < level) {
+          const error = new CustomError(
+            403,
+            "You're not authorized to perform this action"
+          );
+          return next(error);
+        }
+
+        next();
       }
     }
   );
