@@ -10,6 +10,8 @@ import Emails from "../models/email-model";
 import crypto from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
+import logger from "../utils/logger";
+import { getAndDeleteLink } from "./link-controller";
 
 const { frontendBaseURL, cookieExpiry, nodeENV, JWTSecret } = config;
 
@@ -43,6 +45,14 @@ export const googleAuthCallback = asyncErrorHandler(
       "/google",
       { failureRedirect: "/login", session: false },
       async (err: Error | null, user: IUser | false, info?: Info) => {
+        if (err) {
+          const error = new CustomError(
+            500,
+            err?.message || "Something went wrong. Please try again later."
+          );
+          return next(error);
+        }
+
         if (info?.message === "LINKING_REQUIRED") {
           const linkingId = info.linkingId;
           res.redirect(`/confirm-linking?linkingId=${linkingId}`);
@@ -51,11 +61,53 @@ export const googleAuthCallback = asyncErrorHandler(
         if (!user) {
           res.status(401).json({
             status: "Bad Request",
-            message: "Google Authentication failed",
+            message: "Google Authentication failed.",
           });
+        } else {
+          signInResponse(user, res, next, 201);
         }
       }
     );
+  }
+);
+
+export const linkAccount = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { password } = req.body;
+    const { linkingId } = req.query;
+    if (!password) {
+      const error = new CustomError(400, "Password must be provided");
+      return next(error);
+    }
+    if (!linkingId) {
+      const error = new CustomError(400, "Linking ID missing.");
+      return next(error);
+    } else if (typeof linkingId === "string") {
+      const linkingData = await getAndDeleteLink(linkingId);
+      if (!linkingData) {
+        const error = new CustomError(
+          400,
+          "Linking ID has expired. Try again later."
+        );
+        return next(error);
+      } else {
+        const { user, googleId } = linkingData;
+        if (!(await user.comparePasswords(password))) {
+          const error = new CustomError(400, "Wrong password provided");
+          return next(error);
+        }
+        const updatedUser = await user.updateOne({ googleId });
+        if (!updatedUser) {
+          const error = new CustomError(
+            500,
+            "Something went wrong. Try again later."
+          );
+          return next(error);
+        }
+
+        signInResponse(user, res, next, 201);
+      }
+    }
   }
 );
 
@@ -150,6 +202,24 @@ export const userSignUp = asyncErrorHandler(
       lastName,
       password,
     });
+
+    if (!newUser) {
+      const error = new CustomError(
+        500,
+        "Unable to create account. Please try again."
+      );
+      return next(error);
+    }
+
+    const deleteEmail = await Emails.deleteOne({ email });
+
+    if (!deleteEmail) {
+      const error = new CustomError(
+        500,
+        "Unable to delete email from database"
+      );
+      logger(JSON.stringify(error));
+    }
 
     await signInResponse(
       newUser,

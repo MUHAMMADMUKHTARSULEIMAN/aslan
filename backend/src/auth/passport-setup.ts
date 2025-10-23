@@ -53,7 +53,6 @@ export const initializeGooglePassport = () => {
 
           const existingUser = await Users.findOne({
             email,
-            isVerified: true,
             password: { $ne: null, $exists: true },
           });
           if (existingUser) {
@@ -73,7 +72,6 @@ export const initializeGooglePassport = () => {
           user = await Users.create({
             email,
             googleId: profile.id,
-            isVerified: true,
             firstName: profile.name?.givenName || profile.displayName,
             lastName: profile.name?.familyName,
           });
