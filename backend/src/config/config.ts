@@ -14,6 +14,11 @@ interface Config {
 	JWTExpiry: number;
 	cookieSecret: string;
 	cookieExpiry: number;
+	SMTPService: string;
+	SMTPHost: string;
+	SMTPPort: number;
+	SMTPUser: string;
+	SMTPPass: string;
 }
 
 const config: Config = {
@@ -27,6 +32,11 @@ const config: Config = {
   JWTExpiry: parseInt(getENVVariable("JWT_EXPIRY")),
   cookieSecret: getENVVariable("COOKIE_SECRET"),
   cookieExpiry: parseInt(getENVVariable("COOKIE_EXPIRY")),
+  SMTPService: getENVVariable("SMTP_SERVICE"),
+  SMTPHost: getENVVariable("SMTP_HOST"),
+  SMTPPort: parseInt(getENVVariable("SMTP_PORT")),
+  SMTPUser: getENVVariable("SMTP_USER"),
+  SMTPPass: getENVVariable("SMTP_PASS"),
 };
 
 export default config;

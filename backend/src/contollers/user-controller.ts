@@ -10,10 +10,9 @@ import Emails from "../models/email-model";
 import crypto from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
-import logger from "../utils/logger";
 import { getAndDeleteLink } from "./link-controller";
 
-const { frontendBaseURL, cookieExpiry, nodeENV, JWTSecret } = config;
+const { cookieExpiry, nodeENV, JWTSecret } = config;
 
 export const signInResponse = async (
   user: IUser,
@@ -123,27 +122,23 @@ export const emailRegistration = asyncErrorHandler(
     const user = await Users.findOne({ email });
 
     if (user) {
-      const error = new CustomError(409, "Email already in use.");
-      return next(error);
+      res.status(200).json({
+        status: "OK",
+        message:
+          "Verification link sent successfully. It expires in fifteen minutes",
+      });
     }
 
     const userEmail = await Emails.findOne({ email });
     if (userEmail) {
-      // if (userEmail.isVerified) {
-      //   const error = new CustomError(
-      //     409,
-      //     "Email already verified. Proceed to create account."
-      //   );
-      //   return next(error);
-      // }
-
       const token = await userEmail.generateVerificationToken(next);
       // send verification link
       // send response indicating existence of email
 
       res.status(200).json({
         status: "OK",
-        message: "Email verification resent. It will expire in five minutes",
+        message:
+          "Verification link sent successfully. It expires in fifteen minutes",
         token,
       });
     }
@@ -153,9 +148,11 @@ export const emailRegistration = asyncErrorHandler(
     // send response telling user to verify email using
 
     const token = await newUserEmail.generateVerificationToken(next);
+
     res.status(200).json({
       status: "OK",
-      message: "Email verification sent. It will expire in five minutes",
+      message:
+        "Verification link sent successfully. It expires in fifteen minutes",
       token,
     });
   }
@@ -171,18 +168,12 @@ export const userSignUp = asyncErrorHandler(
       return next(error);
     }
 
-    const user = await Users.findOne({ email });
-    if (user) {
-      const error = new CustomError(409, "Email already in use.");
-      return next(error);
-    }
-
     if (typeof token === "string") {
       const verificationToken = crypto
         .createHash("sha256")
         .update(token)
         .digest("hex");
-      const userEmail = await Emails.findOne({
+      const userEmail = await Emails.findOneAndDelete({
         email,
         verificationToken,
         verificationTokenExpiry: { $gt: Date.now() },
@@ -194,6 +185,15 @@ export const userSignUp = asyncErrorHandler(
         );
         return next(error);
       }
+    }
+
+    const user = await Users.findOne({ email });
+    if (user) {
+      const error = new CustomError(
+        409,
+        "Verification token has expired. Please resend verification token."
+      );
+      return next(error);
     }
 
     const newUser = await Users.create({
@@ -209,16 +209,6 @@ export const userSignUp = asyncErrorHandler(
         "Unable to create account. Please try again."
       );
       return next(error);
-    }
-
-    const deleteEmail = await Emails.deleteOne({ email });
-
-    if (!deleteEmail) {
-      const error = new CustomError(
-        500,
-        "Unable to delete email from database"
-      );
-      logger(JSON.stringify(error));
     }
 
     await signInResponse(
@@ -348,3 +338,64 @@ export const restrictUsers = (level: number): RequestHandler => {
     }
   );
 };
+
+export const forgotPassword = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+    if (!email) {
+      const error = new CustomError(400, "Email not provided.");
+      return next(error);
+    }
+
+    const user = await Users.findOne({ email });
+    if (!user) {
+      // send email alerting user of possible phishing scam
+      res.status(200).json({
+        status: "OK",
+        message:
+          "Password reset link sent successfully. It expires in five minutes.",
+      });
+    } else {
+      const token = await user.generateResetToken(next);
+
+      // send email with token
+
+      res.status(200).json({
+        status: "OK",
+        message:
+          "Password reset link sent successfully. It expires in five minutes.",
+      });
+    }
+  }
+);
+
+export const resetPassword = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+		const {password} = req.body
+    const { token } = req.query;
+		if(!password) {
+			const error = new CustomError(400, "Password not provided.")
+			return next(error)
+		}
+		if(!token) {
+			const error = new CustomError(400, "Token missing.")
+			return next(error)
+		}
+		else {
+			if(typeof token === "string") {
+				const resetToken = crypto.createHash("sha256").update(token).digest("hex")
+				const user = await Users.findOne({resetToken, resetTokenExpiry: {$gt: Date.now()}})
+				if(!user) {
+					const error = new CustomError(400, "Reset token has expired. Resend reset token.")
+					return next(error)
+				} else {
+					const updatedUser = await user.updateOne({password})
+					if(!updatedUser) {
+						const error = new CustomError(500, "Unable to update password. Try again later.")
+						return next(error)
+					}
+				}
+			}
+		}
+  }
+);

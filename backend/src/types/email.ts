@@ -3,7 +3,6 @@ import { type Document } from "mongoose";
 
 export interface IEmail extends Document {
 	email: string;
-	// isVerified: boolean;
 	verificationToken?: string;
 	verificationTokenExpiry?: Date;
 

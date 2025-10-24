@@ -113,7 +113,7 @@ userSchema.methods.generateResetToken = async function (next: NextFunction): Pro
   const resetToken = createHash("sha256").update(token).digest("hex");
   const user = await Users.updateOne(
     { _id: this._id },
-    { resetToken, resetTokenExpiry: Date.now() + 5 * 60 * 1000 }
+    { resetToken, resetTokenExpiry: Date.now() + 10 * 60 * 1000 }
   );
 
 	if(!user) {

@@ -8,7 +8,7 @@ const linkSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
-    expires: "300s",
+    expires: "600s",
   },
 });
 
