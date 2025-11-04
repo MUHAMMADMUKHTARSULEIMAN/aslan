@@ -18,49 +18,9 @@
       table {
         border-collapse: collapse;
       }
-      img {
-        border: 0;
-        outline: none;
-        text-decoration: none;
-        -ms-interpolation-mode: bicubic;
-      }
-      a {
-        text-decoration: none;
-      }
-      p {
-        margin: 0;
-        padding: 0;
-      }
-
-      /* Font and Text Styling */
-      body,
-      table,
-      td,
-      p,
-      a {
-        -webkit-text-size-adjust: 100%;
-        -ms-text-size-adjust: 100%;
-      }
-
-      /* Responsive Styles (CSS in the head often works best for media queries) */
-      @media only screen and (max-width: 600px) {
-        .mobile-padding {
-          padding: 10px !important;
-        }
-        .content-table {
-          width: 100% !important;
-        }
-        .full-width-mobile {
-          width: 100% !important;
-          display: block !important;
-        }
-        .header-logo {
-          max-width: 180px !important;
-          height: auto !important;
-        }
-        .m-text-center {
-          text-align: center !important;
-        }
+      /* ... other inline and media query styles ... */
+      .content-table {
+        width: 100% !important;
       }
     </style>
   </head>
@@ -101,7 +61,7 @@
                 >
                   <tr>
                     <td
-                      align="left"
+                      align="center"
                       style="
                         font-family: Arial, sans-serif;
                         font-size: 24px;
@@ -133,18 +93,16 @@
                     margin-bottom: 20px;
                   "
                 >
-                  Welcome to Our Newsletter!
+                  Your Order Status: {{orderStatus}}
                 </h1>
 
                 <p style="margin-bottom: 20px; line-height: 1.6">
-                  Hello [Recipient Name],
+                  Hello **{{name}}**,
                 </p>
 
                 <p style="margin-bottom: 20px; line-height: 1.6">
-                  This is the main body of your email. Use this space for your
-                  primary message, product updates, or special offers. Email
-                  design often relies on tables, even for text layout, to ensure
-                  consistent spacing across different clients.
+                  Your order **#{{orderId}}** has been shipped! Click the link
+                  below to track its progress.
                 </p>
 
                 <table
@@ -158,12 +116,12 @@
                       align="center"
                       style="
                         padding: 12px 25px;
-                        border-radius: 4px;
+                        border-radius: 25px;
                         background-color: #4caf50;
                       "
                     >
                       <a
-                        href="https://www.yourwebsite.com"
+                        href="{{link}}"
                         target="_blank"
                         style="
                           font-family: Arial, sans-serif;
@@ -174,14 +132,14 @@
                           display: inline-block;
                         "
                       >
-                        Click Here to Learn More
+                        Track Your Order
                       </a>
                     </td>
                   </tr>
                 </table>
 
                 <p style="margin-bottom: 0; line-height: 1.6">
-                  Thank you for being a valued customer!
+                  Thank you for choosing us!
                 </p>
               </td>
             </tr>
@@ -194,44 +152,7 @@
                   background-color: #eeeeee;
                   border-top: 1px solid #dddddd;
                 "
-              >
-                <table
-                  border="0"
-                  cellpadding="0"
-                  cellspacing="0"
-                  width="100%"
-                  style="border-collapse: collapse"
-                >
-                  <tr>
-                    <td
-                      align="center"
-                      style="
-                        font-family: Arial, sans-serif;
-                        font-size: 12px;
-                        color: #777777;
-                      "
-                    >
-                      &copy; 2025 Your Company Name. All rights reserved.<br />
-                      <a
-                        href="https://www.yourwebsite.com/unsubscribe"
-                        target="_blank"
-                        style="color: #3f51b5; text-decoration: underline"
-                        >Unsubscribe</a
-                      >
-                      |
-                      <a
-                        href="https://www.yourwebsite.com/preferences"
-                        target="_blank"
-                        style="color: #3f51b5; text-decoration: underline"
-                        >Update Preferences</a
-                      ><br />
-                      <span style="display: block; margin-top: 5px"
-                        >[123 Main St, City, State, ZIP]</span
-                      >
-                    </td>
-                  </tr>
-                </table>
-              </td>
+              ></td>
             </tr>
           </table>
         </td>

@@ -10,6 +10,9 @@ interface Config {
   mongodbURI: string;
   googleClientId: string;
   googleClientSecret: string;
+	refreshTokenExpiry: number;
+	resetTokenExpiry: number;
+	verificationTokenExpiry: number;
 	JWTSecret: string;
 	JWTExpiry: number;
 	cookieSecret: string;
@@ -28,6 +31,9 @@ const config: Config = {
   mongodbURI: getENVVariable("MONGODB_URI"),
   googleClientId: getENVVariable("GOOGLE_CLIENT_ID"),
   googleClientSecret: getENVVariable("GOOGLE_CLIENT_SECRET"),
+  refreshTokenExpiry: parseInt(getENVVariable("REFRESH_TOKEN_EXPIRY")),
+  resetTokenExpiry: parseInt(getENVVariable("RESET_TOKEN_EXPIRY")),
+  verificationTokenExpiry: parseInt(getENVVariable("VERIFICATION_TOKEN_EXPIRY")),
   JWTSecret: getENVVariable("JWT_SECRET"),
   JWTExpiry: parseInt(getENVVariable("JWT_EXPIRY")),
   cookieSecret: getENVVariable("COOKIE_SECRET"),

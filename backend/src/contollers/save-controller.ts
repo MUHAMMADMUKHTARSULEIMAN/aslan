@@ -3,56 +3,93 @@ import asyncErrorHandler from "../utils/async-error-handler";
 import Saves from "../models/save-model";
 import CustomError from "../utils/custom-error";
 import Processor from "../utils/processor";
-import Tags from "../models/tag-model";
-import Collections from "../models/collection-model";
+import Users from "../models/user-model";
 
 export const getSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const saves = await Saves.find({archived: false});
+    const saves = await Saves.find({ archived: false });
 
-		res.status(200).json({
-			status: "OK",
-			data: {
-				saves
-			}
-		})
+    res.status(200).json({
+      status: "OK",
+      data: {
+        saves,
+      },
+    });
   }
 );
 
 export const getArchives = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const archives = await Saves.find({archived: true});
+    const archives = await Saves.find({ archived: true });
 
-		res.status(200).json({
-			status: "OK",
-			data: {
-				archives
-			}
-		})
+    res.status(200).json({
+      status: "OK",
+      data: {
+        archives,
+      },
+    });
   }
 );
 
 export const getFavourites = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const favourites = await Saves.find({favourite: true});
+    const favourites = await Saves.find({ favourite: true });
 
-		res.status(200).json({
-			status: "OK",
-			data: {
-				favourites
-			}
-		})
+    res.status(200).json({
+      status: "OK",
+      data: {
+        favourites,
+      },
+    });
   }
 );
 
 export const addSave = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
     const url = req.body.url;
-		const reqHTML = req.body?.html;
-    if (!url) {
+    const reqHTML = req.body?.html;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+    if (typeof url !== "string") {
       const error = new CustomError(400, "A valid URL must be provided");
       return next(error);
     }
+
+    const existingSave = await Saves.findOne({ url });
+    if (existingSave) {
+      const existingUserSave = await Users.exists({
+        _id: userId,
+        saves: {
+          $elemMatch: {
+            saveId: existingSave._id,
+          },
+        },
+      });
+      if (existingUserSave) {
+        const error = new CustomError(409, "Article already saved.");
+        return next(error);
+      }
+
+      const userSave = await Users.updateOne(
+        { id: userId },
+        { $push: { saves: { saveId: existingSave._id } } }
+      );
+
+      if (!userSave) {
+        const error = new CustomError(
+          500,
+          "Article could not be added. Try again later."
+        );
+        return next(error);
+      }
+
+      res.status(201).json({
+        status: "OK",
+      });
+    }
+
     const processor = new Processor();
     let html = null;
     if (!reqHTML) {
@@ -78,7 +115,20 @@ export const addSave = asyncErrorHandler(
     if (!save) {
       const error = new CustomError(
         500,
-        "Save could not be added. Try again later."
+        "Article could not be added. Try again later."
+      );
+      return next(error);
+    }
+
+    const userSave = await Users.updateOne(
+      { id: userId },
+      { $push: { saves: { saveId: save._id } } }
+    );
+
+    if (!userSave) {
+      const error = new CustomError(
+        500,
+        "Article could not be added. Try again later."
       );
       return next(error);
     }
@@ -91,25 +141,48 @@ export const addSave = asyncErrorHandler(
 
 export const updateSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const urls = req.body.urls;
+    const userId = req.user?._id;
+    const saveIds = req.body.saveIds;
     const updateQuery = req.body.updates;
-    if (!urls) {
-      const error = new CustomError(400, `${urls.length === 1 ? "URL" : "URLs"} not provided.`);
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+    if (!saveIds) {
+      const error = new CustomError(400, `No saveId was provided.`);
       return next(error);
     }
 
-    const updates = await Saves.updateMany(
-      { url: { $in: urls } },
-      { $set: updateQuery },
-      { runValidators: true }
+    const dynamicSet: Record<string, any> = {};
+
+    for (const key in updateQuery) {
+      if (Object.prototype.hasOwnProperty.call(updateQuery, key)) {
+        const updatePath = `saves.$[el].${key}`;
+
+        dynamicSet[updatePath] = updateQuery[key as keyof typeof updateQuery];
+      }
+    }
+
+    const updates = await Users.updateOne(
+      {
+        _id: userId,
+        saves: { $in: saveIds },
+      },
+      { $set: dynamicSet },
+      { runValidators: true, arrayFilters: [{ "el.saveId": { $in: saveIds } }] }
     );
     if (!updates) {
       const error = new CustomError(
         500,
-        `${urls.length === 1 ? "Article" : "Articles"} could not be updated. Try again later.`
+        `${
+          saveIds.length === 1 ? "Article" : "Articles"
+        } could not be updated. Try again later.`
       );
       return next(error);
     }
+
+		if(updates.matchedCount !== updates.modifiedCount) {
+			const error = new CustomError(404, "Not all articles were updated.")
+		}
 
     res.status(200).json({
       status: "OK",
@@ -119,51 +192,54 @@ export const updateSaves = asyncErrorHandler(
 
 export const deleteSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const urls = req.body.urls;
-    if (!urls) {
-      const error = new CustomError(400, `${urls.length === 1 ? "URL" : "URLs"} not provided.`);
+    const userId = req.user?._id;
+    const saveIds = req.body.saveIds;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+    if (!saveIds) {
+      const error = new CustomError(400, `No id was provided.`);
       return next(error);
     }
 
-    const deletes = await Saves.deleteMany({ url: { $in: urls } });
+    const deletes = await Users.updateOne(
+      { _id: userId },
+      { $pull: { saves: { saveId: { $in: saveIds } } } }
+    );
     if (!deletes) {
       const error = new CustomError(
         404,
-        `No ${urls.length === 1 ? "article" : "articles"} with the given ${urls.length === 1 ? "URL" : "URLs"} ${urls.length === 1 ? "was" : "were"} found.`
-      );
-      return next(error);
-    }
-    if (urls.length !== deletes.deletedCount) {
-      const error = new CustomError(404, `Not all saves were deleted.`);
-      return next(error);
-    }
-
-    const tagsUpdate = await Tags.updateMany(
-      { urls: { $in: urls } },
-      { $pull: { urls: { $each: urls } } },
-      { runValidators: true }
-    );
-    if (!tagsUpdate) {
-      const error = new CustomError(
-        500,
-        `Deleted ${
-          urls.length === 1 ? "save" : "saves"
-        } could not be removed from tags.`
+        `No ${saveIds.length === 1 ? "article" : "articles"} with the given ${
+          saveIds.length === 1 ? "id" : "ids"
+        } ${saveIds.length === 1 ? "was" : "were"} found.`
       );
       return next(error);
     }
 
-    const collectionsUpdate = await Collections.updateMany(
-      { urls: { $in: urls } },
-      { $pull: { urls: { $each: urls } } },
+    if (deletes.matchedCount !== deletes.modifiedCount) {
+      const error = new CustomError(404, `Not all articles were deleted.`);
+      return next(error);
+    }
+
+    const collectionsUpdate = await Users.updateOne(
+      { _id: userId, "collections.saveIds": { $in: saveIds } },
+      { $pull: { "collections.$[].saveIds": { $in: saveIds } } },
       { runValidators: true }
     );
     if (!collectionsUpdate) {
       const error = new CustomError(
         500,
         `Deleted ${
-          urls.length === 1 ? "save" : "saves"
+          saveIds.length === 1 ? "article" : "articles"
         } could not be removed from collections.`
+      );
+      return next(error);
+    }
+
+    if (collectionsUpdate.matchedCount !== collectionsUpdate.modifiedCount) {
+      const error = new CustomError(
+        404,
+        `Not all articles were removed from collections.`
       );
       return next(error);
     }
@@ -176,7 +252,7 @@ export const deleteSaves = asyncErrorHandler(
 
 export const getHighlights = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const highlight = await Saves;
+    // const highlight = await Saves;
   }
 );
 
@@ -208,9 +284,9 @@ export const updateHighlight = asyncErrorHandler(
     const id = req.body.highlightId;
     const highlight = req.body.highlight;
     const updatedHighlight = await Saves.updateOne(
-        { url, "highlights._id": id },
-        { $set: { "highlights.$.highlight": highlight } },
-        { runValidators: true },
+      { url, "highlights._id": id },
+      { $set: { "highlights.$.highlight": highlight } },
+      { runValidators: true }
     );
     if (!updatedHighlight) {
       const error = new CustomError(500, `Unable to add highlight.`);
@@ -249,7 +325,7 @@ export const deleteHighlights = asyncErrorHandler(
         { url },
         { $set: { highlights: [] } }
       );
-			if (!deleteHighlights) {
+      if (!deleteHighlights) {
         const error = new CustomError(
           500,
           `${

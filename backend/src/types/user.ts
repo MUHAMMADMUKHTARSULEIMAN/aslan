@@ -1,5 +1,5 @@
 import type { NextFunction } from "express";
-import { type Document } from "mongoose";
+import { type Document} from "mongoose";
 
 export interface IUser extends Document {
   firstName: string;
@@ -15,6 +15,8 @@ export interface IUser extends Document {
   resetTokenExpiry?: Date;
   refreshToken?: string;
   refreshTokenExpiry?: Date;
+	saves: Document[];
+	collections: Document[];
 
   comparePasswords(candidatePassword: string): Promise<boolean>;
   isPasswordModified(JWTTimestamp: number): boolean;
@@ -22,13 +24,3 @@ export interface IUser extends Document {
   generateRefreshToken(next: NextFunction): Promise<void>;
   generateResetToken(next: NextFunction): Promise<string | void>;
 }
-
-// export interface IAuthResponse {
-//   message: string;
-//   accessToken: string;
-//   refreshToken: string;
-//   user: {
-//     id: string;
-//     email: string;
-//   };
-// }

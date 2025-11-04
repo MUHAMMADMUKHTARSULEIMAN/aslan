@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Email Verification</title>
+    <style type="text/css">
+      /* Client-Specific Resets */
+      body,
+      #bodyTable,
+      #bodyCell {
+        height: 100% !important;
+        margin: 0;
+        padding: 0;
+        width: 100% !important;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      img {
+        border: 0;
+        outline: none;
+        text-decoration: none;
+        -ms-interpolation-mode: bicubic;
+      }
+      a {
+        text-decoration: none;
+      }
+      p {
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Font and Text Styling */
+      body,
+      table,
+      td,
+      p,
+      a {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+
+      /* Responsive Styles (CSS in the head often works best for media queries) */
+      @media only screen and (max-width: 600px) {
+        .mobile-padding {
+          padding: 10px !important;
+        }
+        .content-table {
+          width: 100% !important;
+        }
+        .full-width-mobile {
+          width: 100% !important;
+          display: block !important;
+        }
+        .header-logo {
+          max-width: 180px !important;
+          height: auto !important;
+        }
+        .m-text-center {
+          text-align: center !important;
+        }
+      }
+    </style>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #262728;">
+    <table
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      width="100%"
+      id="bodyTable"
+      style="border-collapse: collapse; background-color: #262728;"
+    >
+            <tr>
+              <td
+                align="center"
+                style="
+                  padding: 30px 20px;
+                  font-family: Arial, sans-serif;
+                  font-size: 16px;
+                  color: #f0f1f1; /* Dark mode --foreground: oklch(0.94 0.005 100) */
+                "
+              >
+                <h1
+                  style="
+                    font-size: 24px;
+                    color: #f0f1f1; /* Dark mode --foreground: oklch(0.94 0.005 100) */
+                    margin-top: 0;
+                    margin-bottom: 20px;
+                  "
+                >
+                  Sanctum: Sign-in Notification
+                </h1>
+
+                <p style="margin-bottom: 20px; line-height: 1.6">
+                  Your Sanctum account was just signed in to. If you didn't perform this action, please reset your password immediately using the link below to safeguard your account 
+                </p>
+
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="border-collapse: separate; margin: 30px auto"
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      style="
+                        padding: 12px 25px;
+                        border-radius: 12.5px;
+                        background-color: #8a8536; /* Dark mode --primary: oklch(0.65 0.13 110) */
+                      "
+                    >
+                      <a
+                        href="{{link}}"
+                        target="_blank"
+                        style="
+                          font-family: Arial, sans-serif;
+                          font-size: 16px;
+                          color: #1f201d; /* Dark mode --primary-foreground: oklch(0.12 0.01 110) */
+                          text-decoration: none;
+                          font-weight: bold;
+                          display: inline-block;
+                        "
+                      >
+                        Reset Password
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin-bottom: 16px; line-height: 1.6">
+                  If you're unable to use the button above, you can copy
+                  <a href="{{link}}" target="_blank" style="color: #8a8536;">{{link}}</a> into the
+                  address bar.
+                </p>
+
+                <p style="margin-bottom: 0; line-height: 1.6">Thank you.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td
+                align="center"
+                style="
+                  padding: 20px;
+                  background-color: #444547; /* Dark mode --muted: oklch(0.26 0.02 100) */
+                "
+              >
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  width="100%"
+                  style="border-collapse: collapse"
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 12px;
+                        color: #bfa49c; /* Dark mode --muted-foreground: oklch(0.75 0.04 100) */
+                      "
+                    >
+                      &copy; {{date}} Aslan. All rights reserved.<br />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

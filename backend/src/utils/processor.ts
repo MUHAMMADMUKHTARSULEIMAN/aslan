@@ -139,7 +139,7 @@ class Processor {
       $("#main img").first().attr("src") ||
       $("img").first().attr("src") ||
       null;
-    if (image && !image.startsWith("https://")) {
+    if (image && (!image.startsWith("https://") || !image.startsWith("/http://"))) {
       const parsedURL = new URL(url);
       image = `${parsedURL.origin}${image}`;
     }

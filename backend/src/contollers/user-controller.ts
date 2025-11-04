@@ -11,15 +11,19 @@ import crypto from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
 import { getAndDeleteLink } from "./link-controller";
+import sendEmail from "../utils/email";
 
-const { cookieExpiry, nodeENV, JWTSecret } = config;
+const { frontendBaseURL, cookieExpiry, nodeENV, JWTSecret } = config;
 
 export const signInResponse = async (
   user: IUser,
   res: Response,
   next: NextFunction,
   statusCode: number,
-  message: string | undefined = undefined
+  mailSubject: string,
+  mailMessage: string,
+  mailHTML?: string,
+  message?: string
 ) => {
   const token = user.generateAccessToken();
   await user.generateRefreshToken(next);
@@ -30,6 +34,13 @@ export const signInResponse = async (
     secure: nodeENV === "production",
     httpOnly: true,
     maxAge: cookieExpiry,
+  });
+
+  sendEmail({
+    email: user.email,
+    subject: mailSubject,
+    message: mailMessage,
+    html: mailHTML,
   });
 
   res.status(statusCode).json({
@@ -63,7 +74,11 @@ export const googleAuthCallback = asyncErrorHandler(
             message: "Google Authentication failed.",
           });
         } else {
-          signInResponse(user, res, next, 201);
+          const resetURL = `${frontendBaseURL}/`;
+          const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link beloww to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
+          const subject = "Sanctum: Google Sign-in";
+
+          signInResponse(user, res, next, 201, subject, message);
         }
       }
     );
@@ -104,7 +119,10 @@ export const linkAccount = asyncErrorHandler(
           return next(error);
         }
 
-        signInResponse(user, res, next, 201);
+        const message = `Your Sanctum account has been successfully linked to Google. You can now sign in to your Sanctum account using Google.`;
+        const subject = "Sanctum: Account Linking";
+
+        signInResponse(user, res, next, 201, subject, message);
       }
     }
   }
@@ -122,37 +140,41 @@ export const emailRegistration = asyncErrorHandler(
     const user = await Users.findOne({ email });
 
     if (user) {
-      res.status(200).json({
-        status: "OK",
-        message:
-          "Verification link sent successfully. It expires in fifteen minutes",
-      });
-    }
+      const message = `This email was just used to attempt to register an account with us. If you did not perform this action, you may be the target of a phishing attack.\n\nWe here at Sanctum take security very seriously and we will never ask you for your password, a token or any other sensitive info of any kind.`;
 
-    const userEmail = await Emails.findOne({ email });
-    if (userEmail) {
-      const token = await userEmail.generateVerificationToken(next);
-      // send verification link
-      // send response indicating existence of email
+      sendEmail({
+        email,
+        subject: "Sanctum: Account Security",
+        message,
+        html: "",
+      });
 
       res.status(200).json({
         status: "OK",
         message:
-          "Verification link sent successfully. It expires in fifteen minutes",
-        token,
+          "Verification link sent successfully. It expires in 15 minutes.",
       });
     }
 
-    const newUserEmail = await Emails.create({ email });
-    // send verification link
-    // send response telling user to verify email using
+    let userEmail = await Emails.findOne({ email });
+    if (!userEmail) {
+      userEmail = await Emails.create({ email });
+    }
 
-    const token = await newUserEmail.generateVerificationToken(next);
+    const token = await userEmail.generateVerificationToken(next);
+    const verificationUrl = `${frontendBaseURL}/sign-up?email=${email}&token=${token}`;
+    const message = `Please use the link below to verify your email.\n\n${verificationUrl}\n\nThe link expires in 15 minutes.\n\nYou can safely ignore this email if you did not register your email at Sanctum.`;
+
+    sendEmail({
+      email,
+      subject: "Sanctum: Email Verification",
+      message,
+      html: "",
+    });
 
     res.status(200).json({
       status: "OK",
-      message:
-        "Verification link sent successfully. It expires in fifteen minutes",
+      message: "Verification link sent successfully. It expires in 15 minutes",
       token,
     });
   }
@@ -163,8 +185,8 @@ export const userSignUp = asyncErrorHandler(
     const { firstName, lastName, password } = req.body;
     const { email, token } = req.query;
 
-    if (!token) {
-      const error = new CustomError(400, "Token missing.");
+    if (!token || !email) {
+      const error = new CustomError(400, "Bad Request.");
       return next(error);
     }
 
@@ -189,6 +211,14 @@ export const userSignUp = asyncErrorHandler(
 
     const user = await Users.findOne({ email });
     if (user) {
+      const message = `An attempt was made to re-verify this already verified email address. If you did not perform this action, you may be the target of a phishing attack.\n\nWe here at Sanctum take security very seriously and we will never ask you for your password, a token or any other sensitive info of any kind.`;
+
+      sendEmail({
+        email: user.email,
+        subject: "Sanctum: Account Security",
+        message,
+        html: "",
+      });
       const error = new CustomError(
         409,
         "Verification token has expired. Please resend verification token."
@@ -211,13 +241,10 @@ export const userSignUp = asyncErrorHandler(
       return next(error);
     }
 
-    await signInResponse(
-      newUser,
-      res,
-      next,
-      201,
-      "Account created and user signed in successfully."
-    );
+    const message = `Hi.\n\nYour Sanctum account has been successfully created and you have been successfully signed in.\n\nWelcome aboard.`;
+    const subject = "Sanctum: Account Creation";
+
+    await signInResponse(newUser, res, next, 201, subject, message);
   }
 );
 
@@ -238,7 +265,11 @@ export const userSignIn = asyncErrorHandler(
       return next(error);
     }
 
-    await signInResponse(user, res, next, 201, "User signed in successfully.");
+    const resetURL = `${frontendBaseURL}/`;
+    const message = `Your Sanctum was just signed into using your email address. If you did not perform this action, please use the link beloww to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
+    const subject = "Sanctum: Email Sign-in";
+
+    await signInResponse(user, res, next, 201, subject, message);
   }
 );
 
@@ -350,20 +381,38 @@ export const forgotPassword = asyncErrorHandler(
     const user = await Users.findOne({ email });
     if (!user) {
       // send email alerting user of possible phishing scam
+      const message = `This email is not registered with Sanctum, but a password reset was just requested. If you did not perform this action, you may be the target of a phishing attack.\n\nWe here at Sanctum take security very seriously and we will never ask you for your password, a token or any other sensitive info of any kind.`;
+
+      sendEmail({
+        email,
+        subject: "Sanctum: Account Security",
+        message,
+        html: "",
+      });
+			
       res.status(200).json({
-        status: "OK",
+				status: "OK",
         message:
-          "Password reset link sent successfully. It expires in five minutes.",
+				"Password reset link sent successfully. It expires in 10 minutes.",
       });
     } else {
-      const token = await user.generateResetToken(next);
-
+			const token = await user.generateResetToken(next);
+			
       // send email with token
+			const resetURL = `${frontendBaseURL}/reset-password/${token}`;
+			const message = `Use the link below to reset your password. It expires in 10 minutes.\n\n${resetURL}\n\nIf you did not perform this action, you can safely ignore this email.\n\nAnd don't forget that we will never ask you for your password, a token or any other sensitive info. Thank you.`;
+			
+			sendEmail({
+				email,
+				subject: "Sanctum: Password Reset",
+				message,
+				html: "",
+			});
 
       res.status(200).json({
         status: "OK",
         message:
-          "Password reset link sent successfully. It expires in five minutes.",
+          "Password reset link sent successfully. It expires in 10 minutes.",
       });
     }
   }
@@ -371,31 +420,47 @@ export const forgotPassword = asyncErrorHandler(
 
 export const resetPassword = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-		const {password} = req.body
+    const { password } = req.body;
     const { token } = req.query;
-		if(!password) {
-			const error = new CustomError(400, "Password not provided.")
-			return next(error)
-		}
-		if(!token) {
-			const error = new CustomError(400, "Token missing.")
-			return next(error)
-		}
-		else {
-			if(typeof token === "string") {
-				const resetToken = crypto.createHash("sha256").update(token).digest("hex")
-				const user = await Users.findOne({resetToken, resetTokenExpiry: {$gt: Date.now()}})
-				if(!user) {
-					const error = new CustomError(400, "Reset token has expired. Resend reset token.")
-					return next(error)
-				} else {
-					const updatedUser = await user.updateOne({password})
-					if(!updatedUser) {
-						const error = new CustomError(500, "Unable to update password. Try again later.")
-						return next(error)
-					}
-				}
-			}
-		}
+    if (!password) {
+      const error = new CustomError(400, "Password not provided.");
+      return next(error);
+    }
+    if (!token) {
+      const error = new CustomError(400, "Token missing.");
+      return next(error);
+    } else {
+      if (typeof token === "string") {
+        const resetToken = crypto
+          .createHash("sha256")
+          .update(token)
+          .digest("hex");
+        const user = await Users.findOne({
+          resetToken,
+          resetTokenExpiry: { $gt: Date.now() },
+        });
+        if (!user) {
+          const error = new CustomError(
+            400,
+            "Reset token has expired. Resend reset token."
+          );
+          return next(error);
+        } else {
+          const updatedUser = await user.updateOne({ password });
+          if (!updatedUser) {
+            const error = new CustomError(
+              500,
+              "Unable to update password. Try again later."
+            );
+            return next(error);
+          }
+
+          const message = `Your Sanctum password has been successfully reset and all previously signed in users have been signed out. You have also been signed into your new device.`;
+          const subject = "Sanctum: Password Reset";
+
+          signInResponse(user, res, next, 201, subject, message);
+        }
+      }
+    }
   }
 );
