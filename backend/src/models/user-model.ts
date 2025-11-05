@@ -26,10 +26,6 @@ const tagSchema = new Schema({
 		required: true,
 		unique: true,
 	},
-	saveIds: {
-		type: [Schema.Types.ObjectId],
-		ref: "Save",
-	},
 })
 
 const collectionSchema = new Schema({
@@ -61,7 +57,6 @@ const userSaveSchema = new Schema(
 		},
     tags: {
 			type: [tagSchema],
-			select: false,
 			default: [],
 		},
     favourite: {

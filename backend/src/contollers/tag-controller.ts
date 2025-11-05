@@ -2,124 +2,118 @@ import type { NextFunction, Request, Response } from "express";
 import asyncErrorHandler from "../utils/async-error-handler";
 import Tags from "../models/tag-model";
 import CustomError from "../utils/custom-error";
+import Users from "../models/user-model";
 
-export const getTags = asyncErrorHandler(async(req: Request, res: Response, next: NextFunction) => {
-	const tags = await Tags.find()
-	
-	res.status(200).json({
-		status: "OK",
-		data: {
-			tags
-		}
-	})
-})
-
-export const addTags = asyncErrorHandler(
+export const getTags = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const urls = req.body.urls;
-    const tagsList = req.body?.tags;
-    const newTagsList = req.body?.newTags;
-    const tagsArray = [];
-    const newTagsArray = [];
+    const tags = await Tags.find();
 
-    if (newTagsList) {
-      for (let i = 0; i < newTagsList.length; i++) {
+    res.status(200).json({
+      status: "OK",
+      data: {
+        tags,
+      },
+    });
+  }
+);
+
+export const addTagstoSaves = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    const saveIds = req.body.saveIds;
+    const tagNamesList = req.body?.tags;
+    const newTagNamesList = req.body?.newTags;
+    const tagsList = [];
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
+    if (newTagNamesList) {
+      for (let i = 0; i < newTagNamesList.length; i++) {
         const tag = {
-          name: newTagsList[i],
+          name: newTagNamesList[i],
         };
-        newTagsArray.push(tag);
+        tagsList.push(tag);
       }
-
-      const newTags = await Tags.create(newTagsArray);
-      if (!newTags) {
-        const error = new CustomError(
-          500,
-          `Failed to create ${
-            newTagsArray.length === 1 ? "a new tag" : "new tags"
-          }. Try again later.`
-        );
-        return next(error);
-      }
-
-      tagsArray.push(newTagsList);
     }
 
-    if (tagsList) {
-      tagsArray.push(tagsList);
+    if (tagNamesList) {
+      for (let i = 0; i < tagNamesList.length; i++) {
+        const tag = {
+          name: tagNamesList[i],
+        };
+        tagsList.push(tag);
+      }
     }
 
-    const tags = await Tags.updateMany(
-      { name: { $in: tagsArray } },
-      { $push: { urls: { $each: urls } } },
+    const tags = await Users.updateOne(
+      { _id: userId, "saves.saveId": { $in: saveIds } },
+      { $push: { "saves.$[].tags": { $each: tagsList } } },
       { runValidators: true }
     );
     if (!tags) {
       const error = new CustomError(
         500,
-        `Failed to add ${
-          urls.length === 1 ? "article" : "articles"
-        } to tags. Try again later.`
+        `Failed to add ${tagsList.length === 1 ? "tag" : "tags"} to ${
+          saveIds.length === 1 ? "article" : "articles"
+        }. Try again later.`
       );
       return next(error);
     }
 
-    res.status(201).json({
+    res.status(200).json({
       status: "OK",
     });
   }
 );
 
-export const editTags = asyncErrorHandler(
+export const editTagsOnSave = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const url = req.body.url;
-    const tagsList = req.body?.tags;
-    const newTagsList = req.body?.newTags;
-    const removedTagsList = req.body?.removedTags;
-    const tagsArray = [];
-    const newTagsArray = [];
+    const userId = req.user?._id;
+    const saveId = req.body.saveId;
+    const tagNamesList = req.body?.tags;
+    const newTagNamesList = req.body?.newTags;
+    const removedTagNamesList = req.body?.removedTags;
+    const tagsList = [];
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
 
-    if (removedTagsList) {
-      const removedTags = await Tags.updateMany(
-        { name: { $in: removedTagsList } },
-        { $pull: { urls: url } }
+    if (removedTagNamesList) {
+      const removedTags = await Users.updateOne(
+        { _id: userId, "saves.saveId": saveId },
+        { $pull: { "saves.$.tags": { name: { $in: removedTagNamesList } } } }
       );
       if (!removedTags) {
         const error = new CustomError(
           500,
-          "Unable to remove tags. Try again later"
+          "Unable to remove tags from article. Try again later"
         );
         return next(error);
       }
     }
 
-    if (newTagsList) {
-      for (let i = 0; i < newTagsList.length; i++) {
+    if (newTagNamesList) {
+      for (let i = 0; i < newTagNamesList.length; i++) {
         const tag = {
-          name: newTagsList[i],
+          name: newTagNamesList[i],
         };
-        newTagsArray.push(tag);
+        tagsList.push(tag);
       }
-
-      const newTags = await Tags.create(newTagsArray);
-      if (!newTags) {
-        const error = new CustomError(
-          500,
-          `Failed to create ${
-            newTagsArray.length === 1 ? "a new tag" : "new tags"
-          }. Try again later.`
-        );
-        return next(error);
-      }
-      tagsArray.push(newTagsList);
     }
 
-    if (tagsList) {
-      tagsArray.push(tagsList);
+    if (tagNamesList) {
+      for (let i = 0; i < tagNamesList.length; i++) {
+        const tag = {
+          name: tagNamesList[i],
+        };
+        tagsList.push(tag);
+      }
     }
 
-    const tags = await Tags.updateMany(
-      { name: { $in: tagsArray } },
-      { $push: { urls: url } },
+    const tags = await Users.updateOne(
+      { _id: userId, "saves.saveId": saveId },
+      { $push: { "saves.$.tags": { $each: tagsList } } },
       { runValidators: true }
     );
     if (!tags) {
@@ -136,21 +130,57 @@ export const editTags = asyncErrorHandler(
   }
 );
 
-export const deleteTags = asyncErrorHandler(
+export const editTag = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const tagsList = req.body.tags;
-
-    const deletedTags = Tags.deleteMany({ name: { $in: tagsList } });
-    if (!deletedTags) {
-      const error = new CustomError(
-        500,
-        "Unable to remove tags. Try again later"
-      );
-      return next(error);
+    const userId = req.user?._id;
+    const tagId = req.body.tagId;
+    const newTagName = req.body.newTagName;
+    const removedTagNamesList = req.body.tags;
+    if (!userId) {
+      res.redirect("/sign-in");
     }
 
-		res.status(204).json({
-			status: "OK"
-		})
+    if (tagId && newTagName) {
+      const renamedTag = await Users.updateOne(
+        { _id: userId, "saves.tags._id": tagId },
+        { $set: { "saves.$[save].tags.$[tag].name": newTagName } },
+        {
+          runValidators: true,
+          arrayFilters: [{ "save.tags._id": tagId }, { "tag._id": tagId }],
+        }
+      );
+      if (!renamedTag) {
+        const error = new CustomError(
+          500,
+          "Failed to rename tag. Try again later."
+        );
+        return next(error);
+      }
+
+      res.status(200).json({
+        status: "OK",
+      });
+    }
+
+    if (removedTagNamesList) {
+      const deletedTags = await Users.updateOne(
+        { _id: userId, "saves.tags.name": { $in: removedTagNamesList } },
+        { $pull: { "saves.$[].tags": { name: { $in: removedTagNamesList } } } },
+        { runValidators: true }
+      );
+      if (!deletedTags) {
+        const error = new CustomError(
+          500,
+          `Unable to remove ${
+            removedTagNamesList.length === 1 ? "tag" : "tags"
+          }. Try again later`
+        );
+        return next(error);
+      }
+
+      res.status(204).json({
+        status: "OK",
+      });
+    }
   }
 );

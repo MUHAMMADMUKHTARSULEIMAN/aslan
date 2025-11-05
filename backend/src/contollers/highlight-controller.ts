@@ -75,6 +75,10 @@ export const deleteHighlights = asyncErrorHandler(
     const userId = req.user?._id;
     const saveId = req.body.saveId;
     const highlightIds = req.body?.highlightIds;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
     if (highlightIds) {
       const deleteHighlights = await Users.updateOne(
         { _id: userId, "saves.saveId": saveId },
