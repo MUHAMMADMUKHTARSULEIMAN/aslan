@@ -156,7 +156,7 @@ export const updateSaves = asyncErrorHandler(
 
     for (const key in updateQuery) {
       if (Object.prototype.hasOwnProperty.call(updateQuery, key)) {
-        const updatePath = `saves.$[el].${key}`;
+        const updatePath = `saves.$[save].${key}`;
 
         dynamicSet[updatePath] = updateQuery[key as keyof typeof updateQuery];
       }
@@ -168,7 +168,10 @@ export const updateSaves = asyncErrorHandler(
         saves: { $in: saveIds },
       },
       { $set: dynamicSet },
-      { runValidators: true, arrayFilters: [{ "el.saveId": { $in: saveIds } }] }
+      {
+        runValidators: true,
+        arrayFilters: [{ "save.saveId": { $in: saveIds } }],
+      }
     );
     if (!updates) {
       const error = new CustomError(
@@ -180,9 +183,9 @@ export const updateSaves = asyncErrorHandler(
       return next(error);
     }
 
-		if(updates.matchedCount !== updates.modifiedCount) {
-			const error = new CustomError(404, "Not all articles were updated.")
-		}
+    if (updates.matchedCount !== updates.modifiedCount) {
+      const error = new CustomError(404, "Not all articles were updated.");
+    }
 
     res.status(200).json({
       status: "OK",
@@ -247,97 +250,5 @@ export const deleteSaves = asyncErrorHandler(
     res.status(204).json({
       status: "OK",
     });
-  }
-);
-
-export const getHighlights = asyncErrorHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    // const highlight = await Saves;
-  }
-);
-
-export const addHighlight = asyncErrorHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const url = req.body.url;
-    const highlight = req.body.highlight;
-    const addedHighlight = await Saves.updateOne(
-      url,
-      {
-        $push: { highlights: { highlight } },
-      },
-      { runValidators: true }
-    );
-    if (!addedHighlight) {
-      const error = new CustomError(500, `Unable to add highlight.`);
-      return next(error);
-    }
-
-    res.status(200).json({
-      status: "OK",
-    });
-  }
-);
-
-export const updateHighlight = asyncErrorHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const url = req.body.url;
-    const id = req.body.highlightId;
-    const highlight = req.body.highlight;
-    const updatedHighlight = await Saves.updateOne(
-      { url, "highlights._id": id },
-      { $set: { "highlights.$.highlight": highlight } },
-      { runValidators: true }
-    );
-    if (!updatedHighlight) {
-      const error = new CustomError(500, `Unable to add highlight.`);
-      return next(error);
-    }
-
-    res.status(200).json({
-      status: "OK",
-    });
-  }
-);
-export const deleteHighlights = asyncErrorHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const url = req.body.url;
-    const ids = req.body?.ids;
-    if (ids) {
-      const deleteHighlights = await Saves.updateOne(
-        { url },
-        { $pull: { highlights: { _id: { $in: ids } } } }
-      );
-      if (!deleteHighlights) {
-        const error = new CustomError(
-          500,
-          `${
-            ids.length === 1 ? "Highlight" : "Highlights"
-          } could not be deleted.`
-        );
-        return next(error);
-      }
-
-      res.status(204).json({
-        status: "OK",
-      });
-    } else {
-      const deleteHighlights = await Saves.updateOne(
-        { url },
-        { $set: { highlights: [] } }
-      );
-      if (!deleteHighlights) {
-        const error = new CustomError(
-          500,
-          `${
-            ids.length === 1 ? "Highlight" : "Highlights"
-          } could not be deleted.`
-        );
-        return next(error);
-      }
-
-      res.status(204).json({
-        status: "OK",
-      });
-    }
   }
 );

@@ -12,7 +12,7 @@ const { refreshTokenExpiry, resetTokenExpiry, JWTSecret, JWTExpiry } = config;
 
 const highlightSchema = new Schema(
   {
-    highlight: {
+    text: {
       type: String,
       required: true,
     },
