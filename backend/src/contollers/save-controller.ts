@@ -165,7 +165,7 @@ export const updateSaves = asyncErrorHandler(
     const updates = await Users.updateOne(
       {
         _id: userId,
-        saves: { $in: saveIds },
+        "saves.saveId": { $in: saveIds },
       },
       { $set: dynamicSet },
       {

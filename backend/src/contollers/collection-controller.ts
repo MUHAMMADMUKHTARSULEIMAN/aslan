@@ -1,22 +1,32 @@
 import type { NextFunction, Request, Response } from "express";
 import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
-import Collections from "../models/collection-model";
+import Users from "../models/user-model";
 
-export const getCollections = asyncErrorHandler(async(req: Request, res: Response, next: NextFunction) => {
-	const collections = await Collections.find()
-	
-	res.status(200).json({
-		status: "OK",
-		data: {
-			collections
-		}
-	})
-})
+export const getCollections = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const collections = await Users.find();
+
+    res.status(200).json({
+      status: "OK",
+      data: {
+        collections,
+      },
+    });
+  }
+);
 
 export const createCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const collection = await Collections.create(req.body);
+    const userId = req.user?._id;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
+    const collection = await Users.updateOne(
+      { _id: userId },
+      { $push: { collections: req.body } }
+    );
     if (!collection) {
       const error = new CustomError(
         500,
@@ -30,21 +40,25 @@ export const createCollection = asyncErrorHandler(
   }
 );
 
-export const addArticlesToCollection = asyncErrorHandler(
+export const addSavesToCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const name = req.body.name;
-    const urls = req.body.urls;
+    const userId = req.user?._id;
+    const collectionId = req.body.collectionId;
+    const saveIds = req.body.saveIds;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
 
-    const addedArticles = await Collections.updateOne(
-      { name },
-      { $push: { urls: { each: urls } } }
+    const addedArticles = await Users.updateOne(
+      { _id: userId, "collections._id": collectionId },
+      { $push: { "collections.saveIds": { each: saveIds } } }
     );
     if (!addedArticles) {
       const error = new CustomError(
         500,
         `Failed to add ${
-          urls.length === 1 ? "article" : "articles"
-        }. Try again later.`
+          saveIds.length === 1 ? "article" : "articles"
+        } to collection. Try again later.`
       );
       return next(error);
     }
@@ -57,61 +71,51 @@ export const addArticlesToCollection = asyncErrorHandler(
 
 export const editCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const name = req.body.name;
-    const newName = req.body?.newName;
-    const newDescription = req.body?.newDescription;
-    const removedURL = req.body?.url;
+    const userId = req.user?._id;
+    const collectionId = req.body.collectionId;
+    const editQuery = req.body.updateQuery;
+    const removedSaveIds = req.body?.saveIds;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
 
-    if (newName && newDescription) {
-      const editedCollection = await Collections.updateOne(
-        { name },
-        { $set: { name: newName, description: newDescription } }
+    if (editQuery) {
+      const dynamicSet: Record<string, any> = {};
+
+      for (const key in editQuery) {
+        if (Object.prototype.hasOwnProperty.call(editQuery, key)) {
+          const editPath = `collections.$.${key}`;
+
+          dynamicSet[editPath] = editQuery[key as keyof typeof editQuery];
+        }
+      }
+      const editedCollection = await Users.updateOne(
+        { _id: userId, "collections._id": collectionId },
+        { $set: dynamicSet },
+        {
+          runValidators: true,
+        }
       );
       if (!editedCollection) {
         const error = new CustomError(
           500,
-          "Failed to change either of the name and the desription of the collection. Try again later."
+          "Failed to change the name or the description of the collection. Try again later."
         );
         return next(error);
       }
-    } else {
-      if (newName) {
-        const editedCollection = await Collections.updateOne(
-          { name },
-          { $set: { name: newName } }
-        );
-        if (!editedCollection) {
-          const error = new CustomError(
-            500,
-            "Failed to change the name of the collection. Try again later."
-          );
-          return next(error);
-        }
-      }
-      if (newDescription) {
-        const editedCollection = await Collections.updateOne(
-          { name },
-          { $set: { description: newDescription } }
-        );
-        if (!editedCollection) {
-          const error = new CustomError(
-            500,
-            "Failed to change the description of the collection. Try again later."
-          );
-          return next(error);
-        }
-      }
     }
 
-    if (removedURL) {
-      const editedCollection = await Collections.updateOne(
-        { name },
-        { $pull: { urls: removedURL } }
+    if (removedSaveIds) {
+      const editedCollection = await Users.updateOne(
+        { _id: userId, "collections._id": collectionId },
+        { $pull: { "collectiions.$.saveIds": { $in: removedSaveIds } } }
       );
       if (!editedCollection) {
         const error = new CustomError(
           500,
-          "Failed to remove article from collection. Try again later."
+          `Failed to remove ${
+            removedSaveIds.length === 1 ? "article" : "articles"
+          } from collection. Try again later.`
         );
         return next(error);
       }
@@ -125,9 +129,16 @@ export const editCollection = asyncErrorHandler(
 
 export const deleteCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const name = req.body.Name;
+    const userId = req.user?._id;
+    const collectionId = req.body.collectionId;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
 
-    const deletedCollection = await Collections.deleteOne({ name });
+    const deletedCollection = await Users.updateOne(
+      { _id: userId, "collections._id": collectionId },
+      { $pull: { collections: {_id: collectionId} } }
+    );
     if (!deletedCollection) {
       const error = new CustomError(
         500,
@@ -141,5 +152,3 @@ export const deleteCollection = asyncErrorHandler(
     });
   }
 );
-
-// "Failed to change the name and the decription of the collection. Try again later"

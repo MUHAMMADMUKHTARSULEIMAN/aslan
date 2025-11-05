@@ -1,12 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 import asyncErrorHandler from "../utils/async-error-handler";
-import Tags from "../models/tag-model";
 import CustomError from "../utils/custom-error";
 import Users from "../models/user-model";
 
 export const getTags = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const tags = await Tags.find();
+    const tags = await Users.find();
 
     res.status(200).json({
       status: "OK",
