@@ -21,6 +21,6 @@ export interface IUser extends Document {
   comparePasswords(candidatePassword: string): Promise<boolean>;
   isPasswordModified(JWTTimestamp: number): boolean;
   generateAccessToken(): string;
-  generateRefreshToken(next: NextFunction): Promise<void>;
+  generateRefreshToken(next: NextFunction): Promise<string | void>;
   generateResetToken(next: NextFunction): Promise<string | void>;
 }

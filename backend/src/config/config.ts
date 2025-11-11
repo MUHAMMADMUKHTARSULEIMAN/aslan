@@ -16,7 +16,8 @@ interface Config {
 	JWTSecret: string;
 	JWTExpiry: number;
 	cookieSecret: string;
-	cookieExpiry: number;
+	JWTCookieExpiry: number;
+	refreshCookieExpiry: number;
 	SMTPService: string;
 	SMTPHost: string;
 	SMTPPort: number;
@@ -37,7 +38,8 @@ const config: Config = {
   JWTSecret: getENVVariable("JWT_SECRET"),
   JWTExpiry: parseInt(getENVVariable("JWT_EXPIRY")),
   cookieSecret: getENVVariable("COOKIE_SECRET"),
-  cookieExpiry: parseInt(getENVVariable("COOKIE_EXPIRY")),
+  JWTCookieExpiry: parseInt(getENVVariable("JWT_COOKIE_EXPIRY")),
+  refreshCookieExpiry: parseInt(getENVVariable("REFRESH_COOKIE_EXPIRY")),
   SMTPService: getENVVariable("SMTP_SERVICE"),
   SMTPHost: getENVVariable("SMTP_HOST"),
   SMTPPort: parseInt(getENVVariable("SMTP_PORT")),

@@ -3,14 +3,88 @@ import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
 import Users from "../models/user-model";
 
-export const getTags = asyncErrorHandler(
+export const getAllTags = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const tags = await Users.find();
+    const userId = req.user?._id;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+    const tagsAggregate = await Users.aggregate([
+      { $match: { _id: userId } },
+      { $unwind: "$saves" },
+      { $unwind: "$saves.tags" },
+      {
+        $group: {
+          _id: null,
+          allTags: { $addToSet: "$saves.tags.name" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          allTags: 1,
+        },
+      },
+    ]);
+
+    const tags = tagsAggregate.length > 0 ? tagsAggregate[0].allTags : [];
 
     res.status(200).json({
       status: "OK",
       data: {
         tags,
+      },
+    });
+  }
+);
+
+export const getAllSavesWithSpecificTAg = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    const tagName = req.params.tagName;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
+    const tagSavesAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+					"saves.archived": false
+        },
+      },
+      { $unwind: "$saves" },
+      { $match: { "saves.tags.name": tagName } },
+      {
+        $lookup: {
+          from: "saves",
+          localField: "saves.saveId",
+          foreignField: "_id",
+          as: "saves.save",
+        },
+      },
+      { $unwind: "$saves.save" },
+      {
+        $group: {
+          _id: null,
+          tagSaves: { $push: "$saves.save" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          tagSaves: 1,
+        },
+      },
+    ]);
+
+    const tagSaves =
+      tagSavesAggregate.length > 0 ? tagSavesAggregate[0].tagSaves : [];
+
+    res.status(200).json({
+      status: "OK",
+      data: {
+        saves: tagSaves,
       },
     });
   }

@@ -7,13 +7,13 @@ import passport from "passport";
 import type { Info } from "../auth/passport-setup";
 import Users from "../models/user-model";
 import Emails from "../models/email-model";
-import crypto from "crypto";
+import {createHash, randomBytes} from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
 import { getAndDeleteLink } from "./link-controller";
 import sendEmail from "../utils/email";
 
-const { frontendBaseURL, cookieExpiry, nodeENV, JWTSecret } = config;
+const { frontendBaseURL, JWTCookieExpiry, refreshCookieExpiry, nodeENV, JWTSecret } = config;
 
 export const signInResponse = async (
   user: IUser,
@@ -25,15 +25,23 @@ export const signInResponse = async (
   mailHTML?: string,
   message?: string
 ) => {
-  const token = user.generateAccessToken();
-  await user.generateRefreshToken(next);
+  const accessToken = user.generateAccessToken();
+  const refreshToken = await user.generateRefreshToken(next);
 
-  res.cookie("jwt", token, {
+  res.cookie("jwt", accessToken, {
     sameSite: "lax",
     signed: true,
     secure: nodeENV === "production",
     httpOnly: true,
-    maxAge: cookieExpiry,
+    maxAge: JWTCookieExpiry,
+  });
+
+  res.cookie("refresh", refreshToken, {
+    sameSite: "lax",
+    signed: true,
+    secure: nodeENV === "production",
+    httpOnly: true,
+    maxAge: refreshCookieExpiry	,
   });
 
   sendEmail({
@@ -75,7 +83,7 @@ export const googleAuthCallback = asyncErrorHandler(
           });
         } else {
           const resetURL = `${frontendBaseURL}/`;
-          const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link beloww to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
+          const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
           const subject = "Sanctum: Google Sign-in";
 
           signInResponse(user, res, next, 201, subject, message);
@@ -191,8 +199,7 @@ export const userSignUp = asyncErrorHandler(
     }
 
     if (typeof token === "string") {
-      const verificationToken = crypto
-        .createHash("sha256")
+      const verificationToken = createHash("sha256")
         .update(token)
         .digest("hex");
       const userEmail = await Emails.findOneAndDelete({
@@ -266,7 +273,7 @@ export const userSignIn = asyncErrorHandler(
     }
 
     const resetURL = `${frontendBaseURL}/`;
-    const message = `Your Sanctum was just signed into using your email address. If you did not perform this action, please use the link beloww to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
+    const message = `Your Sanctum was just signed into using your email address. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
     const subject = "Sanctum: Email Sign-in";
 
     await signInResponse(user, res, next, 201, subject, message);
@@ -275,23 +282,15 @@ export const userSignIn = asyncErrorHandler(
 
 export const refreshAccessToken = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.signedCookies.jwt;
-    if (!token) {
+    const JWT = req.signedCookies.jwt;
+    if (JWT) {
       next();
     }
 
-    const parts = token.split(".");
-    if (parts.length !== 3) {
-      next();
-    }
+		const token = req.signedCookies.refresh
+		const refreshToken = createHash("sha256").update(token).digest("hex")
 
-    const encodedPayload = parts[1];
-    const payload = JSON.parse(
-      Buffer.from(encodedPayload, "base64url").toString("utf-8")
-    );
-    const exp: number = payload.exp;
-    const user = await Users.findById(payload.id);
-    if (exp && exp < Math.floor(Date.now() / 1000)) {
+    const user = await Users.findOne({refreshToken, refreshTokenExpiry: {$gt: Date.now()}});
       if (!user) {
         next();
       } else {
@@ -299,36 +298,41 @@ export const refreshAccessToken = asyncErrorHandler(
           user.refreshTokenExpiry &&
           Date.now() < user.refreshTokenExpiry.getTime()
         ) {
-          const token = user.generateAccessToken();
-          await user.generateRefreshToken(next);
+          const newJWT = user.generateAccessToken();
+          const newRefresh = await user.generateRefreshToken(next);
 
-          res.cookie("jwt", token, {
+          res.cookie("jwt", newJWT, {
             sameSite: "lax",
             signed: true,
             secure: nodeENV === "production",
             httpOnly: true,
-            maxAge: cookieExpiry,
+            maxAge: JWTCookieExpiry,
           });
+          res.cookie("refresh", newRefresh, {
+            sameSite: "lax",
+            signed: true,
+            secure: nodeENV === "production",
+            httpOnly: true,
+            maxAge: refreshCookieExpiry,
+          });
+
           next();
         } else {
           next();
         }
       }
-    } else {
-      next();
-    }
   }
 );
 
 export const protectRoutes = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.signedCookies.jwt;
-    if (!token) {
+    const JWT = req.signedCookies.jwt;
+    if (!JWT) {
       res.redirect("/sign-in");
     }
 
     // @ts-expect-error
-    const decodedToken = await promisify(jwt.verify)(token, JWTSecret);
+    const decodedToken = await promisify(jwt.verify)(JWT, JWTSecret);
     // @ts-expect-error
     const id = decodedToken.id;
     // @ts-expect-error
@@ -359,7 +363,7 @@ export const restrictUsers = (level: number): RequestHandler => {
         if (user.level[key] < level) {
           const error = new CustomError(
             403,
-            "You're not authorized to perform this action"
+            "You're not authorized to perform this action."
           );
           return next(error);
         }
@@ -431,8 +435,7 @@ export const resetPassword = asyncErrorHandler(
       return next(error);
     } else {
       if (typeof token === "string") {
-        const resetToken = crypto
-          .createHash("sha256")
+        const resetToken = createHash("sha256")
           .update(token)
           .digest("hex");
         const user = await Users.findOne({

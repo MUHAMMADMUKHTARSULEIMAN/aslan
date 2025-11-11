@@ -20,28 +20,34 @@ const highlightSchema = new Schema(
   { timestamps: true }
 );
 
-const tagSchema = new Schema({
-	name: {
-		type: String,
-		required: true,
-		unique: true,
-	},
-})
+const tagSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+  },
+  { timestamps: true }
+);
 
-const collectionSchema = new Schema({
-	name: {
-		type: String,
-		required: true,
-		unique: true,
-	},
-	description: {
-		type: String
-	},
-	saveIds: {
-		type: [Schema.Types.ObjectId],
-		ref: "Save",
-	},
-})
+const collectionSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    description: {
+      type: String,
+    },
+    saveIds: {
+      type: [Schema.Types.ObjectId],
+      ref: "Save",
+    },
+  },
+  { timestamps: true }
+);
 
 const userSaveSchema = new Schema(
   {
@@ -51,20 +57,21 @@ const userSaveSchema = new Schema(
       required: true,
     },
     highlights: {
-			type: [highlightSchema],
-			select: false,
-			default: [],
-		},
+      type: [highlightSchema],
+      select: false,
+      default: [],
+    },
     tags: {
-			type: [tagSchema],
-			default: [],
-		},
+      type: [tagSchema],
+      select: false,
+      default: [],
+    },
     favourite: {
-			type: Boolean,
+      type: Boolean,
       default: false,
     },
     archived: {
-			type: Boolean,
+      type: Boolean,
       default: false,
     },
   },
@@ -73,7 +80,7 @@ const userSaveSchema = new Schema(
 
 const userSchema = new Schema<IUser>(
   {
-		firstName: {
+    firstName: {
       type: String,
       required: [true, "First name not provided"],
     },
@@ -89,54 +96,55 @@ const userSchema = new Schema<IUser>(
       index: true,
     },
     googleId: {
-			type: String,
+      type: String,
       unique: true,
       sparse: true,
-			select: false,
+      select: false,
     },
     password: {
-			type: String,
-      minlength: [8, "Password must be longer than eight characters"],
+      type: String,
+      minlength: [8, "Password must be at least eight characters"],
       required: function () {
-				return !this.googleId;
+        return !this.googleId;
       },
       select: false,
     },
     passwordLastModified: {
-			type: Date,
-			select: false,
+      type: Date,
+      select: false,
     },
     resetToken: {
       type: String,
-			select: false,
+      select: false,
     },
     resetTokenExpiry: {
       type: Date,
-			select: false,
+      select: false,
     },
     refreshToken: {
       type: String,
-			select: false,
+      select: false,
     },
     refreshTokenExpiry: {
       type: Date,
-			select: false,
+      select: false,
     },
     level: {
-			type: Object,
+      type: Map,
+      of: Number,
       enum: [{ user: 1 }, { admin: 2 }, { superuser: 3 }],
       default: { user: 1 },
-			// select: false,
     },
     saves: {
-			type: [userSaveSchema],
-			default: [],
-		},
-		collections: {
-			type: [collectionSchema],
-			select: false,
-			default: [],
-		},
+      type: [userSaveSchema],
+      select: false,
+      default: [],
+    },
+    collections: {
+      type: [collectionSchema],
+      select: false,
+      default: [],
+    },
   },
   { timestamps: true }
 );
@@ -175,7 +183,7 @@ userSchema.methods.generateAccessToken = function (): string {
 
 userSchema.methods.generateRefreshToken = async function (
   next: NextFunction
-): Promise<void> {
+): Promise<string | void> {
   const token = randomBytes(32).toString("hex");
   const refreshToken = createHash("sha256").update(token).digest("hex");
   const user = await Users.updateOne(
@@ -190,6 +198,8 @@ userSchema.methods.generateRefreshToken = async function (
     );
     return next(error);
   }
+
+	return token
 };
 
 userSchema.methods.generateResetToken = async function (
