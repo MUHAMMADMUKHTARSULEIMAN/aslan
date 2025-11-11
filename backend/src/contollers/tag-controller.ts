@@ -61,6 +61,14 @@ export const getAllSavesWithSpecificTAg = asyncErrorHandler(
           localField: "saves.saveId",
           foreignField: "_id",
           as: "saves.save",
+					pipeline: [
+						{$project: {
+							"title": 1,
+							"image": 1,
+							"siteName": 1,
+							"length": 1,
+						}}
+					]
         },
       },
       { $unwind: "$saves.save" },
