@@ -78,20 +78,18 @@ class Processor {
   public extractContent(HTML: string): Article | null {
     const dom = new JSDOM(HTML);
     const document = dom.window.document;
-    document.querySelectorAll("link").forEach((el) => el.remove());
-    document.querySelectorAll("script").forEach((el) => el.remove());
-    document.querySelectorAll("style").forEach((el) => el.remove());
+
+    const NOISE_SELECTORS = ["link", "script", "style"].join(", ");
+
+    document.querySelectorAll(NOISE_SELECTORS).forEach((el) => el.remove());
+
     document.querySelectorAll("*").forEach((el) => {
       if (el.hasAttribute("style")) {
         el.removeAttribute("style");
       }
-    });
-    document.querySelectorAll("*").forEach((el) => {
       if (el.hasAttribute("id")) {
         el.removeAttribute("id");
       }
-    });
-    document.querySelectorAll("*").forEach((el) => {
       if (el.hasAttribute("class")) {
         el.removeAttribute("class");
       }
@@ -139,7 +137,10 @@ class Processor {
       $("#main img").first().attr("src") ||
       $("img").first().attr("src") ||
       null;
-    if (image && (!image.startsWith("https://") || !image.startsWith("/http://"))) {
+    if (
+      image &&
+      (!image.startsWith("https://") || !image.startsWith("/http://"))
+    ) {
       const parsedURL = new URL(url);
       image = `${parsedURL.origin}${image}`;
     }
@@ -208,6 +209,87 @@ class Processor {
       $('meta[name="og:title"]').attr("content") ||
       null
     );
+  }
+
+  public findDescription(HTML: string, maxLength: number): string | null {
+    const dom = new JSDOM(HTML);
+    const document = dom.window.document;
+
+    const HEAD_NOISE_SELECTORS = ["link", "script", "style"].join(", ");
+
+    document
+      .querySelectorAll(HEAD_NOISE_SELECTORS)
+      .forEach((el) => el.remove());
+
+    document.querySelectorAll("*").forEach((el) => {
+      if (el.hasAttribute("style")) {
+        el.removeAttribute("style");
+      }
+      if (el.hasAttribute("id")) {
+        el.removeAttribute("id");
+      }
+      if (el.hasAttribute("class")) {
+        el.removeAttribute("class");
+      }
+    });
+
+    const readable = isProbablyReaderable(document);
+    if (readable) {
+      const $ = cheerio.load(HTML);
+
+      const description =
+        $('meta[name="description"]').attr("content") ||
+        $('meta[property="og:description"]').attr("content") ||
+        $('meta[name="og:description"]').attr("content") ||
+        $('meta[name="twitter:description"]').attr("content") ||
+        null;
+
+      if (description) {
+        return description;
+      }
+
+      const BODY_NOISE_SELECTORS: string = [
+        "h1, h2, h3, h4, h5, h6",
+        "header",
+        "footer",
+        "nav",
+        "aside",
+        "form",
+        ".sidebar",
+        ".ads, .ad, .advertisement",
+        "script, style",
+      ].join(", ");
+
+      const body = document.querySelector("body");
+
+      if (body !== null) {
+        body
+          .querySelectorAll(BODY_NOISE_SELECTORS)
+          .forEach((el) => el.remove());
+        const bodyText = body.textContent
+          .replace(/(\r\n|\n|\r|\t)/gm, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        if (bodyText.length > maxLength) {
+          const truncatedText = bodyText.substring(0, maxLength);
+          const lastSpaceIndex = truncatedText.lastIndexOf(" ");
+
+          const excerpt =
+            lastSpaceIndex > 0
+              ? truncatedText.substring(0, lastSpaceIndex)
+              : truncatedText;
+
+          return excerpt + "...";
+        } else {
+          return bodyText;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   public findAuthor(HTML: string): string | null {

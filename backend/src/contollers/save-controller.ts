@@ -102,11 +102,13 @@ export const addSave = asyncErrorHandler(
       processor.findSiteName(reqHTML || html || "") ||
       processor.getHostname(url);
     const length = processor.findLength(reqHTML || html || "");
+    const description = processor.findDescription(reqHTML || html || "", 197);
 
     const packet = {
       url,
       title,
       image,
+			description,
       siteName,
       html: reqHTML || html,
       length,

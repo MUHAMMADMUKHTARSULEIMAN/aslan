@@ -3,9 +3,33 @@ import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
 import Users from "../models/user-model";
 
-export const getCollections = asyncErrorHandler(
+export const getAllCollections = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const collections = await Users.find();
+    const userId = req.user?._id;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+    const collectionsAggregate = await Users.aggregate([
+      { $match: { _id: userId } },
+      { $unwind: "$collections" },
+      {
+        $group: {
+          _id: null,
+          allCollections: { $push: "$collections.name" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          allCollections: 1,
+        },
+      },
+    ]);
+
+    const collections =
+      collectionsAggregate.length > 0
+        ? collectionsAggregate[0].allCollections
+        : [];
 
     res.status(200).json({
       status: "OK",
@@ -13,6 +37,75 @@ export const getCollections = asyncErrorHandler(
         collections,
       },
     });
+  }
+);
+
+export const getAllSavesInACollection = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    const collectionName = req.params.collectionName;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
+    const collectionSavesAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      { $unwind: "$collections" },
+      {
+        $match: {
+          "collections.name": collectionName,
+        },
+      },
+      { $unwind: "$collections.saveIds" },
+      {
+        $lookup: {
+          from: "saves",
+          localField: "collections.saveIds",
+          foreignField: "_id",
+          as: "collections.saves",
+          pipeline: [
+            {
+              $project: {
+                title: 1,
+                image: 1,
+                description: 1,
+                siteName: 1,
+                length: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: "$collections.saves" },
+      {
+        $group: {
+          _id: null,
+          collectionSaves: { $push: "$collections.saves" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          collectionSaves: 1,
+        },
+      },
+    ]);
+
+    const collectionSaves =
+      collectionSavesAggregate.length > 0
+        ? collectionSavesAggregate[0].collectionSaves
+        : [];
+
+		res.status(200).json({
+			status: "OK",
+			data: {
+				saves: collectionSaves
+			}
+		})
   }
 );
 
@@ -137,7 +230,7 @@ export const deleteCollection = asyncErrorHandler(
 
     const deletedCollection = await Users.updateOne(
       { _id: userId, "collections._id": collectionId },
-      { $pull: { collections: {_id: collectionId} } }
+      { $pull: { collections: { _id: collectionId } } }
     );
     if (!deletedCollection) {
       const error = new CustomError(

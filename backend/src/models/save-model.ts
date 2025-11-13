@@ -14,6 +14,9 @@ const saveSchema = new Schema(
     image: {
       type: String,
     },
+    description: {
+      type: String,
+    },
     siteName: {
       type: String,
       required: [true, "Name of site not provided"],

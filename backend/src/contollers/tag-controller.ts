@@ -50,25 +50,26 @@ export const getAllSavesWithSpecificTAg = asyncErrorHandler(
       {
         $match: {
           _id: userId,
-					"saves.archived": false
         },
       },
       { $unwind: "$saves" },
-      { $match: { "saves.tags.name": tagName } },
+      { $match: { "saves.archived": false, "saves.tags.name": tagName } },
       {
         $lookup: {
           from: "saves",
           localField: "saves.saveId",
           foreignField: "_id",
           as: "saves.save",
-					pipeline: [
-						{$project: {
-							"title": 1,
-							"image": 1,
-							"siteName": 1,
-							"length": 1,
-						}}
-					]
+          pipeline: [
+            {
+              $project: {
+                title: 1,
+                image: 1,
+                siteName: 1,
+                length: 1,
+              },
+            },
+          ],
         },
       },
       { $unwind: "$saves.save" },
