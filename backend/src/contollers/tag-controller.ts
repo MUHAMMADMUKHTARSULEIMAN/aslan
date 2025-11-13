@@ -63,6 +63,7 @@ export const getAllSavesWithSpecificTAg = asyncErrorHandler(
           pipeline: [
             {
               $project: {
+								url: 1,
                 title: 1,
                 image: 1,
                 siteName: 1,

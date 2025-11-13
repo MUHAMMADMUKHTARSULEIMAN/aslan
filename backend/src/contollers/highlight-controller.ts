@@ -3,9 +3,124 @@ import Users from "../models/user-model";
 import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
 
-export const getHighlights = asyncErrorHandler(
+export const getAllHighlights = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    // const highlight = await Saves;
+    const userId = req.user?._id;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
+    const savesHighlightsAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      { $unwind: "$saves" },
+      {
+        $match: {
+          "saves.archived": false,
+        },
+      },
+      {
+        $lookup: {
+          from: "saves",
+          localField: "save._id",
+          foreignField: "_id",
+          as: "saves.save",
+          pipeline: [
+            {
+              $project: {
+                url: 1,
+                title: 1,
+                image: 1,
+                siteName: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unset: [
+          "saves.saveId",
+          "saves.tags",
+          "saves.favourite",
+          "saves.archived",
+        ],
+      },
+      { $unwind: "$saves.highlights" },
+      {
+        $group: {
+          _id: null,
+          savesHighlights: { $push: "$saves" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          savesHighlights: 1,
+        },
+      },
+    ]);
+
+    const savesHighlights =
+      savesHighlightsAggregate.length > 0
+        ? savesHighlightsAggregate[0].savesHighlights
+        : [];
+
+    res.status(200).json({
+      status: "OK",
+      data: {
+        saves: savesHighlights,
+      },
+    });
+  }
+);
+
+export const getSaveHighlights = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    const saveId = req.body.saveId;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
+    const highlightsAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      { $unwind: "$saves" },
+      {
+        $match: {
+          "saves._id": saveId,
+        },
+      },
+      { $unwind: "$saves.highlights" },
+      {
+        $group: {
+          _id: null,
+          highlights: { $push: "$saves.highlights" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          highlights: 1,
+        },
+      },
+    ]);
+
+    const highlights =
+      highlightsAggregate.length > 0 ? highlightsAggregate[0].highlights : [];
+
+    res.status(200).json({
+      status: "OK",
+      data: {
+        highlights,
+      },
+    });
   }
 );
 
