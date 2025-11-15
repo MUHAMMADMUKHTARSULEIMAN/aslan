@@ -1,18 +1,155 @@
 import type { NextFunction, Request, Response } from "express";
+import escapeStringRegexp from "escape-string-regexp";
 import asyncErrorHandler from "../utils/async-error-handler";
 import Saves from "../models/save-model";
 import CustomError from "../utils/custom-error";
 import Processor from "../utils/processor";
 import Users from "../models/user-model";
 
-export const getSaves = asyncErrorHandler(
+export const searchSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const saves = await Saves.find({ archived: false });
+    const userId = req.user?._id;
+    const archived = req.body.archived;
+    const searchString = req.body.searchString;
+    const unescapedSearchString = escapeStringRegexp(searchString);
+    const searchRegex = `\\${unescapedSearchString}\\`;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
+    const searchAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      { $unwind: "$saves" },
+      {
+        $match: {
+          "saves.archived": archived,
+        },
+      },
+      {
+        $lookup: {
+          from: "saves",
+          localField: "saves.saveId",
+          foreignField: "_id",
+          as: "saves.save",
+          pipeline: [
+            {
+              $project: {
+                url: 1,
+                title: 1,
+                image: 1,
+                siteName: 1,
+                length: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $match: {
+          $or: [
+            {
+              "saves.save.title": {
+                $regex: searchRegex,
+                $options: "i",
+              },
+            },
+            {
+              "saves.save.siteName": {
+                $regex: searchRegex,
+                $options: "i",
+              },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          searchSaves: { $push: "$saves.save" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          searchSaves: 1,
+        },
+      },
+    ]);
+
+    const searchSaves =
+      searchAggregate.length > 0 ? searchAggregate[0].searchSaves : [];
 
     res.status(200).json({
       status: "OK",
       data: {
-        saves,
+        saves: searchSaves,
+      },
+    });
+  }
+);
+
+export const getSaves = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+    const savesAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      { $unwind: "$saves" },
+      {
+        $match: {
+          "saves.archived": false,
+        },
+      },
+      {
+        $lookup: {
+          from: "saves",
+          localField: "saves.saveId",
+          foreignField: "_id",
+          as: "saves.save",
+          pipeline: [
+            {
+              $project: {
+                url: 1,
+                title: 1,
+                image: 1,
+                siteName: 1,
+                length: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          defaultSaves: { $push: "$saves.save" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          defaultSaves: 1,
+        },
+      },
+    ]);
+
+    const defaultSaves =
+      savesAggregate.length > 0 ? savesAggregate[0].defaultSaves : [];
+
+    res.status(200).json({
+      status: "OK",
+      data: {
+        saves: defaultSaves,
       },
     });
   }
@@ -20,7 +157,57 @@ export const getSaves = asyncErrorHandler(
 
 export const getArchives = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const archives = await Saves.find({ archived: true });
+    const userId = req.user?._id;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+    const archivesAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      { $unwind: "$saves" },
+      {
+        $match: {
+          "saves.archived": true,
+        },
+      },
+      {
+        $lookup: {
+          from: "saves",
+          localField: "saves.saveId",
+          foreignField: "_id",
+          as: "saves.save",
+          pipeline: [
+            {
+              $project: {
+                url: 1,
+                title: 1,
+                image: 1,
+                siteName: 1,
+                length: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          archives: { $push: "$saves.save" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          archives: 1,
+        },
+      },
+    ]);
+
+    const archives =
+      archivesAggregate.length > 0 ? archivesAggregate[0].archives : [];
 
     res.status(200).json({
       status: "OK",
@@ -33,7 +220,58 @@ export const getArchives = asyncErrorHandler(
 
 export const getFavourites = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const favourites = await Saves.find({ favourite: true });
+    const userId = req.user?._id;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+    const favouritesAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      { $unwind: "$saves" },
+      {
+        $match: {
+          "saves.favourite": true,
+          "saves.archived": false,
+        },
+      },
+      {
+        $lookup: {
+          from: "saves",
+          localField: "saves.saveId",
+          foreignField: "_id",
+          as: "saves.save",
+          pipeline: [
+            {
+              $project: {
+                url: 1,
+                title: 1,
+                image: 1,
+                siteName: 1,
+                length: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          favourites: { $push: "$saves.save" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          favourites: 1,
+        },
+      },
+    ]);
+
+    const favourites =
+      favouritesAggregate.length > 0 ? favouritesAggregate[0].favourites : [];
 
     res.status(200).json({
       status: "OK",
@@ -108,7 +346,7 @@ export const addSave = asyncErrorHandler(
       url,
       title,
       image,
-			description,
+      description,
       siteName,
       html: reqHTML || html,
       length,

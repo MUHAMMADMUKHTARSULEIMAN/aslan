@@ -25,7 +25,7 @@ export const getAllHighlights = asyncErrorHandler(
       {
         $lookup: {
           from: "saves",
-          localField: "save._id",
+          localField: "saves.saveId",
           foreignField: "_id",
           as: "saves.save",
           pipeline: [
@@ -40,6 +40,7 @@ export const getAllHighlights = asyncErrorHandler(
           ],
         },
       },
+			{ $unwind: "$saves.highlights" },
       {
         $unset: [
           "saves.saveId",
@@ -48,7 +49,6 @@ export const getAllHighlights = asyncErrorHandler(
           "saves.archived",
         ],
       },
-      { $unwind: "$saves.highlights" },
       {
         $group: {
           _id: null,

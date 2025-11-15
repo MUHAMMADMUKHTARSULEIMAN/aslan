@@ -54,23 +54,78 @@ export const getAllSavesInACollection = asyncErrorHandler(
           _id: userId,
         },
       },
+      {
+        $addFields: {
+          unarchivedSaves: {
+            $filter: {
+              input: "$saves",
+              as: "save",
+              cond: { "$$save.archived": false },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          unarchivedSaveIds: {
+            $push: "$unarchivedSaves.saveId",
+          },
+        },
+      },
       { $unwind: "$collections" },
       {
         $match: {
           "collections.name": collectionName,
         },
       },
-      { $unwind: "$collections.saveIds" },
+      {
+        $addFields: {
+          OGCollectionSaveIds: {
+            $filter: {
+              input: "$collections.saveIds",
+              as: "saveId",
+              cond: { $in: ["$$saveId", "$unarchivedSaveIds"] },
+            },
+          },
+        },
+      },
+      // {$unwind: "$saves"},
+      // {$match: {
+      // 	"saves.archived": false
+      // }},
+      // {$group: {
+      // 	_id: null,
+      // 	unarchivedSaveIds: {$push: "$saves.saveId"}
+      // }},
+      // {$project: {
+      // 	_id: 0,
+      // 	unarchivedSaveIds: 1,
+      // }},
+      // { $unwind: "$collections" },
+      // {
+      //   $match: {
+      //     "collections.name": collectionName,
+      //   },
+      // },
+      // { $unwind: "$collections.saveIds" },
+      // {$match: {
+      // 	"collections.saveIds": {$in: "$unarchivedSaveIds"}
+      // }},
       {
         $lookup: {
           from: "saves",
-          localField: "collections.saveIds",
-          foreignField: "_id",
-          as: "collections.saves",
+          let: { collectionSaveIds: "$OGCollectionSaveIds" },
           pipeline: [
             {
+              $match: {
+                $expr: {
+                  $in: ["$foreignField", "$$colectionSaveIds"],
+                },
+              },
+            },
+            {
               $project: {
-								url: 1,
+                url: 1,
                 title: 1,
                 image: 1,
                 description: 1,
@@ -78,6 +133,7 @@ export const getAllSavesInACollection = asyncErrorHandler(
               },
             },
           ],
+          as: "collections.saves",
         },
       },
       { $unwind: "$collections.saves" },
@@ -100,12 +156,12 @@ export const getAllSavesInACollection = asyncErrorHandler(
         ? collectionSavesAggregate[0].collectionSaves
         : [];
 
-		res.status(200).json({
-			status: "OK",
-			data: {
-				saves: collectionSaves
-			}
-		})
+    res.status(200).json({
+      status: "OK",
+      data: {
+        saves: collectionSaves,
+      },
+    });
   }
 );
 
