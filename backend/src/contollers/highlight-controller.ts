@@ -80,7 +80,7 @@ export const getAllHighlights = asyncErrorHandler(
 export const getSaveHighlights = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const saveId = req.body.saveId;
+    const {saveId} = req.params;
     if (!userId) {
       res.redirect("/sign-in");
     }
@@ -127,7 +127,7 @@ export const getSaveHighlights = asyncErrorHandler(
 export const addHighlight = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const saveId = req.body.saveId;
+    const {saveId} = req.params;
     const highlight = req.body.highlight;
     if (!userId) {
       res.redirect("/sign-in");
@@ -155,8 +155,7 @@ export const addHighlight = asyncErrorHandler(
 export const updateHighlight = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const saveId = req.body.saveId;
-    const highlightId = req.body.highlightId;
+    const {saveId, highlightId} = req.params;
     const highlight = req.body.highlight;
     if (!userId) {
       res.redirect("/sign-in");
@@ -188,7 +187,7 @@ export const updateHighlight = asyncErrorHandler(
 export const deleteHighlights = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const saveId = req.body.saveId;
+    const {saveId} = req.params;
     const highlightIds = req.body?.highlightIds;
     if (!userId) {
       res.redirect("/sign-in");

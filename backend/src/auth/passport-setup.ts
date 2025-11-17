@@ -32,7 +32,7 @@ export const initializeGooglePassport = () => {
       {
         clientID: googleClientId,
         clientSecret: googleClientSecret,
-        callbackURL: "api/auth/google/callback",
+        callbackURL: "/api/google/redirect",
         scope: ["profile"],
         passReqToCallback: true,
       },

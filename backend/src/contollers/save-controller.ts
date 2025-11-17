@@ -6,6 +6,135 @@ import CustomError from "../utils/custom-error";
 import Processor from "../utils/processor";
 import Users from "../models/user-model";
 
+
+export const getSaves = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+    const savesAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      { $unwind: "$saves" },
+      {
+        $match: {
+          "saves.archived": false,
+        },
+      },
+      {
+        $lookup: {
+          from: "saves",
+          localField: "saves.saveId",
+          foreignField: "_id",
+          as: "saves.save",
+          pipeline: [
+            {
+              $project: {
+                url: 1,
+                title: 1,
+                image: 1,
+                siteName: 1,
+                length: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          defaultSaves: { $push: "$saves.save" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          defaultSaves: 1,
+        },
+      },
+    ]);
+
+    const defaultSaves =
+      savesAggregate.length > 0 ? savesAggregate[0].defaultSaves : [];
+
+    res.status(200).json({
+      status: "OK",
+      data: {
+        saves: defaultSaves,
+      },
+    });
+  }
+);
+
+export const getSave = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    const { saveId } = req.params;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
+    const articleAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      { $unwind: "$saves" },
+      {
+        $match: {
+          "saves.saveId": saveId,
+        },
+      },
+      {
+        $lookup: {
+          from: "saves",
+          localField: "saves.saveId",
+          foreignField: "_id",
+          as: "saves.save",
+          pipeline: [
+            {
+              $project: {
+                url: 1,
+                title: 1,
+                siteName: 1,
+                html: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unset: [
+          "saves.saveId",
+          "saves.tags",
+          "saves.archived",
+          "saves.favourite",
+        ],
+      },
+      {
+        $project: {
+          _id: 0,
+          saves: 1,
+        },
+      },
+    ]);
+
+		const article = articleAggregate.length > 0 ? articleAggregate[0].saves : []
+
+		res.status(200).json({
+			status: "OK",
+			data: {
+				article
+			}
+		})
+  }
+);
+
 export const searchSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
@@ -87,69 +216,6 @@ export const searchSaves = asyncErrorHandler(
       status: "OK",
       data: {
         saves: searchSaves,
-      },
-    });
-  }
-);
-
-export const getSaves = asyncErrorHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user?._id;
-    if (!userId) {
-      res.redirect("/sign-in");
-    }
-    const savesAggregate = await Users.aggregate([
-      {
-        $match: {
-          _id: userId,
-        },
-      },
-      { $unwind: "$saves" },
-      {
-        $match: {
-          "saves.archived": false,
-        },
-      },
-      {
-        $lookup: {
-          from: "saves",
-          localField: "saves.saveId",
-          foreignField: "_id",
-          as: "saves.save",
-          pipeline: [
-            {
-              $project: {
-                url: 1,
-                title: 1,
-                image: 1,
-                siteName: 1,
-                length: 1,
-              },
-            },
-          ],
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          defaultSaves: { $push: "$saves.save" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          defaultSaves: 1,
-        },
-      },
-    ]);
-
-    const defaultSaves =
-      savesAggregate.length > 0 ? savesAggregate[0].defaultSaves : [];
-
-    res.status(200).json({
-      status: "OK",
-      data: {
-        saves: defaultSaves,
       },
     });
   }

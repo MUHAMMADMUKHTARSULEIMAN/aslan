@@ -43,7 +43,7 @@ export const getAllCollections = asyncErrorHandler(
 export const getAllSavesInACollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const collectionName = req.params.collectionName;
+    const {collectionName} = req.params;
     if (!userId) {
       res.redirect("/sign-in");
     }
@@ -192,7 +192,7 @@ export const createCollection = asyncErrorHandler(
 export const addSavesToCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const collectionId = req.body.collectionId;
+    const {collectionId} = req.params;
     const saveIds = req.body.saveIds;
     if (!userId) {
       res.redirect("/sign-in");
@@ -221,7 +221,7 @@ export const addSavesToCollection = asyncErrorHandler(
 export const editCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const collectionId = req.body.collectionId;
+    const {collectionId} = req.params;
     const editQuery = req.body.updateQuery;
     const removedSaveIds = req.body?.saveIds;
     if (!userId) {
@@ -279,7 +279,7 @@ export const editCollection = asyncErrorHandler(
 export const deleteCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const collectionId = req.body.collectionId;
+    const {collectionId} = req.params;
     if (!userId) {
       res.redirect("/sign-in");
     }

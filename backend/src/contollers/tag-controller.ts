@@ -38,10 +38,10 @@ export const getAllTags = asyncErrorHandler(
   }
 );
 
-export const getAllSavesWithSpecificTAg = asyncErrorHandler(
+export const getAllSavesWithSpecificTag = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const tagName = req.params.tagName;
+    const { tagName } = req.params;
     if (!userId) {
       res.redirect("/sign-in");
     }
@@ -63,7 +63,7 @@ export const getAllSavesWithSpecificTAg = asyncErrorHandler(
           pipeline: [
             {
               $project: {
-								url: 1,
+                url: 1,
                 title: 1,
                 image: 1,
                 siteName: 1,
@@ -153,7 +153,7 @@ export const addTagstoSaves = asyncErrorHandler(
 export const editTagsOnSave = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const saveId = req.body.saveId;
+    const {saveId} = req.params;
     const tagNamesList = req.body?.tags;
     const newTagNamesList = req.body?.newTags;
     const removedTagNamesList = req.body?.removedTags;
@@ -216,54 +216,59 @@ export const editTagsOnSave = asyncErrorHandler(
 export const editTag = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
-    const tagId = req.body.tagId;
+    const {tagId} = req.params;
     const newTagName = req.body.newTagName;
+    if (!userId) {
+      res.redirect("/sign-in");
+    }
+
+    const renamedTag = await Users.updateOne(
+      { _id: userId, "saves.tags._id": tagId },
+      { $set: { "saves.$[save].tags.$[tag].name": newTagName } },
+      {
+        runValidators: true,
+        arrayFilters: [{ "save.tags._id": tagId }, { "tag._id": tagId }],
+      }
+    );
+    if (!renamedTag) {
+      const error = new CustomError(
+        500,
+        "Failed to rename tag. Try again later."
+      );
+      return next(error);
+    }
+
+    res.status(200).json({
+      status: "OK",
+    });
+  }
+);
+
+export const deleteTags = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
     const removedTagNamesList = req.body.tags;
     if (!userId) {
       res.redirect("/sign-in");
     }
 
-    if (tagId && newTagName) {
-      const renamedTag = await Users.updateOne(
-        { _id: userId, "saves.tags._id": tagId },
-        { $set: { "saves.$[save].tags.$[tag].name": newTagName } },
-        {
-          runValidators: true,
-          arrayFilters: [{ "save.tags._id": tagId }, { "tag._id": tagId }],
-        }
+    const deletedTags = await Users.updateOne(
+      { _id: userId, "saves.tags.name": { $in: removedTagNamesList } },
+      { $pull: { "saves.$[].tags": { name: { $in: removedTagNamesList } } } },
+      { runValidators: true }
+    );
+    if (!deletedTags) {
+      const error = new CustomError(
+        500,
+        `Unable to remove ${
+          removedTagNamesList.length === 1 ? "tag" : "tags"
+        }. Try again later`
       );
-      if (!renamedTag) {
-        const error = new CustomError(
-          500,
-          "Failed to rename tag. Try again later."
-        );
-        return next(error);
-      }
-
-      res.status(200).json({
-        status: "OK",
-      });
+      return next(error);
     }
 
-    if (removedTagNamesList) {
-      const deletedTags = await Users.updateOne(
-        { _id: userId, "saves.tags.name": { $in: removedTagNamesList } },
-        { $pull: { "saves.$[].tags": { name: { $in: removedTagNamesList } } } },
-        { runValidators: true }
-      );
-      if (!deletedTags) {
-        const error = new CustomError(
-          500,
-          `Unable to remove ${
-            removedTagNamesList.length === 1 ? "tag" : "tags"
-          }. Try again later`
-        );
-        return next(error);
-      }
-
-      res.status(204).json({
-        status: "OK",
-      });
-    }
+    res.status(204).json({
+      status: "OK",
+    });
   }
 );

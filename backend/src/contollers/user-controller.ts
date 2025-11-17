@@ -7,13 +7,19 @@ import passport from "passport";
 import type { Info } from "../auth/passport-setup";
 import Users from "../models/user-model";
 import Emails from "../models/email-model";
-import {createHash, randomBytes} from "crypto";
+import { createHash } from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
 import { getAndDeleteLink } from "./link-controller";
 import sendEmail from "../utils/email";
 
-const { frontendBaseURL, JWTCookieExpiry, refreshCookieExpiry, nodeENV, JWTSecret } = config;
+const {
+  frontendBaseURL,
+  JWTCookieExpiry,
+  refreshCookieExpiry,
+  nodeENV,
+  JWTSecret,
+} = config;
 
 export const signInResponse = async (
   user: IUser,
@@ -41,7 +47,7 @@ export const signInResponse = async (
     signed: true,
     secure: nodeENV === "production",
     httpOnly: true,
-    maxAge: refreshCookieExpiry	,
+    maxAge: refreshCookieExpiry,
   });
 
   sendEmail({
@@ -96,7 +102,7 @@ export const googleAuthCallback = asyncErrorHandler(
 export const linkAccount = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body;
-    const { linkingId } = req.query;
+    const { linkingId } = req.params;
     if (!password) {
       const error = new CustomError(400, "Password must be provided");
       return next(error);
@@ -191,7 +197,7 @@ export const emailRegistration = asyncErrorHandler(
 export const userSignUp = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { firstName, lastName, password } = req.body;
-    const { email, token } = req.query;
+    const { email, token } = req.params;
 
     if (!token || !email) {
       const error = new CustomError(400, "Bad Request.");
@@ -287,40 +293,36 @@ export const refreshAccessToken = asyncErrorHandler(
       next();
     }
 
-		const token = req.signedCookies.refresh
-		const refreshToken = createHash("sha256").update(token).digest("hex")
+    const token = req.signedCookies.refresh;
+    const refreshToken = createHash("sha256").update(token).digest("hex");
 
-    const user = await Users.findOne({refreshToken, refreshTokenExpiry: {$gt: Date.now()}});
-      if (!user) {
-        next();
-      } else {
-        if (
-          user.refreshTokenExpiry &&
-          Date.now() < user.refreshTokenExpiry.getTime()
-        ) {
-          const newJWT = user.generateAccessToken();
-          const newRefresh = await user.generateRefreshToken(next);
+    const user = await Users.findOne({
+      refreshToken,
+      refreshTokenExpiry: { $gt: Date.now() },
+    });
+    if (!user) {
+      next();
+    } else {
+      const newJWT = user.generateAccessToken();
+      const newRefresh = await user.generateRefreshToken(next);
 
-          res.cookie("jwt", newJWT, {
-            sameSite: "lax",
-            signed: true,
-            secure: nodeENV === "production",
-            httpOnly: true,
-            maxAge: JWTCookieExpiry,
-          });
-          res.cookie("refresh", newRefresh, {
-            sameSite: "lax",
-            signed: true,
-            secure: nodeENV === "production",
-            httpOnly: true,
-            maxAge: refreshCookieExpiry,
-          });
+      res.cookie("jwt", newJWT, {
+        sameSite: "lax",
+        signed: true,
+        secure: nodeENV === "production",
+        httpOnly: true,
+        maxAge: JWTCookieExpiry,
+      });
+      res.cookie("refresh", newRefresh, {
+        sameSite: "lax",
+        signed: true,
+        secure: nodeENV === "production",
+        httpOnly: true,
+        maxAge: refreshCookieExpiry,
+      });
 
-          next();
-        } else {
-          next();
-        }
-      }
+      next();
+    }
   }
 );
 
@@ -393,39 +395,33 @@ export const forgotPassword = asyncErrorHandler(
         message,
         html: "",
       });
-			
-      res.status(200).json({
-				status: "OK",
-        message:
-				"Password reset link sent successfully. It expires in 10 minutes.",
-      });
     } else {
-			const token = await user.generateResetToken(next);
-			
-      // send email with token
-			const resetURL = `${frontendBaseURL}/reset-password/${token}`;
-			const message = `Use the link below to reset your password. It expires in 10 minutes.\n\n${resetURL}\n\nIf you did not perform this action, you can safely ignore this email.\n\nAnd don't forget that we will never ask you for your password, a token or any other sensitive info. Thank you.`;
-			
-			sendEmail({
-				email,
-				subject: "Sanctum: Password Reset",
-				message,
-				html: "",
-			});
+      const token = await user.generateResetToken(next);
 
-      res.status(200).json({
-        status: "OK",
-        message:
-          "Password reset link sent successfully. It expires in 10 minutes.",
+      // send email with token
+      const resetURL = `${frontendBaseURL}/reset-password/${token}`;
+      const message = `Use the link below to reset your password. It expires in 10 minutes.\n\n${resetURL}\n\nIf you did not perform this action, you can safely ignore this email.\n\nAnd don't forget that we will never ask you for your password, a token or any other sensitive info. Thank you.`;
+
+      sendEmail({
+        email,
+        subject: "Sanctum: Password Reset",
+        message,
+        html: "",
       });
     }
+
+    res.status(200).json({
+      status: "OK",
+      message:
+        "Password reset link sent successfully. It expires in 10 minutes.",
+    });
   }
 );
 
 export const resetPassword = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body;
-    const { token } = req.query;
+    const { token } = req.params;
     if (!password) {
       const error = new CustomError(400, "Password not provided.");
       return next(error);
@@ -435,9 +431,7 @@ export const resetPassword = asyncErrorHandler(
       return next(error);
     } else {
       if (typeof token === "string") {
-        const resetToken = createHash("sha256")
-          .update(token)
-          .digest("hex");
+        const resetToken = createHash("sha256").update(token).digest("hex");
         const user = await Users.findOne({
           resetToken,
           resetTokenExpiry: { $gt: Date.now() },
