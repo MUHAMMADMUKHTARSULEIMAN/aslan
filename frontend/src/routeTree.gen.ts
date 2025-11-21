@@ -9,6 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignUpRouteImport } from './routes/sign-up'
+import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as RegisterEmailRouteImport } from './routes/register-email'
 import { Route as HeaderLayoutRouteImport } from './routes/_header-layout'
 import { Route as HeaderLayoutIndexRouteImport } from './routes/_header-layout/index'
 import { Route as HeaderLayoutTagsRouteImport } from './routes/_header-layout/tags'
@@ -21,6 +24,21 @@ import { Route as HeaderLayoutDiscoverRouteImport } from './routes/_header-layou
 import { Route as HeaderLayoutCollectionsRouteImport } from './routes/_header-layout/collections'
 import { Route as HeaderLayoutArchiveRouteImport } from './routes/_header-layout/archive'
 
+const SignUpRoute = SignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterEmailRoute = RegisterEmailRouteImport.update({
+  id: '/register-email',
+  path: '/register-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HeaderLayoutRoute = HeaderLayoutRouteImport.update({
   id: '/_header-layout',
   getParentRoute: () => rootRouteImport,
@@ -77,6 +95,9 @@ const HeaderLayoutArchiveRoute = HeaderLayoutArchiveRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/register-email': typeof RegisterEmailRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
   '/archive': typeof HeaderLayoutArchiveRoute
   '/collections': typeof HeaderLayoutCollectionsRoute
   '/discover': typeof HeaderLayoutDiscoverRoute
@@ -89,6 +110,9 @@ export interface FileRoutesByFullPath {
   '/': typeof HeaderLayoutIndexRoute
 }
 export interface FileRoutesByTo {
+  '/register-email': typeof RegisterEmailRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
   '/archive': typeof HeaderLayoutArchiveRoute
   '/collections': typeof HeaderLayoutCollectionsRoute
   '/discover': typeof HeaderLayoutDiscoverRoute
@@ -103,6 +127,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_header-layout': typeof HeaderLayoutRouteWithChildren
+  '/register-email': typeof RegisterEmailRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
   '/_header-layout/archive': typeof HeaderLayoutArchiveRoute
   '/_header-layout/collections': typeof HeaderLayoutCollectionsRoute
   '/_header-layout/discover': typeof HeaderLayoutDiscoverRoute
@@ -117,6 +144,9 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/register-email'
+    | '/sign-in'
+    | '/sign-up'
     | '/archive'
     | '/collections'
     | '/discover'
@@ -129,6 +159,9 @@ export interface FileRouteTypes {
     | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/register-email'
+    | '/sign-in'
+    | '/sign-up'
     | '/archive'
     | '/collections'
     | '/discover'
@@ -142,6 +175,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_header-layout'
+    | '/register-email'
+    | '/sign-in'
+    | '/sign-up'
     | '/_header-layout/archive'
     | '/_header-layout/collections'
     | '/_header-layout/discover'
@@ -156,10 +192,34 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   HeaderLayoutRoute: typeof HeaderLayoutRouteWithChildren
+  RegisterEmailRoute: typeof RegisterEmailRoute
+  SignInRoute: typeof SignInRoute
+  SignUpRoute: typeof SignUpRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register-email': {
+      id: '/register-email'
+      path: '/register-email'
+      fullPath: '/register-email'
+      preLoaderRoute: typeof RegisterEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_header-layout': {
       id: '/_header-layout'
       path: ''
@@ -272,6 +332,9 @@ const HeaderLayoutRouteWithChildren = HeaderLayoutRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   HeaderLayoutRoute: HeaderLayoutRouteWithChildren,
+  RegisterEmailRoute: RegisterEmailRoute,
+  SignInRoute: SignInRoute,
+  SignUpRoute: SignUpRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

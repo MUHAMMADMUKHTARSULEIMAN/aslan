@@ -163,7 +163,7 @@ export const emailRegistration = asyncErrorHandler(
         html: "",
       });
 
-      res.status(200).json({
+      res.status(201).json({
         status: "OK",
         message:
           "Verification link sent successfully. It expires in 15 minutes.",
@@ -176,7 +176,7 @@ export const emailRegistration = asyncErrorHandler(
     }
 
     const token = await userEmail.generateVerificationToken(next);
-    const verificationUrl = `${frontendBaseURL}/sign-up?email=${email}&token=${token}`;
+    const verificationUrl = `${frontendBaseURL}/sign-up/${email}/${token}`;
     const message = `Please use the link below to verify your email.\n\n${verificationUrl}\n\nThe link expires in 15 minutes.\n\nYou can safely ignore this email if you did not register your email at Sanctum.`;
 
     sendEmail({
@@ -186,7 +186,7 @@ export const emailRegistration = asyncErrorHandler(
       html: "",
     });
 
-    res.status(200).json({
+    res.status(201).json({
       status: "OK",
       message: "Verification link sent successfully. It expires in 15 minutes",
       token,

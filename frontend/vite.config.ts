@@ -3,7 +3,8 @@ import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
-import { resolve } from 'node:path'
+// Avoid Node built-in imports in the Vite ESM config so TS doesn't require
+// Node type declarations. Use Vite's root-relative alias instead.
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,7 +19,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
+      // Vite resolves "/src" relative to project root when used as an alias.
+      '@': '/src',
     },
   },
-})
+} as any)

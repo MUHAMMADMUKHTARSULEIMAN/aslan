@@ -139,8 +139,11 @@ export const searchSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     const archived = req.body.archived;
-    const searchString = req.body.searchString;
-    const unescapedSearchString = escapeStringRegexp(searchString);
+    const searchString = req.query.q
+		let unescapedSearchString = ""
+		if(typeof searchString === "string") {
+			unescapedSearchString = escapeStringRegexp(searchString);
+		}
     const searchRegex = `\\${unescapedSearchString}\\`;
     if (!userId) {
       res.redirect("/sign-in");

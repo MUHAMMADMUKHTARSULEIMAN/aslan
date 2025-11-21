@@ -1,10 +1,7 @@
-import { Menu } from "lucide-react";
-import { useSidebar } from "./ui/sidebar";
 import { Link } from "@tanstack/react-router";
 import { Button } from "./ui/button";
 
-export const Header = () => {
-  const { toggleSidebar } = useSidebar();
+export const SignOnHeader = () => {
   const logged = false;
   return (
     <div className="sticky w-full min-w-screen bg-background top-0 left-0 right-0 z-50">
@@ -27,11 +24,6 @@ export const Header = () => {
               <Link to="/register-email">Sign up</Link>
             </Button>
 						}
-            <Button onClick={toggleSidebar} variant="first-icon" size="icon">
-              <Menu
-                className="!w-[1.5rem] !h-[1.5rem] hover:text-emerald-600 dark:hover:text-emerald-200"
-              />
-            </Button>
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ router.route("/").get(getSaves);
 
 router.route("/:saveId").get(getSave);
 
-router.route("/search-saves").get(searchSaves);
+router.route("/search").get(searchSaves);
 
 router.route("/archived").get(getArchives);
 

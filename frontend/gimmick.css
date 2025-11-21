@@ -1,20 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,100;0,300;0,400;0,500;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&family=Alegreya:ital,wght@0,400..900;1,400..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap");
-@import "tailwindcss";
-@import "tw-animate-css";
-@custom-variant dark (&:is(.dark *));
-
-body {
-  @apply m-0;
-  font-family: -apple-system, BlinkMacSystemFont, "Source Sans 3", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-}
-
 :root {
   --radius: 0.625rem;
 
@@ -63,6 +46,36 @@ code {
   --chart-3: oklch(0.72 0.1 240);
   --chart-4: oklch(0.6 0.15 25);
   --chart-5: oklch(0.55 0.12 300);
+
+	--red-dark: oklch(0.58, 0.28, 25);
+  --red-light: oklch(0.85, 0.1, 25);
+  
+  --green-dark: oklch(0.6, 0.2, 135);
+  --green-light: oklch(0.88, 0.05, 135);
+  
+  --blue-dark: oklch(0.5, 0.15, 260);
+  --blue-light: oklch(0.80, 0.04, 260);
+
+  --cyan-dark: oklch(0.7, 0.15, 190);
+  --cyan-light: oklch(0.92, 0.04, 190);
+
+  --magenta-dark: oklch(0.65, 0.25, 330);
+  --magenta-light: oklch(0.90, 0.06, 330);
+
+  --yellow-dark: oklch(0.9, 0.2, 100);
+  --yellow-light: oklch(0.97, 0.05, 100);
+
+  --orange-dark: oklch(0.7, 0.22, 65);
+  --orange-light: oklch(0.93, 0.06, 65);
+
+  --violet-dark: oklch(0.5, 0.18, 300);
+  --violet-light: oklch(0.85, 0.05, 300);
+  
+  --teal-dark: oklch(0.55, 0.12, 170);
+  --teal-light: oklch(0.85, 0.03, 170);
+  
+  --gold-dark: oklch(0.75, 0.16, 90);
+  --gold-light: oklch(0.95, 0.04, 90);
 }
 
 .dark {
@@ -111,6 +124,36 @@ code {
   --chart-3: oklch(0.68 0.1 240);
   --chart-4: oklch(0.7 0.14 25);
   --chart-5: oklch(0.66 0.12 300);
+	
+	--red-dark: oklch(0.65, 0.28, 25);
+  --red-light: oklch(0.35, 0.1, 25);
+  
+  --green-dark: oklch(0.7, 0.2, 135);
+  --green-light: oklch(0.38, 0.05, 135);
+  
+  --blue-dark: oklch(0.6, 0.15, 260);
+  --blue-light: oklch(0.30, 0.04, 260);
+
+  --cyan-dark: oklch(0.78, 0.15, 190);
+  --cyan-light: oklch(0.42, 0.04, 190);
+
+  --magenta-dark: oklch(0.75, 0.25, 330);
+  --magenta-light: oklch(0.40, 0.06, 330);
+
+  --yellow-dark: oklch(0.95, 0.2, 100);
+  --yellow-light: oklch(0.47, 0.05, 100);
+
+  --orange-dark: oklch(0.8, 0.22, 65);
+  --orange-light: oklch(0.43, 0.06, 65);
+
+  --violet-dark: oklch(0.6, 0.18, 300);
+  --violet-light: oklch(0.35, 0.05, 300);
+  
+  --teal-dark: oklch(0.65, 0.12, 170);
+  --teal-light: oklch(0.35, 0.03, 170);
+  
+  --gold-dark: oklch(0.85, 0.16, 90);
+  --gold-light: oklch(0.45, 0.04, 90);
 }
 
 @theme inline {
@@ -152,11 +195,36 @@ code {
   --color-sidebar-ring: var(--sidebar-ring);
   --color-article-foreground: var(--article-foreground);
   --color-article-background: var(--article-background);
-  --font-alegreya-sans: "Alegreya Sans", "sans-serif";
-  --font-alegreya: "Alegreya", "serif";
-  --font-source-sans: "Source Sans 3", "sans-serif";
-  --font-source-serif: "Source Serif 4", "serif";
-  --font-source-code: "Alegreya", "monospace";
+	
+	--color-red-dark: var(--red-dark);
+  --color-red-light: var(--red-light);
+  
+  --color-green-dark: var(--green-dark);
+  --color-green-light: var(--green-light);
+
+  --color-blue-dark: var(--blue-dark);
+  --color-blue-light: var(--blue-light);
+
+  --color-cyan-dark: var(--cyan-dark);
+  --color-cyan-light: var(--cyan-light);
+	
+  --color-magenta-dark: var(--magenta-dark);
+  --color-magenta-light: var(--magenta-light);
+	
+  --color-yellow-dark: var(--yellow-dark);
+  --color-yellow-light: var(--yellow-light);
+	
+  --color-orange-dark: var(--orange-dark);
+  --color-orange-light: var(--orange-light);
+	
+  --color-violet-dark: var(--violet-dark);
+  --color-violet-light: var(--violet-light);
+	
+  --color-teal-dark: var(--teal-dark);
+  --color-teal-light: var(--teal-light);
+	
+  --color-gold-dark: var(--gold-dark);
+  --color-gold-light: var(--gold-light);
 }
 
 @layer base {
