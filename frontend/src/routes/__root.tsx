@@ -7,7 +7,7 @@ import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 
 interface MyRouterContext {
   queryClient: QueryClient;

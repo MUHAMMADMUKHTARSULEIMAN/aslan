@@ -188,7 +188,7 @@ export const emailRegistration = asyncErrorHandler(
 
     res.status(201).json({
       status: "OK",
-      message: "Verification link sent successfully. It expires in 15 minutes",
+      message: "Verification link sent successfully. It expires in 15 minutes.",
       token,
     });
   }
