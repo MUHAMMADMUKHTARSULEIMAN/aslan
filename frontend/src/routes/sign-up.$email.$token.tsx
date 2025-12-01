@@ -1,9 +1,7 @@
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FcGoogle } from "react-icons/fc";
 import { z } from "zod/v4";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import FloatingLabelInput from "@/components/floating-label-input";
@@ -50,11 +48,11 @@ function RouteComponent() {
 
   return (
     <div className="w-full mx-8 mt-16 flex flex-col items-center">
-			<div className="">
+			{/* <div className="">
         <Link to="/">
           <img src="images/logo.svg" alt="" className="h-12 w-12" />
         </Link>
-      </div>
+      </div> */}
       <div className="mb-8 text-center">
         <h1 className="font-bold text-4xl">Create Sanctum Account</h1>
       </div>

@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
@@ -10,6 +10,7 @@ import FloatingLabelInput from "@/components/floating-label-input";
 import { Spinner } from "@/components/ui/spinner";
 import ToastSuccess from "@/components/toast-success";
 import ToastError from "@/components/toast-error";
+import ToastInfo from "@/components/toast-info";
 
 export const Route = createFileRoute("/register-email")({
   component: RouteComponent,
@@ -96,7 +97,7 @@ function RouteComponent() {
 							)
 						}}
 						/>
-						<Button variant="secondary" disabled={formState.isSubmitting} className="w-full mt-4 py-[20px] shadow-none">
+						<Button variant="secondary" disabled={formState.isSubmitting} className="w-full mt-4 py-5 shadow-none">
 							{
 								formState.isSubmitting
 								? <span className="flex justify-center items-center gap-1"><Spinner />Submitting</span>
@@ -105,6 +106,13 @@ function RouteComponent() {
 						</Button>
 						</form>
 				</Form>
+						<Button variant="secondary" onClick={() => ToastInfo("New message. Stay alert at all times.")} className="w-full mt-4 py-5 shadow-none">
+							{
+								formState.isSubmitting
+								? <span className="flex justify-center items-center gap-1"><Spinner />Submitting</span>
+								: "Register"
+							}
+						</Button>
 			</div>
       <div className="mt-1">
 				<p className="text-[13px] text-center text-muted-foreground/75">By continuing, you agree to our <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Terms of Service</Link> and <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Privacy Policy</Link>.</p>
