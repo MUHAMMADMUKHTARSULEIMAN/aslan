@@ -38,9 +38,13 @@ function RouteComponent() {
 
       const data = await response.json();
 			if(data.status === "OK") {
-				toast
+				toast.success(data?.message)
+			} else {
+				toast.error(data?.message)
 			}
-    } catch (error) {}
+    } catch (error) {
+			toast.error("Something went wrong. Try again later.")
+		}
   };
   return (
     <div className="w-full mx-8 mt-16 flex flex-col items-center">
