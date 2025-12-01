@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
@@ -8,7 +8,6 @@ import { z } from "zod/v4";
 import { Form, FormControl, FormField, FormItem, } from "@/components/ui/form";
 import FloatingLabelInput from "@/components/floating-label-input";
 import { Spinner } from "@/components/ui/spinner";
-import { toast } from "sonner";
 import ToastSuccess from "@/components/toast-success";
 import ToastError from "@/components/toast-error";
 
@@ -44,10 +43,12 @@ function RouteComponent() {
 			} else {
 				ToastError(data?.message)
 			}
+			
     } catch (error) {
 			ToastError("Something went wrong. Try again later.")
 		}
   };
+
   return (
     <div className="w-full mx-8 mt-16 flex flex-col items-center">
       <div className="">

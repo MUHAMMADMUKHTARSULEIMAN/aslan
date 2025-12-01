@@ -1,9 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/sign-in')({
+export const Route = createFileRoute("/sign-in")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  return <div>Hello "/_sign-on-layout/sign-in"!</div>
+  return (
+    <div className="">
+      <Link to="/">
+        <img src="images/logo.svg" alt="" className="h-12 w-12" />
+      </Link>
+    </div>
+  );
 }
