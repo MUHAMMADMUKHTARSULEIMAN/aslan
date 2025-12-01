@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, } from "@/components/ui/form";
 import FloatingLabelInput from "@/components/floating-label-input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import ToastSuccess from "@/components/toast-success";
 
 export const Route = createFileRoute("/register-email")({
   component: RouteComponent,
@@ -38,7 +39,7 @@ function RouteComponent() {
 
       const data = await response.json();
 			if(data.status === "OK") {
-				toast.success(data?.message)
+				ToastSuccess(data?.message)
 			} else {
 				toast.error(data?.message)
 			}
@@ -102,6 +103,11 @@ function RouteComponent() {
 						</Button>
 						</form>
 				</Form>
+						<Button variant="secondary" onClick={() => ToastSuccess("Verification link sent successfully. It expires in 15 minutes. Verification sent again. Take care. Now for the big guns.")} className="w-full mt-4 py-[20px] shadow-none">
+							{
+								"Register"
+							}
+						</Button>
 			</div>
       <div className="mt-1">
 				<p className="text-[13px] text-center text-muted-foreground/75">By continuing, you agree to our <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Terms of Service</Link> and <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Privacy Policy</Link>.</p>
