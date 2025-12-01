@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-bold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive cursor-pointer",
   {
     variants: {
       variant: {
@@ -21,6 +21,7 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-2 hover:underline text-base cursor-pointer",
 				first: "bg-emerald-200 dark:bg-emerald-950/75 text-emerald-950 dark:text-emerald-200 hover:bg-emerald-200/60 dark:hover:bg-emerald-950/50 shadow-xs cursor-pointer",
+				"first-link": "text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer p-0 m-0",
 				"first-icon": "h-auto w-auto p-0 bg-inherit text-inherit hover:text-emerald-600 dark:hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 cursor-pointer",
 				"sign-on": "bg-card/50 hover:bg-card/90 dark:hover:bg-card/20 text-inherit border-2 border-input/50 dark:border-input/20 rounded-xl shadow-xs cursor-pointer",
 				"nav-icon": "hover:text-emerald-800 dark:hover:text-emerald-200 bg-background text-foreground",

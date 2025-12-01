@@ -1,12 +1,14 @@
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
 import { z } from "zod/v4";
-import { Form, FormControl, FormField, FormItem, FormLabel, } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, } from "@/components/ui/form";
+import FloatingLabelInput from "@/components/floating-label-input";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/register-email")({
   component: RouteComponent,
@@ -26,7 +28,7 @@ function RouteComponent() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch("http://127.0.0.1:2020/register-email", {
+      const response = await fetch("http://127.0.0.1:2020/api/register-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,6 +37,9 @@ function RouteComponent() {
       });
 
       const data = await response.json();
+			if(data.status === "OK") {
+				toast
+			}
     } catch (error) {}
   };
   return (
@@ -48,26 +53,26 @@ function RouteComponent() {
         <p>
           Already have an account?{" "}
           <span
-            className={cn(buttonVariants({ variant: "link" }), "text-base p-0")}
+            className={cn(buttonVariants({ variant: "link" }), "text-base font-normal p-0")}
           >
             <Link to="/sign-in">Sign in</Link>
           </span>
         </p>
       </div>
-      <div className="mt-4 w-full">
-        <div className="w-full bg-card/50 hover:bg-card/90 dark:hover:bg-card/20 text-inherit border-2 border-input/50 dark:border-input/20 flex items-center justify-center gap-2 py-2 rounded-xl shadow-xs cursor-pointer text-sm">
+      <div className="mt-2 w-full">
+        <div className="w-full hover:bg-card/50 dark:hover:bg-card text-inherit border-2 border-border/40 dark:border-muted-foreground/30 flex items-center justify-center gap-2 py-2 rounded-xl cursor-pointer shadow-none text-sm">
           <FcGoogle size={20} />
           Continue with Google
         </div>
       </div>
       <div className="my-2 flex items-center w-full">
-        <hr className="border border-input grow" />
+        <hr className="border border-border/40 grow" />
         <span className="px-2">OR</span>
-        <hr className="border border-input grow" />
+        <hr className="border border-border/40 grow" />
       </div>
 			<div className="w-full">
 				<Form {...form}>
-					<form onSubmit={handleSubmit(onSubmit)}></form>
+					<form onSubmit={handleSubmit(onSubmit)}>
 					<FormField
 						control={control}
 						name="email"
@@ -75,19 +80,28 @@ function RouteComponent() {
 							return(
 								<FormItem>
 									<FormControl>
-										<div className="">
-											<Input placeholder="Enter your email" className="bg-card/50 hover:bg-card/90 dark:hover:bg-card/20 text-inherit border-2 border-input/50 dark:border-input/20 flex items-center justify-center gap-2 py-2 rounded-xl shadow-xs" {...field}/>
+										<div>
+										<FloatingLabelInput label="Email" {...field} disabled={formState.isSubmitting} />
+										<p className="text-[13px] text-center text-destructive">{formState.errors.email?.message}</p>
 										</div>
 									</FormControl>
 								</FormItem>
 							)
 						}}
 						/>
+						<Button variant="secondary" disabled={formState.isSubmitting} className="w-full mt-4 py-[20px] shadow-none">
+							{
+								formState.isSubmitting
+								? <span className="flex justify-center items-center gap-1"><Spinner />Submitting</span>
+								: "Register"
+							}
+						</Button>
+						</form>
 				</Form>
 			</div>
-      {/* <div>
-				<p>By continuing, you agree to our Terms of Service and Privacy Policy. Need help? </p>
-			</div> */}
+      <div className="mt-1">
+				<p className="text-[13px] text-center text-muted-foreground/75">By continuing, you agree to our <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Terms of Service</Link> and <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Privacy Policy</Link>.</p>
+			</div>
     </div>
   );
 }

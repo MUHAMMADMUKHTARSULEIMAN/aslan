@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { isEmail } from "validator";
+import validator from "validator";
 import { randomBytes, createHash } from "crypto";
 import { compare } from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -92,7 +92,7 @@ const userSchema = new Schema<IUser>(
       required: [true, "Email not provided"],
       unique: [true, "Email already in use"],
       lowercase: true,
-      validate: [isEmail, "Please provide a valid email"],
+      validate: [validator.isEmail, "Please provide a valid email"],
       index: true,
     },
     googleId: {

@@ -23,7 +23,7 @@ export const Header = () => {
 						{
 							logged ? 
 							"" :
-            <Button variant="first" className="font-bold">
+            <Button variant="secondary" className="shadow-none">
               <Link to="/register-email">Sign up</Link>
             </Button>
 						}

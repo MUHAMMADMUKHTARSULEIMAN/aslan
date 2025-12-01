@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as RegisterEmailRouteImport } from './routes/register-email'
 import { Route as HeaderLayoutRouteImport } from './routes/_header-layout'
@@ -23,12 +22,8 @@ import { Route as HeaderLayoutExportRouteImport } from './routes/_header-layout/
 import { Route as HeaderLayoutDiscoverRouteImport } from './routes/_header-layout/discover'
 import { Route as HeaderLayoutCollectionsRouteImport } from './routes/_header-layout/collections'
 import { Route as HeaderLayoutArchiveRouteImport } from './routes/_header-layout/archive'
+import { Route as SignUpEmailTokenRouteImport } from './routes/sign-up.$email.$token'
 
-const SignUpRoute = SignUpRouteImport.update({
-  id: '/sign-up',
-  path: '/sign-up',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
@@ -93,11 +88,15 @@ const HeaderLayoutArchiveRoute = HeaderLayoutArchiveRouteImport.update({
   path: '/archive',
   getParentRoute: () => HeaderLayoutRoute,
 } as any)
+const SignUpEmailTokenRoute = SignUpEmailTokenRouteImport.update({
+  id: '/sign-up/$email/$token',
+  path: '/sign-up/$email/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/register-email': typeof RegisterEmailRoute
   '/sign-in': typeof SignInRoute
-  '/sign-up': typeof SignUpRoute
   '/archive': typeof HeaderLayoutArchiveRoute
   '/collections': typeof HeaderLayoutCollectionsRoute
   '/discover': typeof HeaderLayoutDiscoverRoute
@@ -108,11 +107,11 @@ export interface FileRoutesByFullPath {
   '/saves': typeof HeaderLayoutSavesRoute
   '/tags': typeof HeaderLayoutTagsRoute
   '/': typeof HeaderLayoutIndexRoute
+  '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
 }
 export interface FileRoutesByTo {
   '/register-email': typeof RegisterEmailRoute
   '/sign-in': typeof SignInRoute
-  '/sign-up': typeof SignUpRoute
   '/archive': typeof HeaderLayoutArchiveRoute
   '/collections': typeof HeaderLayoutCollectionsRoute
   '/discover': typeof HeaderLayoutDiscoverRoute
@@ -123,13 +122,13 @@ export interface FileRoutesByTo {
   '/saves': typeof HeaderLayoutSavesRoute
   '/tags': typeof HeaderLayoutTagsRoute
   '/': typeof HeaderLayoutIndexRoute
+  '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_header-layout': typeof HeaderLayoutRouteWithChildren
   '/register-email': typeof RegisterEmailRoute
   '/sign-in': typeof SignInRoute
-  '/sign-up': typeof SignUpRoute
   '/_header-layout/archive': typeof HeaderLayoutArchiveRoute
   '/_header-layout/collections': typeof HeaderLayoutCollectionsRoute
   '/_header-layout/discover': typeof HeaderLayoutDiscoverRoute
@@ -140,13 +139,13 @@ export interface FileRoutesById {
   '/_header-layout/saves': typeof HeaderLayoutSavesRoute
   '/_header-layout/tags': typeof HeaderLayoutTagsRoute
   '/_header-layout/': typeof HeaderLayoutIndexRoute
+  '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/register-email'
     | '/sign-in'
-    | '/sign-up'
     | '/archive'
     | '/collections'
     | '/discover'
@@ -157,11 +156,11 @@ export interface FileRouteTypes {
     | '/saves'
     | '/tags'
     | '/'
+    | '/sign-up/$email/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/register-email'
     | '/sign-in'
-    | '/sign-up'
     | '/archive'
     | '/collections'
     | '/discover'
@@ -172,12 +171,12 @@ export interface FileRouteTypes {
     | '/saves'
     | '/tags'
     | '/'
+    | '/sign-up/$email/$token'
   id:
     | '__root__'
     | '/_header-layout'
     | '/register-email'
     | '/sign-in'
-    | '/sign-up'
     | '/_header-layout/archive'
     | '/_header-layout/collections'
     | '/_header-layout/discover'
@@ -188,24 +187,18 @@ export interface FileRouteTypes {
     | '/_header-layout/saves'
     | '/_header-layout/tags'
     | '/_header-layout/'
+    | '/sign-up/$email/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   HeaderLayoutRoute: typeof HeaderLayoutRouteWithChildren
   RegisterEmailRoute: typeof RegisterEmailRoute
   SignInRoute: typeof SignInRoute
-  SignUpRoute: typeof SignUpRoute
+  SignUpEmailTokenRoute: typeof SignUpEmailTokenRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sign-up': {
-      id: '/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof SignUpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
@@ -297,6 +290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HeaderLayoutArchiveRouteImport
       parentRoute: typeof HeaderLayoutRoute
     }
+    '/sign-up/$email/$token': {
+      id: '/sign-up/$email/$token'
+      path: '/sign-up/$email/$token'
+      fullPath: '/sign-up/$email/$token'
+      preLoaderRoute: typeof SignUpEmailTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -334,7 +334,7 @@ const rootRouteChildren: RootRouteChildren = {
   HeaderLayoutRoute: HeaderLayoutRouteWithChildren,
   RegisterEmailRoute: RegisterEmailRoute,
   SignInRoute: SignInRoute,
-  SignUpRoute: SignUpRoute,
+  SignUpEmailTokenRoute: SignUpEmailTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -3,6 +3,7 @@ import express, {
   type Request,
   type Response,
 } from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./contollers/error-controller";
 import CustomError from "./utils/custom-error";
@@ -23,6 +24,7 @@ export default app;
 
 initializeGooglePassport();
 
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(cookieSecret));

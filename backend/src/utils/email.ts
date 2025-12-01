@@ -3,7 +3,7 @@ import config from "./../config/config";
 import CustomError from "./custom-error";
 import logger from "./logger";
 
-const { SMTPHost, SMTPPort, SMTPUser, SMTPPass } = config;
+const { SMTPService, SMTPHost, SMTPPort, SMTPUser, SMTPPass } = config;
 
 interface Options {
   from?: string;
@@ -15,7 +15,7 @@ interface Options {
 
 const sendEmail = async (options: Options) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: SMTPService,
     host: SMTPHost,
     port: SMTPPort,
     secure: false,

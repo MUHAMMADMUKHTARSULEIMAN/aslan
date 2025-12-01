@@ -1,62 +1,36 @@
-// src/components/FloatingLabelInput.tsx
-'use client';
+import * as React from "react";
+import { Input } from "@/components/ui/input";
+import { FormLabel } from "@/components/ui/form";
 
-import * as React from 'react';
-import { Input } from '@/components/ui/input';
-import { FormLabel } from '@/components/ui/form';
-
-// Props inherited from InputProps, excluding the standard placeholder
 interface FloatingLabelInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
 }
 
-// NOTE: We do not use this component directly in the form, 
-// but pass props to it from the FormField component.
 const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInputProps>(
   ({ label, className, ...props }, ref) => {
 
-    const value = props.value || '';
-    const [isFocused, setIsFocused] = React.useState(false);
-
+    const value = props.value || "";
     const hasValue = value.toString().length > 0;
-    const isActive = isFocused || hasValue;
-
-    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-      setIsFocused(true);
-      if (props.onFocus) props.onFocus(e);
-    };
-
-    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-      setIsFocused(false);
-      if (props.onBlur) props.onBlur(e);
-    };
 
     return (
-      <div className="relative pt-4">
+      <div className="relative group">
         <FormLabel
           className={`
-            absolute left-3 top-1/2 cursor-text transition-all duration-200 
-            ease-in-out transform -translate-y-1/2 text-muted-foreground pointer-events-none
-
-            peer-focus:text-xs peer-focus:-translate-y-7 peer-focus:left-3 
-            peer-focus:bg-background peer-focus:px-1 peer-focus:text-foreground
+            absolute text-md left-[14.5px] top-10/21 cursor-text transition-all duration-300 ease-out transform -translate-y-9/23 text-border dark:text-muted-foreground/50 bg-background pointer-events-none group-has-hover:bg-card/50 group-has-focus:bg-card/50 dark:group-has-hover:bg-card dark:group-has-focus:bg-card
 
             ${
-              isActive
-                ? 'text-xs -translate-y-7 left-3 bg-background px-1 text-foreground'
-                : ''
+              hasValue
+                ? 'text-sm -translate-y-7 left-3 bg-background px-0.25 text-border group-has-hover:bg-background group-has-focus:bg-background dark:group-has-hover:bg-background dark:group-has-focus:bg-background group-has-disabled:z-100'
+                : ""
             }
           `}
         >
           {label}
         </FormLabel>
         <Input
-          ref={ref} // Forward the ref to the native input element
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          className={`peer h-12 ${className}`}
-          placeholder="" // Important to set a placeholder/empty string to hide the default browser text
+				ref={ref}
+          className={`rounded-xl border-2 border-border/40 dark:border-muted-foreground/30 bg-background dark:bg-background hover:bg-card/50 dark:hover:bg-card focus:bg-card/50 dark:focus:bg-card shadow-none pt-5 pb-4 ${className}`}
           {...props}
         />
       </div>
