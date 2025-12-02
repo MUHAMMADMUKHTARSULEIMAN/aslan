@@ -28,8 +28,8 @@ export const signInResponse = async (
   statusCode: number,
   mailSubject: string,
   mailMessage: string,
-  mailHTML?: string,
-  message?: string
+  message?: string,
+  mailHTML?: string
 ) => {
   const accessToken = user.generateAccessToken();
   const refreshToken = await user.generateRefreshToken(next);
@@ -256,8 +256,9 @@ export const userSignUp = asyncErrorHandler(
 
     const message = `Hi.\n\nYour Sanctum account has been successfully created and you have been successfully signed in.\n\nWelcome aboard.`;
     const subject = "Sanctum: Account Creation";
+		const responseMessage = "Your account has been successfully created and you have been signed in."
 
-    await signInResponse(newUser, res, next, 201, subject, message);
+    await signInResponse(newUser, res, next, 201, subject, message, responseMessage);
   }
 );
 

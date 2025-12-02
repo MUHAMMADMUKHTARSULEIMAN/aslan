@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import validator from "validator";
 import { randomBytes, createHash } from "crypto";
-import { compare } from "bcryptjs";
+import { compare, genSalt, hash } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "../config/config";
 import { IUser } from "../types/user";
@@ -149,13 +149,13 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-// userSchema.pre<IUser>("save", async function (next) {
-//   if (this.isModified("password") && this.password) {
-//     const salt = await bcrypt.genSalt(10);
-//     this.password = await bcrypt.hash(this.password, salt);
-//   }
-//   next();
-// });
+userSchema.pre<IUser>("save", async function (next) {
+  if (this.isModified("password") && this.password) {
+    const salt = await genSalt(10);
+    this.password = await hash(this.password, salt);
+  }
+  next();
+});
 
 userSchema.methods.comparePasswords = async function (
   candidatePassword: string

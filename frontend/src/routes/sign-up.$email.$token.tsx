@@ -21,29 +21,45 @@ function RouteComponent() {
   const hasNumber = new RegExp(".*[0-9].*");
   const hasSpecialCharacter = new RegExp(".*[^A-Za-z0-9].*");
 
-	const passwordConstraints = z
-      .string("Field is required.")
-      .min(8, "Password must be at least eight characters long.")
-      .max(32, "Password must be at most 32 character long.")
-			.regex(hasUppercase, "Password must include at least one upper-case letter.")
-			.regex(hasLowercase, "Password must include at least one lower-case letter.")
-			.regex(hasNumber, "Password must include at least one number.")
-			.regex(hasSpecialCharacter, "Password must include at least one special character")
-      .trim()
+  const passwordConstraints = z
+    .string()
+    .min(8, "Password must be at least eight characters long.")
+    .max(32, "Password must be at most 32 character long.")
+    .regex(
+      hasUppercase,
+      "Password must include at least one upper-case letter."
+    )
+    .regex(
+      hasLowercase,
+      "Password must include at least one lower-case letter."
+    )
+    .regex(hasNumber, "Password must include at least one number.")
+    .regex(
+      hasSpecialCharacter,
+      "Password must include at least one special character"
+    )
+    .trim();
 
-  const formSchema = z.object({
-    firstName: z.string("Field is required.").min(1, "First name too short.").trim(),
-    lastName: z.string("Field is required.").min(1, "Last name too short.").trim(),
-    password: passwordConstraints,
-		confirmPassword: z.string().min(1, "Confirm your password.")
-  }).refine((data) => data.password === data.confirmPassword, {
-		message: "Passwords don't match",
-		path: ["confirmPassword"]
-	})
+  const formSchema = z
+    .object({
+      firstName: z.string().min(1, "Field is required.").trim(),
+      lastName: z.string().min(1, "Field is required.").trim(),
+      password: passwordConstraints,
+      confirmPassword: z.string().min(1, "Confirm your password."),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { firstName: "", lastName: "", password: "", confirmPassword: "" },
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 
   const { handleSubmit, control, formState } = form;
@@ -86,108 +102,109 @@ function RouteComponent() {
       </div>
       <div className="w-full">
         <Form {...form}>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-4"
-          >
-            <FormField
-              control={control}
-              name="firstName"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <div>
-                        <FloatingLabelInput
-                          label="First name"
-                          {...field}
-                          disabled={formState.isSubmitting}
-                        />
-                        <p className="text-[13px] text-center text-destructive">
-                          {formState.errors.firstName?.message}
-                        </p>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                );
-              }}
-            />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-4">
+              <FormField
+                control={control}
+                name="firstName"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <div>
+                          <FloatingLabelInput
+                            label="First name"
+                            {...field}
+                            disabled={formState.isSubmitting}
+                          />
+                          <p className="text-[13px] text-center text-destructive">
+                            {formState.errors.firstName?.message}
+                          </p>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
 
-            <FormField
-              control={control}
-              name="lastName"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <div>
-                        <FloatingLabelInput
-                          label="Last name"
-                          {...field}
-                          disabled={formState.isSubmitting}
-                        />
-                        <p className="text-[13px] text-center text-destructive">
-                          {formState.errors.lastName?.message}
-                        </p>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                );
-              }}
-            />
+              <FormField
+                control={control}
+                name="lastName"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <div>
+                          <FloatingLabelInput
+                            label="Last name"
+                            {...field}
+                            disabled={formState.isSubmitting}
+                          />
+                          <p className="text-[13px] text-center text-destructive">
+                            {formState.errors.lastName?.message}
+                          </p>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
 
-            <FormField
-              control={control}
-              name="password"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <div>
-                        <FloatingLabelInput
-                          label="Password"
-													type="password"
-                          {...field}
-                          disabled={formState.isSubmitting}
-                        />
-                        <p className="text-[13px] text-center text-destructive">
-                          {formState.errors.password?.message}
-                        </p>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                );
-              }}
-            />
+              <FormField
+                control={control}
+                name="password"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <div>
+                          <FloatingLabelInput
+                            label="Password"
+                            type="password"
+                            {...field}
+                            disabled={formState.isSubmitting}
+                          />
+                          <p className="text-[13px] text-center text-destructive">
+                            {formState.errors.password?.message}
+                          </p>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
 
-            <FormField
-              control={control}
-              name="confirmPassword"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <div>
-                        <FloatingLabelInput
-                          label="Confirm Password"
-													type="password"
-                          {...field}
-                          disabled={formState.isSubmitting}
-                        />
-                        <p className="text-[13px] text-center text-destructive">
-                          {formState.errors.confirmPassword?.message}
-                        </p>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                );
-              }}
-            />
-
+              <FormField
+                control={control}
+                name="confirmPassword"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <div>
+                          <FloatingLabelInput
+                            label="Confirm Password"
+                            type="password"
+                            {...field}
+                            disabled={formState.isSubmitting}
+                          />
+                          <p className="text-[13px] text-center text-destructive">
+                            {formState.errors.confirmPassword?.message}
+                          </p>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
+            </div>
+						{/* <div>
+							<p className="text-sm">Password must be at least eight characters long and contain at least an upper-case letter, a lower-case letter, a number, and a special character. Password cannot be more than 32 characters long.</p>
+						</div> */}
             <Button
               variant="secondary"
               disabled={formState.isSubmitting}
-              className="w-full py-5 shadow-none"
+              className="w-full mt-4 py-5 shadow-none"
             >
               {formState.isSubmitting ? (
                 <span className="flex justify-center items-center gap-1">
