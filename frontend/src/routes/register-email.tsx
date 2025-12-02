@@ -18,7 +18,7 @@ export const Route = createFileRoute("/register-email")({
 
 function RouteComponent() {
   const formSchema = z.object({
-    email: z.email({ message: "Please enter a valid email address" }),
+    email: z.email({ message: "Please enter a valid email address" }).trim().toLowerCase()
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -106,13 +106,13 @@ function RouteComponent() {
 						</Button>
 						</form>
 				</Form>
-						<Button variant="secondary" onClick={() => ToastInfo("New message. Stay alert at all times.")} className="w-full mt-4 py-5 shadow-none">
+						{/* <Button variant="secondary" onClick={() => ToastInfo("New message. Stay alert at all times.")} className="w-full mt-4 py-5 shadow-none">
 							{
 								formState.isSubmitting
 								? <span className="flex justify-center items-center gap-1"><Spinner />Submitting</span>
 								: "Register"
 							}
-						</Button>
+						</Button> */}
 			</div>
       <div className="mt-1">
 				<p className="text-[13px] text-center text-muted-foreground/75">By continuing, you agree to our <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Terms of Service</Link> and <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Privacy Policy</Link>.</p>
