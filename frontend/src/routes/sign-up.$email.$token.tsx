@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { createFileRoute } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useForm, useWatch, Watch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
@@ -8,12 +8,17 @@ import FloatingLabelInput from "@/components/floating-label-input";
 import { Spinner } from "@/components/ui/spinner";
 import ToastSuccess from "@/components/toast-success";
 import ToastError from "@/components/toast-error";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { tr } from "zod/v4/locales";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/sign-up/$email/$token")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
   const { email, token } = Route.useParams();
 
   const hasUppercase = new RegExp(".*[A-Z].*");
@@ -24,20 +29,11 @@ function RouteComponent() {
   const passwordConstraints = z
     .string()
     .min(8, "Password must be at least eight characters long.")
-    .max(32, "Password must be at most 32 character long.")
-    .regex(
-      hasUppercase,
-      "Password must include at least one upper-case letter."
-    )
-    .regex(
-      hasLowercase,
-      "Password must include at least one lower-case letter."
-    )
-    .regex(hasNumber, "Password must include at least one number.")
-    .regex(
-      hasSpecialCharacter,
-      "Password must include at least one special character"
-    )
+    .max(32, "Password cannot more than 32 character long.")
+    .regex(hasUppercase, "Password must include an upper-case letter.")
+    .regex(hasLowercase, "Password must include a lower-case letter.")
+    .regex(hasNumber, "Password must include a number.")
+    .regex(hasSpecialCharacter, "Password must include a special character.")
     .trim();
 
   const formSchema = z
@@ -46,6 +42,12 @@ function RouteComponent() {
       lastName: z.string().min(1, "Field is required.").trim(),
       password: passwordConstraints,
       confirmPassword: z.string().min(1, "Confirm your password."),
+      isUpToEight: z.boolean(),
+      isUppercase: z.boolean(),
+      isLowercase: z.boolean(),
+      isNumber: z.boolean(),
+      isSpecialCharacter: z.boolean(),
+      isNotMoreThan32: z.boolean(),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: "Passwords don't match",
@@ -59,10 +61,54 @@ function RouteComponent() {
       lastName: "",
       password: "",
       confirmPassword: "",
+      isUpToEight: false,
+      isUppercase: false,
+      isLowercase: false,
+      isNumber: false,
+      isSpecialCharacter: false,
+      isNotMoreThan32: true,
     },
   });
 
-  const { handleSubmit, control, formState } = form;
+  const { handleSubmit, control, formState, watch, setValue } = form;
+
+  const passwordValue = watch("password");
+  const [disableSubmitForPassword, setDisableSubmitForPassword] =
+    useState(true);
+
+  useEffect(() => {
+    const upToEightCheck = passwordValue.length >= 8;
+    const uppercaseCheck = (passwordValue.match(hasUppercase)?.length || 0) > 0;
+    const lowercaseCheck = (passwordValue.match(hasLowercase)?.length || 0) > 0;
+    const numberCheck = (passwordValue.match(hasNumber)?.length || 0) > 0;
+    const specialCharacterCheck =
+      (passwordValue.match(hasSpecialCharacter)?.length || 0) > 0;
+    const notMoreThan32Check = passwordValue.length <= 32;
+
+    setDisableSubmitForPassword(() => {
+      if (
+        upToEightCheck &&
+        uppercaseCheck &&
+        lowercaseCheck &&
+        numberCheck &&
+        specialCharacterCheck &&
+        notMoreThan32Check
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    setValue("isUpToEight", upToEightCheck);
+    setValue("isUppercase", uppercaseCheck);
+    setValue("isLowercase", lowercaseCheck);
+    setValue("isNumber", numberCheck);
+    setValue("isSpecialCharacter", specialCharacterCheck);
+    setValue("isNotMoreThan32", notMoreThan32Check);
+  }, [passwordValue, setValue, disableSubmitForPassword]);
+
+  console.log(disableSubmitForPassword);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -87,7 +133,10 @@ function RouteComponent() {
       } else {
         ToastError(data?.message);
       }
-    } catch (error) {}
+      await navigate({ to: "/", replace: true });
+    } catch (error) {
+      ToastError("Something went wrong. Try again later.");
+    }
   };
 
   return (
@@ -98,7 +147,9 @@ function RouteComponent() {
         </Link>
       </div> */}
       <div className="mb-8 text-center">
-        <h1 className="font-bold text-4xl">Create Sanctum Account</h1>
+        <h1 className="font-bold text-4xl">
+          Current password: {passwordValue}
+        </h1>
       </div>
       <div className="w-full">
         <Form {...form}>
@@ -174,6 +225,162 @@ function RouteComponent() {
                 }}
               />
 
+              {disableSubmitForPassword === false ? (
+                ""
+              ) : (
+                <div className="flex flex-col gap-1">
+                  <div className="mb-1">
+                    <p className="text-sm">
+                      Your password must meet the following requirements:
+                    </p>
+                  </div>
+
+                  <FormField
+                    control={control}
+                    name="isUpToEight"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has at least eight characters
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isUppercase"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has an upper-case letter
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isLowercase"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has a lower-case character
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isNumber"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has a number
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isSpecialCharacter"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has a special character
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isNotMoreThan32"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has not more than 32 characters
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+              )}
+
               <FormField
                 control={control}
                 name="confirmPassword"
@@ -183,7 +390,7 @@ function RouteComponent() {
                       <FormControl>
                         <div>
                           <FloatingLabelInput
-                            label="Confirm Password"
+                            label="Confirm password"
                             type="password"
                             {...field}
                             disabled={formState.isSubmitting}
@@ -198,12 +405,9 @@ function RouteComponent() {
                 }}
               />
             </div>
-						{/* <div>
-							<p className="text-sm">Password must be at least eight characters long and contain at least an upper-case letter, a lower-case letter, a number, and a special character. Password cannot be more than 32 characters long.</p>
-						</div> */}
             <Button
               variant="secondary"
-              disabled={formState.isSubmitting}
+              disabled={formState.isSubmitting || disableSubmitForPassword}
               className="w-full mt-4 py-5 shadow-none"
             >
               {formState.isSubmitting ? (

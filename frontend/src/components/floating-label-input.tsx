@@ -21,7 +21,7 @@ const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInput
 
             ${
               hasValue
-                ? 'text-sm -translate-y-7 left-3 bg-background px-0.25 text-border group-has-hover:bg-background group-has-focus:bg-background dark:group-has-hover:bg-background dark:group-has-focus:bg-background group-has-disabled:z-100'
+                ? 'text-sm -translate-y-7 left-3 bg-background px-px text-border group-has-hover:bg-background group-has-focus:bg-background dark:group-has-hover:bg-background dark:group-has-focus:bg-background group-has-disabled:z-100'
                 : ""
             }
           `}

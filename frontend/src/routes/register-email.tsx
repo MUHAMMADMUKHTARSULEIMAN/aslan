@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
@@ -10,13 +10,13 @@ import FloatingLabelInput from "@/components/floating-label-input";
 import { Spinner } from "@/components/ui/spinner";
 import ToastSuccess from "@/components/toast-success";
 import ToastError from "@/components/toast-error";
-import ToastInfo from "@/components/toast-info";
 
 export const Route = createFileRoute("/register-email")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+	const navigate = useNavigate()
   const formSchema = z.object({
     email: z.email({ message: "Please enter a valid email address" }).trim().toLowerCase()
   });
@@ -44,7 +44,7 @@ function RouteComponent() {
 			} else {
 				ToastError(data?.message)
 			}
-			
+			await navigate({to: "/", replace: true})
     } catch (error) {
 			ToastError("Something went wrong. Try again later.")
 		}
@@ -106,7 +106,9 @@ function RouteComponent() {
 						</Button>
 						</form>
 				</Form>
-						{/* <Button variant="secondary" onClick={() => ToastInfo("New message. Stay alert at all times.")} className="w-full mt-4 py-5 shadow-none">
+						{/* <Button variant="secondary" onClick={() => {
+							navigate({to: "/"})
+						}} className="w-full mt-4 py-5 shadow-none">
 							{
 								formState.isSubmitting
 								? <span className="flex justify-center items-center gap-1"><Spinner />Submitting</span>
