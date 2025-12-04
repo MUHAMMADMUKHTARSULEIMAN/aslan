@@ -28,12 +28,12 @@ function RouteComponent() {
 
   const passwordConstraints = z
     .string()
-    .min(8, "")
-    .max(32, "")
-    .regex(hasUppercase, "")
-    .regex(hasLowercase, "")
-    .regex(hasNumber, "")
-    .regex(hasSpecialCharacter, "")
+    .min(8, " ")
+    .max(32, " ")
+    .regex(hasUppercase, " ")
+    .regex(hasLowercase, " ")
+    .regex(hasNumber, " ")
+    .regex(hasSpecialCharacter, " ")
     .trim();
 
   const formSchema = z
