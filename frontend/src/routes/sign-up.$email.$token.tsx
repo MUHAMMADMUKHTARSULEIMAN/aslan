@@ -10,8 +10,8 @@ import ToastSuccess from "@/components/toast-success";
 import ToastError from "@/components/toast-error";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { tr } from "zod/v4/locales";
 import { useEffect, useState } from "react";
+import FloatingLabelPassword from "@/components/floating-label-password";
 
 export const Route = createFileRoute("/sign-up/$email/$token")({
   component: RouteComponent,
@@ -28,12 +28,12 @@ function RouteComponent() {
 
   const passwordConstraints = z
     .string()
-    .min(8, "Password must be at least eight characters long.")
-    .max(32, "Password cannot more than 32 character long.")
-    .regex(hasUppercase, "Password must include an upper-case letter.")
-    .regex(hasLowercase, "Password must include a lower-case letter.")
-    .regex(hasNumber, "Password must include a number.")
-    .regex(hasSpecialCharacter, "Password must include a special character.")
+    .min(8)
+    .max(32)
+    .regex(hasUppercase)
+    .regex(hasLowercase)
+    .regex(hasNumber)
+    .regex(hasSpecialCharacter)
     .trim();
 
   const formSchema = z
@@ -133,7 +133,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className="w-full mx-8 mt-16 flex flex-col items-center">
+    <div className="w-full mx-8 my-16 flex flex-col items-center">
       {/* <div className="">
         <Link to="/">
           <img src="images/logo.svg" alt="" className="h-12 w-12" />
@@ -202,9 +202,8 @@ function RouteComponent() {
                     <FormItem>
                       <FormControl>
                         <div>
-                          <FloatingLabelInput
+                          <FloatingLabelPassword
                             label="Password"
-                            type="password"
                             {...field}
                             disabled={formState.isSubmitting}
                           />
@@ -378,9 +377,8 @@ function RouteComponent() {
                     <FormItem>
                       <FormControl>
                         <div>
-                          <FloatingLabelInput
+                          <FloatingLabelPassword
                             label="Confirm password"
-                            type="password"
                             {...field}
                             disabled={formState.isSubmitting}
                           />
