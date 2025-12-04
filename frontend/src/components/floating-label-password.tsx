@@ -57,7 +57,7 @@ const FloatingLabelPassword = forwardRef<HTMLInputElement, FloatingLabelInputPro
         >
           {label}
         </FormLabel>
-				<Button disabled={isDisabled} size="icon" type="button" onClick={() => setVisible((prev) => !prev)} className="absolute right-0.5 top-0.5 bg-background hover:bg-input dark:hover:bg-muted/50 text-border dark:text-muted-foreground/50 peer-hover:bg-card peer-focus:bg-card p-[5px] rounded-[12px] rounded-l-none cursor-pointer shadow-none">
+				<Button disabled={isDisabled} size="icon" type="button" onClick={() => setVisible((prev) => !prev)} className="absolute right-0.5 top-0.5 bg-background hover:bg-input dark:hover:bg-muted/75 text-border dark:text-muted-foreground/50 peer-hover:bg-card peer-focus:bg-card p-[5px] rounded-[12px] rounded-l-none cursor-pointer shadow-none">
 				{
 					visible
 					? <EyeOff className="h-[1.2rem]! w-[1.2rem]!" />
