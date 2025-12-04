@@ -141,7 +141,7 @@ function RouteComponent() {
     <div className="w-full mx-8 my-16 flex flex-col items-center">
       <div className="mb-6">
         <Link to="/">
-          <img src="images/logo.svg" alt="" className="h-12 w-12" />
+          <img src="/images/logo.svg" alt="" className="h-12 w-12" />
         </Link>
       </div>
       <div className="mb-8 text-center">
@@ -409,7 +409,7 @@ function RouteComponent() {
               {formState.isSubmitting ? (
                 <span className="flex justify-center items-center gap-1">
                   <Spinner />
-                  Submitting
+                  Creating account
                 </span>
               ) : (
                 "Create Account"

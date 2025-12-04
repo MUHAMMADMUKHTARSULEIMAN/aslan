@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
 import { z } from "zod/v4";
-import { Form, FormControl, FormField, FormItem, } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import FloatingLabelInput from "@/components/floating-label-input";
 import { Spinner } from "@/components/ui/spinner";
 import ToastSuccess from "@/components/toast-success";
@@ -16,9 +16,12 @@ export const Route = createFileRoute("/register-email")({
 });
 
 function RouteComponent() {
-	const navigate = useNavigate()
+  const navigate = useNavigate();
   const formSchema = z.object({
-    email: z.email({ message: "Please enter a valid email address" }).trim().toLowerCase()
+    email: z
+      .email({ message: "Enter a valid email address." })
+      .trim()
+      .toLowerCase(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -26,7 +29,7 @@ function RouteComponent() {
     defaultValues: { email: "" },
   });
 
-	const {handleSubmit, control, formState} = form
+  const { handleSubmit, control, formState } = form;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -39,15 +42,15 @@ function RouteComponent() {
       });
 
       const data = await response.json();
-			if(data.status === "OK") {
-				ToastSuccess(data?.message)
-			} else {
-				ToastError(data?.message)
-			}
-			await navigate({to: "/", replace: true})
+      if (data.status === "OK") {
+        ToastSuccess(data?.message);
+      } else {
+        ToastError(data?.message);
+      }
+      await navigate({ to: "/", replace: true });
     } catch (error) {
-			ToastError("Something went wrong. Try again later.")
-		}
+      ToastError("Something went wrong. Try again later.");
+    }
   };
 
   return (
@@ -61,7 +64,10 @@ function RouteComponent() {
         <p>
           Already have an account?{" "}
           <span
-            className={cn(buttonVariants({ variant: "link" }), "text-base font-normal p-0")}
+            className={cn(
+              buttonVariants({ variant: "link" }),
+              "text-base font-normal p-0"
+            )}
           >
             <Link to="/sign-in">Sign in</Link>
           </span>
@@ -78,35 +84,48 @@ function RouteComponent() {
         <span className="px-2">OR</span>
         <hr className="border border-border/40 grow" />
       </div>
-			<div className="w-full">
-				<Form {...form}>
-					<form onSubmit={handleSubmit(onSubmit)}>
-					<FormField
-						control={control}
-						name="email"
-						render={({field}) => {
-							return(
-								<FormItem>
-									<FormControl>
-										<div>
-										<FloatingLabelInput label="Email" {...field} disabled={formState.isSubmitting} />
-										<p className="text-[13px] text-center text-destructive">{formState.errors.email?.message}</p>
-										</div>
-									</FormControl>
-								</FormItem>
-							)
-						}}
-						/>
-						<Button variant="secondary" disabled={formState.isSubmitting} className="w-full mt-4 py-5 shadow-none">
-							{
-								formState.isSubmitting
-								? <span className="flex justify-center items-center gap-1"><Spinner />Submitting</span>
-								: "Register"
-							}
-						</Button>
-						</form>
-				</Form>
-						{/* <Button variant="secondary" onClick={() => {
+      <div className="w-full">
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FormField
+              control={control}
+              name="email"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <div>
+                        <FloatingLabelInput
+                          label="Email"
+                          {...field}
+                          disabled={formState.isSubmitting}
+                        />
+                        <p className="text-[13px] text-center text-destructive">
+                          {formState.errors.email?.message}
+                        </p>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                );
+              }}
+            />
+            <Button
+              variant="secondary"
+              disabled={formState.isSubmitting}
+              className="w-full mt-4 py-5 shadow-none"
+            >
+              {formState.isSubmitting ? (
+                <span className="flex justify-center items-center gap-1">
+                  <Spinner />
+                  Registering
+                </span>
+              ) : (
+                "Register"
+              )}
+            </Button>
+          </form>
+        </Form>
+        {/* <Button variant="secondary" onClick={() => {
 							navigate({to: "/"})
 						}} className="w-full mt-4 py-5 shadow-none">
 							{
@@ -115,10 +134,26 @@ function RouteComponent() {
 								: "Register"
 							}
 						</Button> */}
-			</div>
+      </div>
       <div className="mt-1">
-				<p className="text-[13px] text-center text-muted-foreground/75">By continuing, you agree to our <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Terms of Service</Link> and <Link to="/" className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer">Privacy Policy</Link>.</p>
-			</div>
+        <p className="text-[13px] text-center text-muted-foreground/75">
+          By continuing, you agree to our{" "}
+          <Link
+            to="/"
+            className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            to="/"
+            className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      </div>
     </div>
   );
 }

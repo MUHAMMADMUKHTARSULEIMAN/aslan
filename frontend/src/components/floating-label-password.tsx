@@ -41,7 +41,7 @@ const FloatingLabelPassword = forwardRef<HTMLInputElement, FloatingLabelInputPro
 				<Input
 				ref={ref}
 				type={visible ? "text" : "password"}
-					className={`peer rounded-xl border-2 border-border/40 dark:border-muted-foreground/30 bg-background dark:bg-background hover:bg-card/50 dark:hover:bg-card focus:bg-card/50 dark:focus:bg-card shadow-none pt-5 pb-4 ${className}`}
+					className={`peer rounded-xl border-2 pr-9.5 border-border/40 dark:border-muted-foreground/30 bg-background dark:bg-background hover:bg-card/50 dark:hover:bg-card focus:bg-card/50 dark:focus:bg-card shadow-none pt-5 pb-4 ${className}`}
 					{...props}
 				/>
         <FormLabel
@@ -57,7 +57,7 @@ const FloatingLabelPassword = forwardRef<HTMLInputElement, FloatingLabelInputPro
         >
           {label}
         </FormLabel>
-				<Button disabled={isDisabled} size="icon" type="button" onClick={() => setVisible((prev) => !prev)} className="absolute right-0.5 top-0.5 bg-background hover:bg-background text-border dark:text-muted-foreground/50 peer-hover:bg-card peer-focus:bg-card p-[5px] rounded-[12px] cursor-pointer">
+				<Button disabled={isDisabled} size="icon" type="button" onClick={() => setVisible((prev) => !prev)} className="absolute right-0.5 top-0.5 bg-background hover:bg-input dark:hover:bg-muted/50 text-border dark:text-muted-foreground/50 peer-hover:bg-card peer-focus:bg-card p-[5px] rounded-[12px] rounded-l-none cursor-pointer shadow-none">
 				{
 					visible
 					? <EyeOff className="h-[1.2rem]! w-[1.2rem]!" />
