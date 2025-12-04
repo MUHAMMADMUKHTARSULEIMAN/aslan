@@ -1,20 +1,40 @@
-import {useState, forwardRef} from "react";
+import {useState, forwardRef, useEffect} from "react";
 import { Input } from "@/components/ui/input";
 import { FormLabel } from "@/components/ui/form";
 import { Eye, EyeOff } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface FloatingLabelInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
+	isDisabled: boolean;
 }
 
 const FloatingLabelPassword = forwardRef<HTMLInputElement, FloatingLabelInputProps>(
-  ({ label, className, ...props }, ref) => {
+  ({ label, isDisabled, className, ...props }, ref) => {
 
     const value = props.value || "";
     const hasValue = value.toString().length > 0;
 
 		const [visible, setVisible] = useState(false)
+		const [visibleBeforeDisAbled, setVisibleBeforeDisAbled] = useState(false)
+
+		useEffect(() => {
+			if(isDisabled) {
+				setVisible(() => false)
+				if(visible) {
+					setVisibleBeforeDisAbled(() => true)
+				} else {
+					setVisibleBeforeDisAbled(() => false)
+				}
+			} else {
+				if(visibleBeforeDisAbled) {
+					setVisible(() => true)
+				} else {
+					setVisible(() => false)
+				}
+			}
+		}, [isDisabled])
 		
     return (
 			<div className="relative">
@@ -30,23 +50,21 @@ const FloatingLabelPassword = forwardRef<HTMLInputElement, FloatingLabelInputPro
 
             ${
               hasValue
-                ? 'text-sm -translate-y-7 left-3 bg-background px-px text-border peer-hover:bg-background peer-focus:bg-background dark:peer-hover:bg-background dark:peer-focus:bg-background peer-disabled:z-100'
+                ? 'text-sm -translate-y-7 left-3 bg-background px-px peer-hover:bg-background peer-focus:bg-background dark:peer-hover:bg-background dark:peer-focus:bg-background peer-disabled:z-100'
                 : ""
             }
           `}
         >
           {label}
         </FormLabel>
-				<div onClick={() => setVisible((prev) => !prev)} className="absolute right-[3.5px] top-[3.5px] bg-background text-foreground peer-hover:bg-card/50 dark:peer-hover:bg-card peer-focus:bg-card/50 dark:peer-focus:bg-card p-[7px] rounded-[11px] cursor-pointer">
+				<Button disabled={isDisabled} size="icon" type="button" onClick={() => setVisible((prev) => !prev)} className="absolute right-0.5 top-0.5 bg-background hover:bg-background text-border dark:text-muted-foreground/50 peer-hover:bg-card peer-focus:bg-card p-[5px] rounded-[12px] cursor-pointer">
 				{
 					visible
 					? <EyeOff className="h-[1.2rem]! w-[1.2rem]!" />
 					: <Eye className="h-[1.2rem]! w-[1.2rem]!" />
-
 				}
-          {/* <EyeOff className="absolute h-[1.2rem]! w-[1.2rem]! scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" /> */}
           <span className="sr-only">Show password</span>
-        </div>
+        </Button>
       </div>
     );
   }
