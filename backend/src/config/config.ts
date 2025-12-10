@@ -23,6 +23,11 @@ interface Config {
 	SMTPPort: number;
 	SMTPUser: string;
 	SMTPPass: string;
+<<<<<<< HEAD
+=======
+	limitMs: number;
+	maxRequests: number;
+>>>>>>> b9c5ed4 (let's see if this works)
 }
 
 const config: Config = {
@@ -45,6 +50,11 @@ const config: Config = {
   SMTPPort: parseInt(getENVVariable("SMTP_PORT")),
   SMTPUser: getENVVariable("SMTP_USER"),
   SMTPPass: getENVVariable("SMTP_PASS"),
+<<<<<<< HEAD
+=======
+  limitMs: parseInt(getENVVariable("LIMIT_MS")),
+  maxRequests: parseInt(getENVVariable("MAX_REQUESTS")),
+>>>>>>> b9c5ed4 (let's see if this works)
 };
 
 export default config;

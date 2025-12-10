@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import express from "express";
+=======
+import express, { type Request, Response, NextFunction } from "express";
+>>>>>>> b9c5ed4 (let's see if this works)
 import passport from "passport";
 import {
   emailRegistration,
@@ -10,6 +14,29 @@ import {
   userSignIn,
   userSignUp,
 } from "../contollers/user-controller";
+<<<<<<< HEAD
+=======
+import rateLimit from "express-rate-limit";
+import asyncErrorHandler from "../utils/async-error-handler";
+import config from "../config/config";
+
+const {limitMs, maxRequests} = config
+
+
+const limiter = rateLimit({
+	windowMs: limitMs,
+	max: maxRequests,
+	legacyHeaders: false,
+	standardHeaders: "draft-7",
+	message: "Too many requests from this address. Try again later.",
+	handler: asyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
+		res.status(429).json({
+			status: "Too Many Requests",
+			message: "Rate limit exceeded. Wait a moment."
+		})
+	})
+});
+>>>>>>> b9c5ed4 (let's see if this works)
 
 export const router = express.Router();
 
