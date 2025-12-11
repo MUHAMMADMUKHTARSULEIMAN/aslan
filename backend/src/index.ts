@@ -16,28 +16,32 @@ import { router as highlightRouter } from "./routers/highlight-router";
 import { router as collectionRouter } from "./routers/collection-router";
 import { initializeGooglePassport } from "./auth/passport-setup";
 import config from "./config/config";
+import helmet from "helmet";
+import { refreshAccessToken } from "./contollers/user-controller";
+import compression from "compression"
+import hpp from "hpp";
 
-const { cookieSecret } = config;
+const { cookieSecret} = config;
 
 const app = express();
 export default app;
 
 initializeGooglePassport();
 
-app.use(cors())
+app.disable("X-powered-by")
+app.use(cors());
+app.use(compression)
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(helmet());
 app.use(cookieParser(cookieSecret));
-app.use(
-  "/api",
-  feedRouter,
-  discoveryRouter,
-  userRouter,
-);
-app.use("/api/saves", saveRouter)
-app.use("/api/saves/tags", tagRouter)
-app.use("/api/saves/highlights", highlightRouter)
-app.use("/api/collections", collectionRouter)
+app.use(hpp())
+app.use("/api", refreshAccessToken)
+app.use("/api", feedRouter, discoveryRouter, userRouter);
+app.use("/api/saves", saveRouter);
+app.use("/api/saves/tags", tagRouter);
+app.use("/api/saves/highlights", highlightRouter);
+app.use("/api/collections", collectionRouter);
 
 app.all("{/*path}", (req: Request, res: Response, next: NextFunction) => {
   const error = new CustomError(
