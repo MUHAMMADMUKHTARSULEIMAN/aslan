@@ -15,7 +15,7 @@ export const Header = () => {
               <img
                 src="images/logo.svg"
                 alt=""
-                className="h-[1.5rem] w-[1.5rem]"
+                className="h-6 w-6"
               />
             </Link>
           </div>
@@ -23,13 +23,13 @@ export const Header = () => {
 						{
 							logged ? 
 							"" :
-            <Button variant="secondary" className="shadow-none">
+            <Button variant="secondary" className="shadow-none font-semibold">
               <Link to="/register-email">Sign up</Link>
             </Button>
 						}
             <Button onClick={toggleSidebar} variant="first-icon" size="icon">
               <Menu
-                className="!w-[1.5rem] !h-[1.5rem] hover:text-emerald-600 dark:hover:text-emerald-200"
+                className="w-6! h-6! hover:text-emerald-600 dark:hover:text-emerald-200"
               />
             </Button>
           </div>

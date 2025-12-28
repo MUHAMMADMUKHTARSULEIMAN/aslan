@@ -17,7 +17,7 @@ import { router as collectionRouter } from "./routers/collection-router";
 import { initializeGooglePassport } from "./auth/passport-setup";
 import config from "./config/config";
 import helmet from "helmet";
-import { refreshAccessToken } from "./controllers/user-controller";
+import { refreshAccessToken, testRoute } from "./controllers/user-controller";
 import compression from "compression"
 import hpp from "hpp";
 import { doubleCsrf } from "csrf-csrf";
@@ -44,9 +44,9 @@ initializeGooglePassport();
 
 app.disable("X-powered-by")
 app.use(cors());
-app.use(compression())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(compression())
 app.use(helmet());
 app.use(hpp())
 app.use(cookieParser(cookieSecret));
@@ -58,6 +58,8 @@ app.use("/api/saves", saveRouter);
 app.use("/api/saves/tags", tagRouter);
 app.use("/api/saves/highlights", highlightRouter);
 app.use("/api/collections", collectionRouter);
+
+app.get("/", testRoute)
 
 app.all("{/*path}", (req: Request, res: Response, next: NextFunction) => {
   const error = new CustomError(

@@ -105,7 +105,7 @@ export const linkAccount = asyncErrorHandler(
     const { password } = req.body;
     const { linkingId } = req.params;
     if (!password) {
-      const error = new CustomError(400, "Password must be provided");
+      const error = new CustomError(400, "Password must be provided.");
       return next(error);
     }
     if (!linkingId) {
@@ -122,7 +122,7 @@ export const linkAccount = asyncErrorHandler(
       } else {
         const { user, googleId } = linkingData;
         if (!(await user.comparePasswords(password))) {
-          const error = new CustomError(400, "Wrong password provided");
+          const error = new CustomError(400, "Wrong password provided.");
           return next(error);
         }
         const updatedUser = await user.updateOne({ googleId });
@@ -146,9 +146,10 @@ export const linkAccount = asyncErrorHandler(
 export const emailRegistration = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
+    console.log(email);
 
     if (!email) {
-      const error = new CustomError(400, "Email not provided");
+      const error = new CustomError(400, "Email not provided.");
       return next(error);
     }
 
@@ -169,30 +170,30 @@ export const emailRegistration = asyncErrorHandler(
         message:
           "Verification link sent successfully. It expires in 15 minutes.",
       });
-    }
-
-    let userEmail = await Emails.findOne({ email });
-    if (!userEmail) {
-      userEmail = await Emails.create({ email });
-    }
-
-    const token = await userEmail.generateVerificationToken(next);
-    const verificationUrl = `${frontendBaseURL}/sign-up/${email}/${token}`;
-    const message = `Please use the link below to verify your email.\n\n${verificationUrl}\n\nThe link expires in 15 minutes.\n\nYou can safely ignore this email if you did not register your email at Sanctum.`;
-
-    sendEmail({
-      email,
-      subject: "Sanctum: Email Verification",
-      message,
-      html: "",
-    });
-
-    res.status(201).json({
-      status: "OK",
-      message: "Verification link sent successfully. It expires in 15 minutes.",
-      token,
-    });
-  }
+    } else {
+			let userEmail = await Emails.findOne({ email });
+			if (!userEmail) {
+				userEmail = await Emails.create({ email });
+			}
+			
+			const token = await userEmail.generateVerificationToken(next);
+			const verificationUrl = `${frontendBaseURL}/sign-up/${email}/${token}`;
+			const message = `Please use the link below to verify your email.\n\n${verificationUrl}\n\nThe link expires in 15 minutes.\n\nYou can safely ignore this email if you did not register your email at Sanctum.`;
+			
+			sendEmail({
+				email,
+				subject: "Sanctum: Email Verification",
+				message,
+				html: "",
+			});
+			
+			res.status(201).json({
+				status: "OK",
+				message: "Verification link sent successfully. It expires in 15 minutes.",
+				token,
+			});
+		}
+	}
 );
 
 export const userSignUp = asyncErrorHandler(
@@ -305,33 +306,37 @@ export const refreshAccessToken = asyncErrorHandler(
     }
 
     const token = req.signedCookies.refresh;
-    const refreshToken = createHash("sha256").update(token).digest("hex");
+    if (token) {
+      const refreshToken = createHash("sha256").update(token).digest("hex");
 
-    const user = await Users.findOne({
-      refreshToken,
-      refreshTokenExpiry: { $gt: Date.now() },
-    });
-    if (!user) {
-      next();
+      const user = await Users.findOne({
+        refreshToken,
+        refreshTokenExpiry: { $gt: Date.now() },
+      });
+      if (!user) {
+        next();
+      } else {
+        const newJWT = user.generateAccessToken();
+        const newRefresh = await user.generateRefreshToken(next);
+
+        res.cookie("jwt", newJWT, {
+          sameSite: "lax",
+          signed: true,
+          secure: nodeENV === "production",
+          httpOnly: true,
+          maxAge: JWTCookieExpiry,
+        });
+        res.cookie("refresh", newRefresh, {
+          sameSite: "lax",
+          signed: true,
+          secure: nodeENV === "production",
+          httpOnly: true,
+          maxAge: refreshCookieExpiry,
+        });
+
+        next();
+      }
     } else {
-      const newJWT = user.generateAccessToken();
-      const newRefresh = await user.generateRefreshToken(next);
-
-      res.cookie("jwt", newJWT, {
-        sameSite: "lax",
-        signed: true,
-        secure: nodeENV === "production",
-        httpOnly: true,
-        maxAge: JWTCookieExpiry,
-      });
-      res.cookie("refresh", newRefresh, {
-        sameSite: "lax",
-        signed: true,
-        secure: nodeENV === "production",
-        httpOnly: true,
-        maxAge: refreshCookieExpiry,
-      });
-
       next();
     }
   }
@@ -483,4 +488,13 @@ export const getCSRFToken = asyncErrorHandler(
       },
     });
   }
+);
+
+export const testRoute = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+		res.status(200).json({
+			status: "OK",
+			message: "Finally back online"
+		})
+	}
 );

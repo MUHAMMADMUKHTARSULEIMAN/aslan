@@ -56,10 +56,10 @@ function RouteComponent() {
 			const data = await response.json();
 			if (data.status === "OK") {
 				ToastSuccess(data?.message);
+				await navigate({ to: "/", replace: true });
 			} else {
 				ToastError(data?.message);
 			}
-			await navigate({ to: "/", replace: true });
 		} catch (error) {
 			ToastError("Something went wrong. Try again later.");
 		}

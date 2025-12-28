@@ -44,10 +44,10 @@ function RouteComponent() {
       const data = await response.json();
       if (data.status === "OK") {
         ToastSuccess(data?.message);
+				await navigate({ to: "/", replace: true });
       } else {
         ToastError(data?.message);
       }
-      await navigate({ to: "/", replace: true });
     } catch (error) {
       ToastError("Something went wrong. Try again later.");
     }
@@ -61,12 +61,12 @@ function RouteComponent() {
         </Link>
       </div>
       <div className="mt-2">
-        <p>
+        <p className="text-[15px]">
           Already have an account?{" "}
           <span
             className={cn(
               buttonVariants({ variant: "link" }),
-              "text-base font-normal p-0"
+              "text-[15px] font-normal p-0"
             )}
           >
             <Link to="/sign-in">Sign in</Link>
@@ -112,7 +112,7 @@ function RouteComponent() {
             <Button
               variant="secondary"
               disabled={formState.isSubmitting}
-              className="w-full mt-4 py-5 shadow-none"
+              className="w-full font-semibold mt-4 py-5 shadow-none"
             >
               {formState.isSubmitting ? (
                 <span className="flex justify-center items-center gap-1">
