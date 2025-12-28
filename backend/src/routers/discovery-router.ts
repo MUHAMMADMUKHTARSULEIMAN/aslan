@@ -1,5 +1,5 @@
 import express from "express"
-import { createFeeds } from "../contollers/discovery-controller";
+import { createFeeds } from "../controllers/discovery-controller";
 
 export const router = express.Router()
 

@@ -12,6 +12,7 @@ import { promisify } from "util";
 import jwt from "jsonwebtoken";
 import { getAndDeleteLink } from "./link-controller";
 import sendEmail from "../utils/email";
+import { generateCsrfToken } from "../index";
 
 const {
   frontendBaseURL,
@@ -256,9 +257,18 @@ export const userSignUp = asyncErrorHandler(
 
     const message = `Hi.\n\nYour Sanctum account has been successfully created and you have been successfully signed in.\n\nWelcome aboard.`;
     const subject = "Sanctum: Account Creation";
-		const responseMessage = "Your account has been successfully created and you have been signed in."
+    const responseMessage =
+      "Your account has been successfully created and you have been signed in.";
 
-    await signInResponse(newUser, res, next, 201, subject, message, responseMessage);
+    await signInResponse(
+      newUser,
+      res,
+      next,
+      201,
+      subject,
+      message,
+      responseMessage
+    );
   }
 );
 
@@ -288,7 +298,7 @@ export const userSignIn = asyncErrorHandler(
 );
 
 export const refreshAccessToken = asyncErrorHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const JWT = req.signedCookies.jwt;
     if (JWT) {
       next();
@@ -460,5 +470,17 @@ export const resetPassword = asyncErrorHandler(
         }
       }
     }
+  }
+);
+
+export const getCSRFToken = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const CSRFToken = generateCsrfToken(req, res);
+    res.status(200).json({
+      status: "OK",
+      data: {
+        token: CSRFToken,
+      },
+    });
   }
 );

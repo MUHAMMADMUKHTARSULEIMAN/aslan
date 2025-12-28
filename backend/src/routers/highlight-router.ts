@@ -4,7 +4,7 @@ import {
   getAllHighlights,
   getSaveHighlights,
   updateHighlight,
-} from "../contollers/highlight-controller";
+} from "../controllers/highlight-controller";
 
 export const router = express.Router();
 

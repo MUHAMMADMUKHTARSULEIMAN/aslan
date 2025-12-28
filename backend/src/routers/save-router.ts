@@ -8,7 +8,7 @@ import {
   getSaves,
   searchSaves,
   updateSaves,
-} from "../contollers/save-controller";
+} from "../controllers/save-controller";
 
 export const router = express.Router();
 

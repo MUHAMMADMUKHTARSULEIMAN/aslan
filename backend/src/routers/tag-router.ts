@@ -6,7 +6,7 @@ import {
   getAllSavesWithSpecificTag,
   getAllTags,
   deleteTags,
-} from "../contollers/tag-controller";
+} from "../controllers/tag-controller";
 
 export const router = express.Router();
 

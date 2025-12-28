@@ -4,7 +4,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oidc";
 import Users from "../models/user-model";
 import { IUser } from "../types/user";
 import config from "../config/config";
-import { createLink } from "../contollers/link-controller";
+import { createLink } from "../controllers/link-controller";
 
 const { googleClientId, googleClientSecret } = config;
 

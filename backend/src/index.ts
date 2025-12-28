@@ -5,7 +5,7 @@ import express, {
 } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import globalErrorHandler from "./contollers/error-controller";
+import globalErrorHandler from "./controllers/error-controller";
 import CustomError from "./utils/custom-error";
 import { router as feedRouter } from "./routers/feed-router";
 import { router as discoveryRouter } from "./routers/discovery-router";
@@ -17,11 +17,25 @@ import { router as collectionRouter } from "./routers/collection-router";
 import { initializeGooglePassport } from "./auth/passport-setup";
 import config from "./config/config";
 import helmet from "helmet";
-import { refreshAccessToken } from "./contollers/user-controller";
+import { refreshAccessToken } from "./controllers/user-controller";
 import compression from "compression"
 import hpp from "hpp";
+import { doubleCsrf } from "csrf-csrf";
 
-const { cookieSecret} = config;
+const { cookieSecret, nodeENV, CSRFSecret} = config;
+
+export const {generateCsrfToken, invalidCsrfTokenError, doubleCsrfProtection} = doubleCsrf({
+	getSecret: (req) => CSRFSecret,
+	getSessionIdentifier: (req) => req.user?.id || req.session.id,
+	cookieName: nodeENV === "production" ? "__Host-psifi.x-csrf-token" : "psifi.x-csrf-token",
+	cookieOptions: {
+		sameSite: "lax",
+		secure: nodeENV === "production",
+	},
+	errorConfig: {
+		message: "You're not authorized to perform this action."
+	}
+})
 
 const app = express();
 export default app;
@@ -30,13 +44,15 @@ initializeGooglePassport();
 
 app.disable("X-powered-by")
 app.use(cors());
-app.use(compression)
+app.use(compression())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(helmet());
-app.use(cookieParser(cookieSecret));
 app.use(hpp())
-app.use("/api", refreshAccessToken)
+app.use(cookieParser(cookieSecret));
+app.use(refreshAccessToken)
+app.use("/api", userRouter);
+app.use(doubleCsrfProtection)
 app.use("/api", feedRouter, discoveryRouter, userRouter);
 app.use("/api/saves", saveRouter);
 app.use("/api/saves/tags", tagRouter);
@@ -48,7 +64,9 @@ app.all("{/*path}", (req: Request, res: Response, next: NextFunction) => {
     404,
     `Can't find ${req.originalUrl} on the server.`
   );
-  next(error);
+  return next(error);
 });
+
+
 
 app.use(globalErrorHandler);

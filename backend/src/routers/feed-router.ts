@@ -1,5 +1,5 @@
 import express from "express"
-import { addFeedURL } from "../contollers/feed-controller";
+import { addFeedURL } from "../controllers/feed-controller";
 
 export const router = express.Router()
 
