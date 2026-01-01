@@ -26,6 +26,7 @@ interface Config {
 	windowMs: number;
 	limit: number;
 	CSRFSecret: string;
+	sessionSecret: string;
 }
 
 const config: Config = {
@@ -51,6 +52,7 @@ const config: Config = {
   windowMs: parseInt(getENVVariable("WINDOW_MS")),
   limit: parseInt(getENVVariable("LIMIT")),
   CSRFSecret: getENVVariable("CSRF_SECRET"),
+  sessionSecret: getENVVariable("SESSION_SECRET"),
 };
 
 export default config;

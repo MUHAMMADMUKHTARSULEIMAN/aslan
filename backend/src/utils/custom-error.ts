@@ -12,6 +12,8 @@ export default class CustomError extends Error {
   isOperational: boolean;
   value: any;
   path: string;
+	code?: number | string;
+	keyPattern: Object;
   errors: Record<string, any>;
 
   constructor(statusCode: number, message: string) {
@@ -40,6 +42,7 @@ export default class CustomError extends Error {
     this.isOperational = true;
     this.path = "";
     this.errors = {};
+		this.keyPattern = {};
     Error.captureStackTrace(this, this.constructor);
   }
 }

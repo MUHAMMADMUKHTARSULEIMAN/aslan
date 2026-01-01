@@ -14,16 +14,12 @@ export interface LinkingData {
 }
 
 export interface Info {
-	message: string;
-	linkingId: string;
+  message: string;
+  linkingId: string;
 }
 
 interface CustomVerifyCallback {
-  (
-    err: Error | null,
-    user: IUser | false,
-    info?: Info
-  ): void;
+  (err: Error | null, user: IUser | false): void;
 }
 
 export const initializeGooglePassport = () => {
@@ -33,22 +29,26 @@ export const initializeGooglePassport = () => {
         clientID: googleClientId,
         clientSecret: googleClientSecret,
         callbackURL: "/api/google/redirect",
-        scope: ["profile"],
-        passReqToCallback: true,
+        scope: ["profile", "email"],
       },
-      async (req: Request, issuer: string, profile: Profile, done: CustomVerifyCallback) => {
+      async function verify(
+        issuer: string,
+        profile: Profile,
+        cb: CustomVerifyCallback
+      ) {
         try {
           const email = profile.emails?.[0].value;
           const googleId = profile.id;
           if (!email) {
-            return done(
+            return cb(
               new Error("Google profile did not contain an email."),
               false
             );
           }
+
           let user = await Users.findOne({ googleId });
           if (user) {
-            return done(null, user);
+            return cb(null, user);
           }
 
           const existingUser = await Users.findOne({
@@ -62,11 +62,8 @@ export const initializeGooglePassport = () => {
             };
 
             const linkingId = await createLink(linkingData);
-
-            return done(null, false, {
-              message: "LINKING_REQUIRED",
-              linkingId,
-            });
+						await existingUser.updateOne({linkingId})
+            return cb(null, existingUser);
           }
 
           user = await Users.create({
@@ -76,24 +73,28 @@ export const initializeGooglePassport = () => {
             lastName: profile.name?.familyName,
           });
 
-          return done(null, user);
+          return cb(null, user);
         } catch (error) {
-          done(error as Error, false);
+          return cb(error as Error, false);
         }
       }
     )
   );
 };
 
-// passport.serializeUser((user: any, done) => {
-//   done(null, user._id);
-// });
+passport.serializeUser((user: any, cb) => {
+  process.nextTick(() => {
+    cb(null, user.id);
+  });
+});
 
-// passport.deserializeUser(async (id: string, done) => {
-//   try {
-//     const user = await Users.findById(id);
-//     done(null, user);
-//   } catch (error) {
-//     done(error as Error, undefined);
-//   }
-// });
+passport.deserializeUser((id: string, cb) => {
+  process.nextTick( async () => {
+    try {
+      const user = await Users.findById(id);
+      return cb(null, user);
+    } catch (error) {
+      return cb(error as Error, undefined);
+    }
+  });
+});

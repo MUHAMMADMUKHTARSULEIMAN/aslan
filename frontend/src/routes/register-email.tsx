@@ -19,7 +19,7 @@ function RouteComponent() {
   const navigate = useNavigate();
   const formSchema = z.object({
     email: z
-      .email({ message: "Enter a valid email address." })
+      .email({ message: "Enter a valid email address" })
       .trim()
       .toLowerCase(),
   });
@@ -44,7 +44,7 @@ function RouteComponent() {
       const data = await response.json();
       if (data.status === "OK") {
         ToastSuccess(data?.message);
-				await navigate({ to: "/", replace: true });
+        await navigate({ to: "/", replace: true });
       } else {
         ToastError(data?.message);
       }
@@ -55,36 +55,29 @@ function RouteComponent() {
 
   return (
     <div className="w-full mx-8 mt-16 flex flex-col items-center">
-      <div className="">
+      <div className="mb-6">
         <Link to="/">
           <img src="images/logo.svg" alt="" className="h-12 w-12" />
         </Link>
       </div>
-      <div className="mt-2">
-        <p className="text-[15px]">
-          Already have an account?{" "}
-          <span
-            className={cn(
-              buttonVariants({ variant: "link" }),
-              "text-[15px] font-normal p-0"
-            )}
-          >
-            <Link to="/sign-in">Sign in</Link>
-          </span>
-        </p>
+      <div className="mb-6">
+        <h1 className="font-medium text-center text-xl">Register on Sanctum</h1>
       </div>
-      <div className="mt-2 w-full">
-        <div className="w-full hover:bg-card/50 dark:hover:bg-card text-inherit border-2 border-border/40 dark:border-muted-foreground/30 flex items-center justify-center gap-2 py-2 rounded-xl cursor-pointer shadow-none text-sm">
+      <div className="w-full">
+        <a
+          href="http://localhost:2020/api/login/federated/google"
+          className="w-full hover:bg-card/50 dark:hover:bg-card text-inherit border-2 border-border/40 dark:border-muted-foreground/30 flex items-center justify-center gap-2 py-2 rounded-xl cursor-pointer shadow-none text-sm"
+        >
           <FcGoogle size={20} />
           Continue with Google
-        </div>
+        </a>
       </div>
       <div className="my-2 flex items-center w-full">
         <hr className="border border-border/40 grow" />
         <span className="px-2">OR</span>
         <hr className="border border-border/40 grow" />
       </div>
-      <div className="w-full">
+      <div className="mb-1 w-full">
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <FormField
@@ -92,7 +85,7 @@ function RouteComponent() {
               name="email"
               render={({ field }) => {
                 return (
-                  <FormItem>
+                  <FormItem className="mb-4">
                     <FormControl>
                       <div>
                         <FloatingLabelInput
@@ -110,9 +103,9 @@ function RouteComponent() {
               }}
             />
             <Button
-              variant="secondary"
+              variant="secondary-full"
               disabled={formState.isSubmitting}
-              className="w-full font-semibold mt-4 py-5 shadow-none"
+              className=""
             >
               {formState.isSubmitting ? (
                 <span className="flex justify-center items-center gap-1">
@@ -125,33 +118,37 @@ function RouteComponent() {
             </Button>
           </form>
         </Form>
-        {/* <Button variant="secondary" onClick={() => {
-							navigate({to: "/"})
-						}} className="w-full mt-4 py-5 shadow-none">
-							{
-								formState.isSubmitting
-								? <span className="flex justify-center items-center gap-1"><Spinner />Submitting</span>
-								: "Register"
-							}
-						</Button> */}
       </div>
-      <div className="mt-1">
-        <p className="text-[13px] text-center text-muted-foreground/75">
+      <div className="mb-4">
+        <p className="text-xs text-center text-muted-foreground/75">
           By continuing, you agree to our{" "}
           <Link
             to="/"
-            className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer"
+            className="text-xs text-primary hover:underline underline-offset-2 cursor-pointer"
           >
             Terms of Service
           </Link>{" "}
           and{" "}
           <Link
             to="/"
-            className="text-[13px] text-primary hover:underline underline-offset-2 cursor-pointer"
+            className="text-xs text-primary hover:underline underline-offset-2 cursor-pointer"
           >
             Privacy Policy
           </Link>
           .
+        </p>
+      </div>
+      <div className="">
+        <p className="text-sm">
+          Already have an account?{" "}
+          <span
+            className={cn(
+              buttonVariants({ variant: "link" }),
+              "text-sm font-normal p-0"
+            )}
+          >
+            <Link to="/sign-in">Sign in</Link>
+          </span>
         </p>
       </div>
     </div>

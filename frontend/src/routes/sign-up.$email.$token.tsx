@@ -38,10 +38,10 @@ function RouteComponent() {
 
   const formSchema = z
     .object({
-      firstName: z.string().min(1, "Field is required.").trim(),
-      lastName: z.string().min(1, "Field is required.").trim(),
+      firstName: z.string().min(1, "Field is required").trim(),
+      lastName: z.string().min(1, "Field is required").trim(),
       password: passwordConstraints,
-      confirmPassword: z.string().min(1, "Re-enter your password."),
+      confirmPassword: z.string().min(1, "Re-enter your password"),
       isUpToEight: z.boolean(),
       isUppercase: z.boolean(),
       isLowercase: z.boolean(),
@@ -128,10 +128,10 @@ function RouteComponent() {
       const data = await response.json();
       if (data.status === "OK") {
         ToastSuccess(data?.message);
+				await navigate({ to: "/", replace: true });
       } else {
         ToastError(data?.message);
       }
-      await navigate({ to: "/", replace: true });
     } catch (error) {
       ToastError("Something went wrong. Try again later.");
     }
@@ -144,8 +144,8 @@ function RouteComponent() {
           <img src="/images/logo.svg" alt="" className="h-12 w-12" />
         </Link>
       </div>
-      <div className="mb-8 text-center">
-        <h1 className="font-bold text-4xl">Create Sanctum Account</h1>
+      <div className="mb-6 text-center">
+        <h1 className="font-medium text-xl">Create Sanctum Account</h1>
       </div>
       <div className="w-full">
         <Form {...form}>
@@ -402,9 +402,9 @@ function RouteComponent() {
               />
             </div>
             <Button
-              variant="secondary"
+              variant="secondary-full"
               disabled={formState.isSubmitting || disableSubmitForPassword}
-              className="w-full mt-4 py-5 shadow-none"
+              className="mt-4"
             >
               {formState.isSubmitting ? (
                 <span className="flex justify-center items-center gap-1">

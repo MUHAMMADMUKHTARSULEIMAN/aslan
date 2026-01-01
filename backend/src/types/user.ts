@@ -1,5 +1,5 @@
 import type { NextFunction } from "express";
-import { type Document} from "mongoose";
+import { type Document, type Types,} from "mongoose";
 
 export interface IUser extends Document {
   firstName: string;
@@ -15,6 +15,7 @@ export interface IUser extends Document {
   resetTokenExpiry?: Date;
   refreshToken?: string;
   refreshTokenExpiry?: Date;
+	linkingId: Types.ObjectId;
 	saves: Document[];
 	collections: Document[];
 

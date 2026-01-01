@@ -1,3 +1,4 @@
+import type { Types } from "mongoose"
 import type { LinkingData } from "../auth/passport-setup"
 import Links from "../models/link-model"
 
@@ -6,10 +7,10 @@ export const getAndDeleteLink = async (linkingId: string): Promise<LinkingData |
 	return link ? link.data as LinkingData : null 
 }
 
-export const createLink = async (data: LinkingData): Promise<string> => {
+export const createLink = async (data: LinkingData): Promise<Types.ObjectId> => {
 	const link = await Links.create({data})
 	if(!link) {
 		console.error(`Unable to create linking data`)
 	}
-	return link._id.toString()
+	return link._id
 }

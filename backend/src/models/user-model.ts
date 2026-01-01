@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model} from "mongoose";
 import validator from "validator";
 import { randomBytes, createHash } from "crypto";
 import { compare, genSalt, hash } from "bcryptjs";
@@ -26,6 +26,7 @@ const tagSchema = new Schema(
       type: String,
       required: true,
       unique: true,
+			sparse: true,
     },
   },
   { timestamps: true }
@@ -37,6 +38,7 @@ const collectionSchema = new Schema(
       type: String,
       required: true,
       unique: true,
+			sparse: true
     },
     description: {
       type: String,
@@ -59,12 +61,10 @@ const userSaveSchema = new Schema(
     highlights: {
       type: [highlightSchema],
       select: false,
-      default: [],
     },
     tags: {
       type: [tagSchema],
       select: false,
-      default: [],
     },
     favourite: {
       type: Boolean,
@@ -135,15 +135,16 @@ const userSchema = new Schema<IUser>(
       enum: [{ user: 1 }, { admin: 2 }, { superuser: 3 }],
       default: { user: 1 },
     },
+		linkingId: {
+			type: Schema.Types.ObjectId
+		},
     saves: {
       type: [userSaveSchema],
       select: false,
-      default: [],
     },
     collections: {
       type: [collectionSchema],
       select: false,
-      default: [],
     },
   },
   { timestamps: true }

@@ -3,8 +3,6 @@ import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
 import config from "../config/config";
 import { IUser } from "../types/user";
-import passport from "passport";
-import type { Info } from "../auth/passport-setup";
 import Users from "../models/user-model";
 import Emails from "../models/email-model";
 import { createHash } from "crypto";
@@ -58,7 +56,7 @@ export const signInResponse = async (
     html: mailHTML,
   });
 
-  res.status(statusCode).json({
+  return res.status(statusCode).json({
     status: "OK",
     message,
   });
@@ -66,78 +64,105 @@ export const signInResponse = async (
 
 export const googleAuthCallback = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    passport.authenticate(
-      "/google",
-      { failureRedirect: "/login", session: false },
-      async (err: Error | null, user: IUser | false, info?: Info) => {
-        if (err) {
-          const error = new CustomError(
-            500,
-            err?.message || "Something went wrong. Please try again later."
-          );
-          return next(error);
-        }
-
-        if (info?.message === "LINKING_REQUIRED") {
-          const linkingId = info.linkingId;
-          res.redirect(`/confirm-linking?linkingId=${linkingId}`);
-        }
-
-        if (!user) {
-          res.status(401).json({
-            status: "Bad Request",
-            message: "Google Authentication failed.",
-          });
-        } else {
-          const resetURL = `${frontendBaseURL}/`;
-          const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
-          const subject = "Sanctum: Google Sign-in";
-
-          signInResponse(user, res, next, 201, subject, message);
-        }
+    const user = req.user;
+    if (!user) {
+      res.redirect(`${frontendBaseURL}/sign-in`);
+    } else {
+      const info = user.linkingId;
+      if (info) {
+        req.session.destroy(() => {});
+        return res.redirect(`${frontendBaseURL}/confirm-linking/${user.email}`);
       }
-    );
+
+      const accessToken = user.generateAccessToken();
+      const refreshToken = await user.generateRefreshToken(next);
+
+      res.cookie("jwt", accessToken, {
+        sameSite: "lax",
+        signed: true,
+        secure: nodeENV === "production",
+        httpOnly: true,
+        maxAge: JWTCookieExpiry,
+      });
+
+      res.cookie("refresh", refreshToken, {
+        sameSite: "lax",
+        signed: true,
+        secure: nodeENV === "production",
+        httpOnly: true,
+        maxAge: refreshCookieExpiry,
+      });
+
+      const resetURL = `${frontendBaseURL}/`;
+      const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
+      const subject = "Sanctum: Google Sign-in";
+
+      sendEmail({
+        email: user.email,
+        subject: subject,
+        message: message,
+      });
+
+      return res.redirect(`${frontendBaseURL}/`);
+    }
+    // async (err: Error | null, user: IUser | false, info?: Info) => {
+    // 	if (err) {
+    // 		return res.redirect(`${frontendBaseURL}/sign-in`);
+    // 	}
+
+    // 	if (!user) {
+    // 		return res.redirect(`${frontendBaseURL}/sign-in`);
+    // 	} else {
+
+    // 		return res.redirect(`${frontendBaseURL}/`)
+    // 	}
+    // }
   }
 );
 
 export const linkAccount = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body;
-    const { linkingId } = req.params;
+    const { email } = req.params;
     if (!password) {
       const error = new CustomError(400, "Password must be provided.");
       return next(error);
     }
-    if (!linkingId) {
-      const error = new CustomError(400, "Linking ID missing.");
-      return next(error);
-    } else if (typeof linkingId === "string") {
-      const linkingData = await getAndDeleteLink(linkingId);
-      if (!linkingData) {
-        const error = new CustomError(
-          400,
-          "Linking ID has expired. Try again later."
-        );
+
+    const user = await Users.findOne({ email });
+    if (user) {
+      const linkingId = user.linkingId;
+      if (!linkingId) {
+        const error = new CustomError(400, "Linking ID missing.");
         return next(error);
-      } else {
-        const { user, googleId } = linkingData;
-        if (!(await user.comparePasswords(password))) {
-          const error = new CustomError(400, "Wrong password provided.");
-          return next(error);
-        }
-        const updatedUser = await user.updateOne({ googleId });
-        if (!updatedUser) {
+      } else if (typeof linkingId === "string") {
+        const linkingData = await getAndDeleteLink(linkingId);
+        if (!linkingData) {
           const error = new CustomError(
-            500,
-            "Something went wrong. Try again later."
+            400,
+            "Linking ID has expired. Try again later."
           );
           return next(error);
+        } else {
+          const { user, googleId } = linkingData;
+          if (!(await user.comparePasswords(password))) {
+            const error = new CustomError(400, "Wrong password provided.");
+            return next(error);
+          }
+          const updatedUser = await user.updateOne({ googleId });
+          if (!updatedUser) {
+            const error = new CustomError(
+              500,
+              "Something went wrong. Try again later."
+            );
+            return next(error);
+          }
+
+          const message = `Your Sanctum account has been successfully linked to Google. You can now sign in to your Sanctum account using Google.`;
+          const subject = "Sanctum: Account Linking";
+
+          signInResponse(user, res, next, 201, subject, message);
         }
-
-        const message = `Your Sanctum account has been successfully linked to Google. You can now sign in to your Sanctum account using Google.`;
-        const subject = "Sanctum: Account Linking";
-
-        signInResponse(user, res, next, 201, subject, message);
       }
     }
   }
@@ -171,29 +196,30 @@ export const emailRegistration = asyncErrorHandler(
           "Verification link sent successfully. It expires in 15 minutes.",
       });
     } else {
-			let userEmail = await Emails.findOne({ email });
-			if (!userEmail) {
-				userEmail = await Emails.create({ email });
-			}
-			
-			const token = await userEmail.generateVerificationToken(next);
-			const verificationUrl = `${frontendBaseURL}/sign-up/${email}/${token}`;
-			const message = `Please use the link below to verify your email.\n\n${verificationUrl}\n\nThe link expires in 15 minutes.\n\nYou can safely ignore this email if you did not register your email at Sanctum.`;
-			
-			sendEmail({
-				email,
-				subject: "Sanctum: Email Verification",
-				message,
-				html: "",
-			});
-			
-			res.status(201).json({
-				status: "OK",
-				message: "Verification link sent successfully. It expires in 15 minutes.",
-				token,
-			});
-		}
-	}
+      let userEmail = await Emails.findOne({ email });
+      if (!userEmail) {
+        userEmail = await Emails.create({ email });
+      }
+
+      const token = await userEmail.generateVerificationToken(next);
+      const verificationUrl = `${frontendBaseURL}/sign-up/${email}/${token}`;
+      const message = `Please use the link below to verify your email.\n\n${verificationUrl}\n\nThe link expires in 15 minutes.\n\nYou can safely ignore this email if you did not register your email at Sanctum.`;
+
+      sendEmail({
+        email,
+        subject: "Sanctum: Email Verification",
+        message,
+        html: "",
+      });
+
+      res.status(201).json({
+        status: "OK",
+        message:
+          "Verification link sent successfully. It expires in 15 minutes.",
+        token,
+      });
+    }
+  }
 );
 
 export const userSignUp = asyncErrorHandler(
@@ -492,9 +518,9 @@ export const getCSRFToken = asyncErrorHandler(
 
 export const testRoute = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-		res.status(200).json({
-			status: "OK",
-			message: "Finally back online"
-		})
-	}
+    res.status(200).json({
+      status: "OK",
+      message: "Finally back online",
+    });
+  }
 );

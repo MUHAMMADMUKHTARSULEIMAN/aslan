@@ -39,13 +39,18 @@ router.route("/get-csrf-token").get(getCSRFToken);
 router.route("/login/federated/google").get(
   passport.authenticate("google", {
     scope: ["profile", "email"],
-    session: false,
+    prompt: "select_account",
   })
 );
 
-router.route("/google/redirect").get(googleAuthCallback);
+router
+  .route("/google/redirect")
+  .get(
+    passport.authenticate("google"),
+    googleAuthCallback
+  );
 
-router.route("/link-account/:linkingId").post(linkAccount);
+router.route("/link-account/:email").post(linkAccount);
 
 router.route("/register-email").post(limiter, emailRegistration);
 

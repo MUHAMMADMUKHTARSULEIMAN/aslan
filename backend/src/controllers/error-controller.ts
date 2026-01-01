@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import CustomError, { type ErrorDetails } from "../utils/custom-error";
+import CustomError from "../utils/custom-error";
 import config from "../config/config";
-import { invalidCsrfTokenError } from "../index";
 
 const { nodeENV } = config;
 
@@ -21,6 +20,8 @@ export interface CustomErrorType extends Error {
   status: string;
   value: any;
   path: string;
+	code?: number | string;
+	keyPattern: {}
   errors: Record<string, ValidationError>;
 }
 
@@ -63,6 +64,12 @@ const validationErrorHandler = (error: CustomErrorType) => {
   return new CustomError(400, message);
 };
 
+const duplicateKeyErrorHandler = (error: CustomErrorType) => {
+	const field = Object.keys(error.keyPattern)[0]
+	const message = `A document with this ${field} already exists.`
+	return new CustomError(409, message)
+}
+
 const globalErrorHandler = (
   error: CustomErrorType,
   req: Request,
@@ -76,6 +83,7 @@ const globalErrorHandler = (
     devErrors(error, res);
   } else {
     if (error.name === "ValidationError") error = validationErrorHandler(error);
+		if(error.code === "11000") error = duplicateKeyErrorHandler(error)
 
     prodErrors(error, res);
   }
