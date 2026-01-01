@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
@@ -11,12 +11,23 @@ import { Spinner } from "@/components/ui/spinner";
 import ToastSuccess from "@/components/toast-success";
 import ToastError from "@/components/toast-error";
 
+const redirectSearchSchema = z.object({
+	returnTo: z.string().optional()
+})
+
 export const Route = createFileRoute("/register-email")({
   component: RouteComponent,
+	validateSearch: (search) => redirectSearchSchema.parse(search)
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
+	const search = useSearch({
+		from: "/register-email"
+	})
+
+	const returnTo = search.returnTo || "/"
+
   const formSchema = z.object({
     email: z
       .email({ message: "Enter a valid email address" })
@@ -65,7 +76,7 @@ function RouteComponent() {
       </div>
       <div className="w-full">
         <a
-          href="http://localhost:2020/api/login/federated/google"
+          href={`http://localhost:2020/api/login/federated/google?returnTo=${returnTo}`}
           className="w-full hover:bg-card/50 dark:hover:bg-card text-inherit border-2 border-border/40 dark:border-muted-foreground/30 flex items-center justify-center gap-2 py-2 rounded-xl cursor-pointer shadow-none text-sm"
         >
           <FcGoogle size={20} />
@@ -147,7 +158,7 @@ function RouteComponent() {
               "text-sm font-normal p-0"
             )}
           >
-            <Link to="/sign-in">Sign in</Link>
+            <Link to="/sign-in" search={{returnTo}}>Sign in</Link>
           </span>
         </p>
       </div>

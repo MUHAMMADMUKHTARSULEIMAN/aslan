@@ -25,7 +25,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(({ pathname }) => {
               ""
             ) : (
               <Button variant="secondary" className="px-3">
-                <Link to="/sign-in" search={{ returnTo: "" }}>
+                <Link to="/sign-in" search={{ returnTo: pathname }}>
                   Sign in
                 </Link>
               </Button>

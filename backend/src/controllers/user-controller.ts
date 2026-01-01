@@ -11,6 +11,7 @@ import jwt from "jsonwebtoken";
 import { getAndDeleteLink } from "./link-controller";
 import sendEmail from "../utils/email";
 import { generateCsrfToken } from "../index";
+import passport from "passport";
 
 const {
   frontendBaseURL,
@@ -62,15 +63,35 @@ export const signInResponse = async (
   });
 };
 
+export const googleAuth = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const returnTo = (req.query.returnTo as string) || "/";
+
+    res.cookie("returnTo", returnTo, {
+      httpOnly: true,
+      secure: nodeENV === "production",
+      sameSite: "lax",
+			signed: true,
+    });
+
+    passport.authenticate("google", {
+      scope: ["profile", "openid", "email"],
+      prompt: "select_account",
+    })(req, res, next);
+  }
+);
+
 export const googleAuthCallback = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    req.session.destroy(() => {});
+		const returnTo = req.signedCookies.returnTo || "/"
+		res.clearCookie("returnTo")
     const user = req.user;
     if (!user) {
       res.redirect(`${frontendBaseURL}/sign-in`);
     } else {
       const info = user.linkingId;
       if (info) {
-        req.session.destroy(() => {});
         return res.redirect(`${frontendBaseURL}/confirm-linking/${user.email}`);
       }
 
@@ -103,7 +124,7 @@ export const googleAuthCallback = asyncErrorHandler(
         message: message,
       });
 
-      return res.redirect(`${frontendBaseURL}/`);
+      return res.redirect(`${frontendBaseURL}${returnTo}`);
     }
     // async (err: Error | null, user: IUser | false, info?: Info) => {
     // 	if (err) {
@@ -512,15 +533,6 @@ export const getCSRFToken = asyncErrorHandler(
       data: {
         token: CSRFToken,
       },
-    });
-  }
-);
-
-export const testRoute = asyncErrorHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).json({
-      status: "OK",
-      message: "Finally back online",
     });
   }
 );

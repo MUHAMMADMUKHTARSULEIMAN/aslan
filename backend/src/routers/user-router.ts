@@ -4,6 +4,7 @@ import {
   emailRegistration,
   forgotPassword,
   getCSRFToken,
+  googleAuth,
   googleAuthCallback,
   linkAccount,
   resetPassword,
@@ -36,19 +37,11 @@ export const router = express.Router();
 
 router.route("/get-csrf-token").get(getCSRFToken);
 
-router.route("/login/federated/google").get(
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-    prompt: "select_account",
-  })
-);
+router.route("/login/federated/google").get(googleAuth);
 
 router
   .route("/google/redirect")
-  .get(
-    passport.authenticate("google"),
-    googleAuthCallback
-  );
+  .get(passport.authenticate("google"), googleAuthCallback);
 
 router.route("/link-account/:email").post(linkAccount);
 
