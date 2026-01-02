@@ -29,7 +29,6 @@ export const initializeGooglePassport = () => {
         clientID: googleClientId,
         clientSecret: googleClientSecret,
         callbackURL: "/api/google/redirect",
-        scope: ["profile", "email"],
       },
       async function verify(
         issuer: string,

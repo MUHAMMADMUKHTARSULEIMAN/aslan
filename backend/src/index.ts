@@ -70,7 +70,6 @@ app.use(
     }),
   })
 );
-app.use(passport.session());
 initializeGooglePassport();
 app.use(cors());
 app.use(compression());

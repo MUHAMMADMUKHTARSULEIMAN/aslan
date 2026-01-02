@@ -37,7 +37,14 @@ export const router = express.Router();
 
 router.route("/get-csrf-token").get(getCSRFToken);
 
-router.route("/login/federated/google").get(googleAuth);
+router.route("/login/federated/google").get(
+  googleAuth,
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    prompt: "select_account",
+		session: false,
+  })
+);
 
 router
   .route("/google/redirect")

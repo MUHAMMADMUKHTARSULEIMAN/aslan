@@ -71,25 +71,27 @@ export const googleAuth = asyncErrorHandler(
       httpOnly: true,
       secure: nodeENV === "production",
       sameSite: "lax",
-			signed: true,
+      signed: true,
     });
 
-    passport.authenticate("google", {
-      scope: ["profile", "openid", "email"],
-      prompt: "select_account",
-    })(req, res, next);
+    next();
   }
 );
 
 export const googleAuthCallback = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    req.session.destroy(() => {});
-		const returnTo = req.signedCookies.returnTo || "/"
-		res.clearCookie("returnTo")
+		const returnTo = req.signedCookies.returnTo || "/";
+		console.log(req.signedCookies)
+		res.clearCookie("returnTo");
+		res.clearCookie("connect.sid");
     const user = req.user;
     if (!user) {
-      res.redirect(`${frontendBaseURL}/sign-in`);
+      res.redirect(`${frontendBaseURL}/sign-in?returnTo=${returnTo}`);
     } else {
+      console.log(req.session);
+			req.session.destroy(() => {});
+      console.log(req.session);
+
       const info = user.linkingId;
       if (info) {
         return res.redirect(`${frontendBaseURL}/confirm-linking/${user.email}`);
@@ -126,18 +128,6 @@ export const googleAuthCallback = asyncErrorHandler(
 
       return res.redirect(`${frontendBaseURL}${returnTo}`);
     }
-    // async (err: Error | null, user: IUser | false, info?: Info) => {
-    // 	if (err) {
-    // 		return res.redirect(`${frontendBaseURL}/sign-in`);
-    // 	}
-
-    // 	if (!user) {
-    // 		return res.redirect(`${frontendBaseURL}/sign-in`);
-    // 	} else {
-
-    // 		return res.redirect(`${frontendBaseURL}/`)
-    // 	}
-    // }
   }
 );
 

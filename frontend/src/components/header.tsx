@@ -8,11 +8,11 @@ interface HeaderProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   pathname: string;
 }
 
-const Header = React.forwardRef<HTMLDivElement, HeaderProps>(({ pathname }) => {
+const Header = React.forwardRef<HTMLDivElement, HeaderProps>(({ pathname }, ref) => {
   const { toggleSidebar } = useSidebar();
   const logged = false;
   return (
-    <div className="sticky w-full min-w-screen bg-background top-0 left-0 right-0 z-50">
+    <div ref={ref} className="sticky w-full min-w-screen bg-background top-0 left-0 right-0 z-50">
       <div className="p-3">
         <div className="flex items-center justify-between">
           <div>

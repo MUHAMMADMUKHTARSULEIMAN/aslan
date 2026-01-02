@@ -14,49 +14,52 @@ export const Route = createFileRoute("/link-account/$email")({
 });
 
 function RouteComponent() {
-		const navigate = useNavigate();
-	const {email} = Route.useParams()
+  const navigate = useNavigate();
+  const { email } = Route.useParams();
 
-		const formSchema = z
-		.object({
-			password: z.string().min(1, "Field is required.")
-		})
+  const formSchema = z.object({
+    password: z.string().min(1, "Field is required."),
+  });
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		defaultValues: {
-			password: "",
-		},
-	});
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      password: "",
+    },
+  });
 
-	const { handleSubmit, control, formState } = form;
+  const { handleSubmit, control, formState } = form;
 
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		try {
-			const response = await fetch(
-				`http://127.0.0.1:2020/api/link-account/${email}`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						password: values.password,
-					}),
-				}
-			);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:2020/api/link-account/${email}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            password: values.password,
+          }),
+        }
+      );
 
-			const data = await response.json();
-			if (data.status === "OK") {
-				ToastSuccess(data?.message);
-				await navigate({ to: "/", replace: true });
-			} else {
-				ToastError(data?.message);
-			}
-		} catch (error) {
-			ToastError("Something went wrong. Try again later.");
-		}
-	};
+      const data = await response.json();
+      if (data.status === "OK") {
+        if (data.message) {
+          ToastSuccess(data?.message);
+        }
+        await navigate({ to: "/", replace: true });
+      } else {
+        if (data?.message) {
+          ToastError(data?.message);
+        }
+      }
+    } catch (error) {
+      ToastError("Something went wrong. Try again later.");
+    }
+  };
   return (
     <div className="w-full mx-8 my-16 flex flex-col items-center">
       <Link className="mb-6" to="/">
@@ -64,55 +67,54 @@ function RouteComponent() {
       </Link>
       <h3 className="font-medium text-xl mb-6 text-center">Verify password</h3>
       <p className="mb-6 text-sm text-balance text-center wrap-anywhere">
-        Verify password for{" "}
-        <span className="font-semibold">{email}</span> enable Google sign-in.
+        Verify password for <span className="font-semibold">{email}</span> to
+        enable Google sign-in.
       </p>
-			<div className="w-full">
-				<Form {...form}>
-					<form onSubmit={handleSubmit(onSubmit)}>
-						<div className="flex flex-col gap-4">
-
-							<FormField
-								control={control}
-								name="password"
-								render={({ field }) => {
-									return (
-										<FormItem>
-											<FormControl>
-												<div>
-													<FloatingLabelPassword
-														label="Password"
-														isDisabled={formState.isSubmitting}
-														{...field}
-														disabled={formState.isSubmitting}
-													/>
-													<p className="text-[13px] text-center text-destructive">
-														{formState.errors.password?.message}
-													</p>
-												</div>
-											</FormControl>
-										</FormItem>
-									);
-								}}
-							/>
-						</div>
-						<Button
-							variant="secondary-full"
-							disabled={formState.isSubmitting}
-							className="mt-4"
-						>
-							{formState.isSubmitting ? (
-								<span className="flex justify-center items-center gap-1">
-									<Spinner />
-									Verifying
-								</span>
-							) : (
-								"Verify"
-							)}
-						</Button>
-					</form>
-				</Form>
-			</div>
+      <div className="w-full">
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-4">
+              <FormField
+                control={control}
+                name="password"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <div>
+                          <FloatingLabelPassword
+                            label="Password"
+                            isDisabled={formState.isSubmitting}
+                            {...field}
+                            disabled={formState.isSubmitting}
+                          />
+                          <p className="text-[13px] text-center text-destructive">
+                            {formState.errors.password?.message}
+                          </p>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
+            </div>
+            <Button
+              variant="secondary-full"
+              disabled={formState.isSubmitting}
+              className="mt-4"
+            >
+              {formState.isSubmitting ? (
+                <span className="flex justify-center items-center gap-1">
+                  <Spinner />
+                  Verifying
+                </span>
+              ) : (
+                "Verify"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }
