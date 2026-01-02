@@ -118,7 +118,7 @@ export const createFeeds = asyncErrorHandler(
     const date = format(subDays(new Date(), 1), "yyyy-MM-dd");
     await Discoveries.deleteMany({ dateCreated: !date });
 
-    res.status(201).json({
+    return res.status(201).json({
       status: "OK",
     });
   }

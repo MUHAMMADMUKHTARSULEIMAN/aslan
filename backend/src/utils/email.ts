@@ -26,7 +26,7 @@ const sendEmail = async (options: Options) => {
   });
 
   const mailOptions = {
-    from: SMTPUser,
+    from: "Sanctum",
     to: options.email,
     subject: options.subject,
     html: options.html,
@@ -36,7 +36,6 @@ const sendEmail = async (options: Options) => {
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log("Email sent: %s", info.response);
-    return info;
   } catch (error: any) {
     logger(JSON.stringify(`Email error: ${error}\n`));
     return new CustomError(

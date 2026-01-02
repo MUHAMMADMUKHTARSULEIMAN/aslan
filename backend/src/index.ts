@@ -52,6 +52,10 @@ export default app;
 
 
 app.disable("X-powered-by");
+app.use(cors());
+app.use(compression());
+app.use(helmet());
+app.use(hpp());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(cookieSecret));
@@ -70,13 +74,10 @@ app.use(
     }),
   })
 );
+app.use(passport.session())
 initializeGooglePassport();
-app.use(cors());
-app.use(compression());
-app.use(helmet());
-app.use(hpp());
-app.use(refreshAccessToken);
 app.use("/api", userRouter);
+app.use(refreshAccessToken);
 app.use(doubleCsrfProtection);
 app.use("/api", feedRouter, discoveryRouter, userRouter);
 app.use("/api/saves", saveRouter);

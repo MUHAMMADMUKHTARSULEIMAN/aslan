@@ -2,12 +2,15 @@ import type { NextFunction, Request, Response } from "express";
 import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
 import Users from "../models/user-model";
+import config from "../config/config";
+
+const {frontendBaseURL} = config
 
 export const getAllTags = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
     const tagsAggregate = await Users.aggregate([
       { $match: { _id: userId } },
@@ -29,7 +32,7 @@ export const getAllTags = asyncErrorHandler(
 
     const tags = tagsAggregate.length > 0 ? tagsAggregate[0].allTags : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         tags,
@@ -43,7 +46,7 @@ export const getAllSavesWithSpecificTag = asyncErrorHandler(
     const userId = req.user?._id;
     const { tagName } = req.params;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const tagSavesAggregate = await Users.aggregate([
@@ -91,7 +94,7 @@ export const getAllSavesWithSpecificTag = asyncErrorHandler(
     const tagSaves =
       tagSavesAggregate.length > 0 ? tagSavesAggregate[0].tagSaves : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         saves: tagSaves,
@@ -108,7 +111,7 @@ export const addTagstoSaves = asyncErrorHandler(
     const newTagNamesList = req.body?.newTags;
     const tagsList = [];
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     if (newTagNamesList) {
@@ -144,7 +147,7 @@ export const addTagstoSaves = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
     });
   }
@@ -159,7 +162,7 @@ export const editTagsOnSave = asyncErrorHandler(
     const removedTagNamesList = req.body?.removedTags;
     const tagsList = [];
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     if (removedTagNamesList) {
@@ -207,7 +210,7 @@ export const editTagsOnSave = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
     });
   }
@@ -219,7 +222,7 @@ export const editTag = asyncErrorHandler(
     const {tagId} = req.params;
     const newTagName = req.body.newTagName;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const renamedTag = await Users.updateOne(
@@ -238,7 +241,7 @@ export const editTag = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
     });
   }
@@ -249,7 +252,7 @@ export const deleteTags = asyncErrorHandler(
     const userId = req.user?._id;
     const removedTagNamesList = req.body.tags;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const deletedTags = await Users.updateOne(
@@ -267,7 +270,7 @@ export const deleteTags = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(204).json({
+    return res.status(204).json({
       status: "OK",
     });
   }

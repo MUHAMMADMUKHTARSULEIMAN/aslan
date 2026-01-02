@@ -3,12 +3,12 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/confirm-linking/$email")({
+export const Route = createFileRoute("/confirm-linking/$email/$linkingId")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { email } = Route.useParams();
+  const { linkingId, email } = Route.useParams();
 	
   return (
     <div className="w-full mx-8 my-16 flex flex-col items-center">
@@ -24,7 +24,7 @@ function RouteComponent() {
         <span className="font-semibold">{email}</span>?
       </p>
       <Button variant="secondary-full" className=" mb-6">
-        <Link to="/link-account/$email" params={{ email }}>
+        <Link to="/link-account/$linkingId" params={{ linkingId }}>
           Link account
         </Link>
       </Button>

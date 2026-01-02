@@ -2,12 +2,15 @@ import type { NextFunction, Request, Response } from "express";
 import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
 import Users from "../models/user-model";
+import config from "../config/config";
+
+const {frontendBaseURL} = config
 
 export const getAllCollections = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
     const collectionsAggregate = await Users.aggregate([
       { $match: { _id: userId } },
@@ -31,7 +34,7 @@ export const getAllCollections = asyncErrorHandler(
         ? collectionsAggregate[0].allCollections
         : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         collections,
@@ -45,7 +48,7 @@ export const getAllSavesInACollection = asyncErrorHandler(
     const userId = req.user?._id;
     const {collectionName} = req.params;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const collectionSavesAggregate = await Users.aggregate([
@@ -156,7 +159,7 @@ export const getAllSavesInACollection = asyncErrorHandler(
         ? collectionSavesAggregate[0].collectionSaves
         : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         saves: collectionSaves,
@@ -169,7 +172,7 @@ export const createCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const collection = await Users.updateOne(
@@ -183,7 +186,7 @@ export const createCollection = asyncErrorHandler(
       );
       return next(error);
     }
-    res.status(201).json({
+    return res.status(201).json({
       status: "OK",
     });
   }
@@ -195,7 +198,7 @@ export const addSavesToCollection = asyncErrorHandler(
     const {collectionId} = req.params;
     const saveIds = req.body.saveIds;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const addedArticles = await Users.updateOne(
@@ -212,7 +215,7 @@ export const addSavesToCollection = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
     });
   }
@@ -225,7 +228,7 @@ export const editCollection = asyncErrorHandler(
     const editQuery = req.body.updateQuery;
     const removedSaveIds = req.body?.saveIds;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     if (editQuery) {
@@ -270,7 +273,7 @@ export const editCollection = asyncErrorHandler(
       }
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
     });
   }
@@ -281,7 +284,7 @@ export const deleteCollection = asyncErrorHandler(
     const userId = req.user?._id;
     const {collectionId} = req.params;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const deletedCollection = await Users.updateOne(
@@ -296,7 +299,7 @@ export const deleteCollection = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(204).json({
+    return res.status(204).json({
       status: "OK",
     });
   }

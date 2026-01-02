@@ -5,13 +5,16 @@ import Saves from "../models/save-model";
 import CustomError from "../utils/custom-error";
 import Processor from "../utils/processor";
 import Users from "../models/user-model";
+import config from "../config/config";
+
+const {frontendBaseURL} = config
 
 
 export const getSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
     const savesAggregate = await Users.aggregate([
       {
@@ -61,7 +64,7 @@ export const getSaves = asyncErrorHandler(
     const defaultSaves =
       savesAggregate.length > 0 ? savesAggregate[0].defaultSaves : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         saves: defaultSaves,
@@ -75,7 +78,7 @@ export const getSave = asyncErrorHandler(
     const userId = req.user?._id;
     const { saveId } = req.params;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const articleAggregate = await Users.aggregate([
@@ -126,7 +129,7 @@ export const getSave = asyncErrorHandler(
 
 		const article = articleAggregate.length > 0 ? articleAggregate[0].saves : []
 
-		res.status(200).json({
+		return res.status(200).json({
 			status: "OK",
 			data: {
 				article
@@ -146,7 +149,7 @@ export const searchSaves = asyncErrorHandler(
 		}
     const searchRegex = `\\${unescapedSearchString}\\`;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const searchAggregate = await Users.aggregate([
@@ -215,7 +218,7 @@ export const searchSaves = asyncErrorHandler(
     const searchSaves =
       searchAggregate.length > 0 ? searchAggregate[0].searchSaves : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         saves: searchSaves,
@@ -228,7 +231,7 @@ export const getArchives = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
     const archivesAggregate = await Users.aggregate([
       {
@@ -278,7 +281,7 @@ export const getArchives = asyncErrorHandler(
     const archives =
       archivesAggregate.length > 0 ? archivesAggregate[0].archives : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         archives,
@@ -291,7 +294,7 @@ export const getFavourites = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
     const favouritesAggregate = await Users.aggregate([
       {
@@ -342,7 +345,7 @@ export const getFavourites = asyncErrorHandler(
     const favourites =
       favouritesAggregate.length > 0 ? favouritesAggregate[0].favourites : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         favourites,
@@ -357,7 +360,7 @@ export const addSave = asyncErrorHandler(
     const url = req.body.url;
     const reqHTML = req.body?.html;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
     if (typeof url !== "string") {
       const error = new CustomError(400, "A valid URL must be provided");
@@ -392,7 +395,7 @@ export const addSave = asyncErrorHandler(
         return next(error);
       }
 
-      res.status(201).json({
+      return res.status(201).json({
         status: "OK",
       });
     }
@@ -442,7 +445,7 @@ export const addSave = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(201).json({
+    return res.status(201).json({
       status: "OK",
     });
   }
@@ -454,7 +457,7 @@ export const updateSaves = asyncErrorHandler(
     const saveIds = req.body.saveIds;
     const updateQuery = req.body.updates;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
     if (!saveIds) {
       const error = new CustomError(400, `No saveId was provided.`);
@@ -496,7 +499,7 @@ export const updateSaves = asyncErrorHandler(
       const error = new CustomError(404, "Not all articles were updated.");
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
     });
   }
@@ -507,7 +510,7 @@ export const deleteSaves = asyncErrorHandler(
     const userId = req.user?._id;
     const saveIds = req.body.saveIds;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
     if (!saveIds) {
       const error = new CustomError(400, `No id was provided.`);
@@ -556,7 +559,7 @@ export const deleteSaves = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(204).json({
+    return res.status(204).json({
       status: "OK",
     });
   }

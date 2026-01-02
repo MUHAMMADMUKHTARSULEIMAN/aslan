@@ -2,12 +2,15 @@ import type { Request, Response, NextFunction } from "express";
 import Users from "../models/user-model";
 import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
+import config from "../config/config";
+
+const {frontendBaseURL} = config
 
 export const getAllHighlights = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const savesHighlightsAggregate = await Users.aggregate([
@@ -68,7 +71,7 @@ export const getAllHighlights = asyncErrorHandler(
         ? savesHighlightsAggregate[0].savesHighlights
         : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         saves: savesHighlights,
@@ -82,7 +85,7 @@ export const getSaveHighlights = asyncErrorHandler(
     const userId = req.user?._id;
     const {saveId} = req.params;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const highlightsAggregate = await Users.aggregate([
@@ -115,7 +118,7 @@ export const getSaveHighlights = asyncErrorHandler(
     const highlights =
       highlightsAggregate.length > 0 ? highlightsAggregate[0].highlights : [];
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         highlights,
@@ -130,7 +133,7 @@ export const addHighlight = asyncErrorHandler(
     const {saveId} = req.params;
     const highlight = req.body.highlight;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const addedHighlight = await Users.updateOne(
@@ -146,7 +149,7 @@ export const addHighlight = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
     });
   }
@@ -158,7 +161,7 @@ export const updateHighlight = asyncErrorHandler(
     const {saveId, highlightId} = req.params;
     const highlight = req.body.highlight;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     const updatedHighlight = await Users.updateOne(
@@ -178,7 +181,7 @@ export const updateHighlight = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
     });
   }
@@ -190,7 +193,7 @@ export const deleteHighlights = asyncErrorHandler(
     const {saveId} = req.params;
     const highlightIds = req.body?.highlightIds;
     if (!userId) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     if (highlightIds) {
@@ -208,7 +211,7 @@ export const deleteHighlights = asyncErrorHandler(
         return next(error);
       }
 
-      res.status(204).json({
+      return res.status(204).json({
         status: "OK",
       });
     } else {
@@ -221,7 +224,7 @@ export const deleteHighlights = asyncErrorHandler(
         return next(error);
       }
 
-      res.status(204).json({
+      return res.status(204).json({
         status: "OK",
       });
     }

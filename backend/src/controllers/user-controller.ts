@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
 import { getAndDeleteLink } from "./link-controller";
 import sendEmail from "../utils/email";
 import { generateCsrfToken } from "../index";
-import passport from "passport";
+import Sessions from "../models/session-model";
 
 const {
   frontendBaseURL,
@@ -80,53 +80,53 @@ export const googleAuth = asyncErrorHandler(
 
 export const googleAuthCallback = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-		const returnTo = req.signedCookies.returnTo || "/";
-		console.log(req.signedCookies)
-		res.clearCookie("returnTo");
-		res.clearCookie("connect.sid");
+    const returnTo = req.signedCookies.returnTo || "/";
+    res.clearCookie("returnTo");
+		console.log(req.sessionID);
+		await Sessions.deleteOne({_id: req.sessionID})
+    req.session.destroy(() => {});
     const user = req.user;
     if (!user) {
-      res.redirect(`${frontendBaseURL}/sign-in?returnTo=${returnTo}`);
+      return res.redirect(`${frontendBaseURL}/sign-in?returnTo=${returnTo}`);
     } else {
-      console.log(req.session);
-			req.session.destroy(() => {});
-      console.log(req.session);
+      const linkingId = user.linkingId;
+      if (linkingId) {
+        return res.redirect(
+          `${frontendBaseURL}/confirm-linking/${user.email}/${linkingId}`
+        );
+      } else {
+        const accessToken = user.generateAccessToken();
+        const refreshToken = await user.generateRefreshToken(next);
 
-      const info = user.linkingId;
-      if (info) {
-        return res.redirect(`${frontendBaseURL}/confirm-linking/${user.email}`);
+        res.cookie("jwt", accessToken, {
+          sameSite: "lax",
+          signed: true,
+          secure: nodeENV === "production",
+          httpOnly: true,
+          maxAge: JWTCookieExpiry,
+        });
+
+        res.cookie("refresh", refreshToken, {
+          sameSite: "lax",
+          signed: true,
+          secure: nodeENV === "production",
+          httpOnly: true,
+          maxAge: refreshCookieExpiry,
+        });
+				const token = await user.generateResetToken(next);
+
+        const resetURL = `${frontendBaseURL}/reset-password/${token}`;
+        const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
+        const subject = "Sanctum: Google Sign-in";
+
+        sendEmail({
+          email: user.email,
+          subject: subject,
+          message: message,
+        });
+
+        return res.redirect(`${frontendBaseURL}${returnTo}`);
       }
-
-      const accessToken = user.generateAccessToken();
-      const refreshToken = await user.generateRefreshToken(next);
-
-      res.cookie("jwt", accessToken, {
-        sameSite: "lax",
-        signed: true,
-        secure: nodeENV === "production",
-        httpOnly: true,
-        maxAge: JWTCookieExpiry,
-      });
-
-      res.cookie("refresh", refreshToken, {
-        sameSite: "lax",
-        signed: true,
-        secure: nodeENV === "production",
-        httpOnly: true,
-        maxAge: refreshCookieExpiry,
-      });
-
-      const resetURL = `${frontendBaseURL}/`;
-      const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
-      const subject = "Sanctum: Google Sign-in";
-
-      sendEmail({
-        email: user.email,
-        subject: subject,
-        message: message,
-      });
-
-      return res.redirect(`${frontendBaseURL}${returnTo}`);
     }
   }
 );
@@ -134,46 +134,42 @@ export const googleAuthCallback = asyncErrorHandler(
 export const linkAccount = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body;
-    const { email } = req.params;
+    const { linkingId } = req.params;
     if (!password) {
       const error = new CustomError(400, "Password must be provided.");
       return next(error);
     }
 
-    const user = await Users.findOne({ email });
-    if (user) {
-      const linkingId = user.linkingId;
-      if (!linkingId) {
-        const error = new CustomError(400, "Linking ID missing.");
+    if (!linkingId) {
+      const error = new CustomError(400, "Linking ID missing.");
+      return next(error);
+    } else if (typeof linkingId === "string") {
+      const linkingData = await getAndDeleteLink(linkingId);
+      if (!linkingData) {
+        const error = new CustomError(
+          410,
+          "Linking ID has expired. Try again later."
+        );
         return next(error);
-      } else if (typeof linkingId === "string") {
-        const linkingData = await getAndDeleteLink(linkingId);
-        if (!linkingData) {
+      } else {
+        const { user, googleId } = linkingData;
+        if (!(await user.comparePasswords(password))) {
+          const error = new CustomError(400, "Wrong password provided.");
+          return next(error);
+        }
+        const updatedUser = await user.updateOne({ googleId });
+        if (!updatedUser) {
           const error = new CustomError(
-            400,
-            "Linking ID has expired. Try again later."
+            500,
+            "Something went wrong. Try again later."
           );
           return next(error);
-        } else {
-          const { user, googleId } = linkingData;
-          if (!(await user.comparePasswords(password))) {
-            const error = new CustomError(400, "Wrong password provided.");
-            return next(error);
-          }
-          const updatedUser = await user.updateOne({ googleId });
-          if (!updatedUser) {
-            const error = new CustomError(
-              500,
-              "Something went wrong. Try again later."
-            );
-            return next(error);
-          }
-
-          const message = `Your Sanctum account has been successfully linked to Google. You can now sign in to your Sanctum account using Google.`;
-          const subject = "Sanctum: Account Linking";
-
-          signInResponse(user, res, next, 201, subject, message);
         }
+
+        const message = `Your Sanctum account has been successfully linked to Google. You can now sign in to your Sanctum account using Google.`;
+        const subject = "Sanctum: Account Linking";
+
+        signInResponse(user, res, next, 201, subject, message);
       }
     }
   }
@@ -182,6 +178,7 @@ export const linkAccount = asyncErrorHandler(
 export const emailRegistration = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
+		const returnTo = req.query.returnTo as string || "/"
     console.log(email);
 
     if (!email) {
@@ -201,7 +198,7 @@ export const emailRegistration = asyncErrorHandler(
         html: "",
       });
 
-      res.status(201).json({
+      return res.status(201).json({
         status: "OK",
         message:
           "Verification link sent successfully. It expires in 15 minutes.",
@@ -213,7 +210,7 @@ export const emailRegistration = asyncErrorHandler(
       }
 
       const token = await userEmail.generateVerificationToken(next);
-      const verificationUrl = `${frontendBaseURL}/sign-up/${email}/${token}`;
+      const verificationUrl = `${frontendBaseURL}/sign-up/${email}/${token}?returnTo=${returnTo}`;
       const message = `Please use the link below to verify your email.\n\n${verificationUrl}\n\nThe link expires in 15 minutes.\n\nYou can safely ignore this email if you did not register your email at Sanctum.`;
 
       sendEmail({
@@ -223,7 +220,7 @@ export const emailRegistration = asyncErrorHandler(
         html: "",
       });
 
-      res.status(201).json({
+      return res.status(201).json({
         status: "OK",
         message:
           "Verification link sent successfully. It expires in 15 minutes.",
@@ -325,13 +322,15 @@ export const userSignIn = asyncErrorHandler(
     if (!user || !(await user?.comparePasswords(password))) {
       const error = new CustomError(400, "Invalid credentials.");
       return next(error);
-    }
-
-    const resetURL = `${frontendBaseURL}/`;
-    const message = `Your Sanctum was just signed into using your email address. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
-    const subject = "Sanctum: Email Sign-in";
-
-    await signInResponse(user, res, next, 201, subject, message);
+    } else {
+			const token = await user.generateResetToken(next);
+			
+			const resetURL = `${frontendBaseURL}/reset-password/${token}`;
+			const message = `Your Sanctum was just signed into using your email address. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
+			const subject = "Sanctum: Email Sign-in";
+			
+			await signInResponse(user, res, next, 201, subject, message);
+		}
   }
 );
 
@@ -383,7 +382,7 @@ export const protectRoutes = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const JWT = req.signedCookies.jwt;
     if (!JWT) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     }
 
     // @ts-expect-error
@@ -395,10 +394,10 @@ export const protectRoutes = asyncErrorHandler(
 
     const user = await Users.findById(id);
     if (!user) {
-      res.redirect("/sign-in");
+      return res.redirect(`${frontendBaseURL}/sign-in`);
     } else {
       if (user.isPasswordModified(iat)) {
-        res.redirect("/sign-in");
+        return res.redirect(`${frontendBaseURL}/sign-in`);
       }
 
       req.user = user;
@@ -412,7 +411,7 @@ export const restrictUsers = (level: number): RequestHandler => {
     async (req: Request, res: Response, next: NextFunction) => {
       const user = req.user;
       if (!user) {
-        res.redirect("/sign-in");
+        return res.redirect(`${frontendBaseURL}/sign-in`);
       } else {
         const key = Object.keys(user.level)[0];
         if (user.level[key] < level) {
@@ -451,7 +450,6 @@ export const forgotPassword = asyncErrorHandler(
     } else {
       const token = await user.generateResetToken(next);
 
-      // send email with token
       const resetURL = `${frontendBaseURL}/reset-password/${token}`;
       const message = `Use the link below to reset your password. It expires in 10 minutes.\n\n${resetURL}\n\nIf you did not perform this action, you can safely ignore this email.\n\nAnd don't forget that we will never ask you for your password, a token or any other sensitive info. Thank you.`;
 
@@ -463,7 +461,7 @@ export const forgotPassword = asyncErrorHandler(
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       message:
         "Password reset link sent successfully. It expires in 10 minutes.",
@@ -518,7 +516,7 @@ export const resetPassword = asyncErrorHandler(
 export const getCSRFToken = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const CSRFToken = generateCsrfToken(req, res);
-    res.status(200).json({
+    return res.status(200).json({
       status: "OK",
       data: {
         token: CSRFToken,

@@ -9,13 +9,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import z from "zod/v4";
 
-export const Route = createFileRoute("/link-account/$email")({
+export const Route = createFileRoute("/link-account/$linkingId")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const { email } = Route.useParams();
+  const { linkingId } = Route.useParams();
 
   const formSchema = z.object({
     password: z.string().min(1, "Field is required."),
@@ -33,7 +33,7 @@ function RouteComponent() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:2020/api/link-account/${email}`,
+        `http://127.0.0.1:2020/api/link-account/${linkingId}`,
         {
           method: "POST",
           headers: {
@@ -67,8 +67,7 @@ function RouteComponent() {
       </Link>
       <h3 className="font-medium text-xl mb-6 text-center">Verify password</h3>
       <p className="mb-6 text-sm text-balance text-center wrap-anywhere">
-        Verify password for <span className="font-semibold">{email}</span> to
-        enable Google sign-in.
+        Enter password to continue.
       </p>
       <div className="w-full">
         <Form {...form}>

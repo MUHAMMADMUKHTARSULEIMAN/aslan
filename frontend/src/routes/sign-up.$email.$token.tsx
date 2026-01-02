@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useSearch,
+} from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
@@ -13,13 +18,23 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import FloatingLabelPassword from "@/components/floating-label-password";
 
+const redirectSearchSchema = z.object({
+  returnTo: z.string().optional(),
+});
+
 export const Route = createFileRoute("/sign-up/$email/$token")({
   component: RouteComponent,
+  validateSearch: (search) => redirectSearchSchema.parse(search),
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
   const { email, token } = Route.useParams();
+  const search = useSearch({
+    from: "/sign-up/$email/$token",
+  });
+
+	const returnTo = search.returnTo || "/"
 
   const hasUppercase = new RegExp(".*[A-Z].*");
   const hasLowercase = new RegExp(".*[a-z].*");
@@ -128,7 +143,7 @@ function RouteComponent() {
       const data = await response.json();
       if (data.status === "OK") {
         ToastSuccess(data?.message);
-				await navigate({ to: "/", replace: true });
+        await navigate({ to: returnTo, replace: true });
       } else {
         ToastError(data?.message);
       }

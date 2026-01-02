@@ -13,8 +13,7 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as RegisterEmailRouteImport } from './routes/register-email'
 import { Route as HeaderLayoutRouteImport } from './routes/_header-layout'
 import { Route as HeaderLayoutIndexRouteImport } from './routes/_header-layout/index'
-import { Route as LinkAccountEmailRouteImport } from './routes/link-account.$email'
-import { Route as ConfirmLinkingEmailRouteImport } from './routes/confirm-linking.$email'
+import { Route as LinkAccountLinkingIdRouteImport } from './routes/link-account.$linkingId'
 import { Route as HeaderLayoutTagsRouteImport } from './routes/_header-layout/tags'
 import { Route as HeaderLayoutSavesRouteImport } from './routes/_header-layout/saves'
 import { Route as HeaderLayoutHomeRouteImport } from './routes/_header-layout/home'
@@ -25,6 +24,7 @@ import { Route as HeaderLayoutDiscoverRouteImport } from './routes/_header-layou
 import { Route as HeaderLayoutCollectionsRouteImport } from './routes/_header-layout/collections'
 import { Route as HeaderLayoutArchiveRouteImport } from './routes/_header-layout/archive'
 import { Route as SignUpEmailTokenRouteImport } from './routes/sign-up.$email.$token'
+import { Route as ConfirmLinkingEmailLinkingIdRouteImport } from './routes/confirm-linking.$email.$linkingId'
 
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
@@ -45,14 +45,9 @@ const HeaderLayoutIndexRoute = HeaderLayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => HeaderLayoutRoute,
 } as any)
-const LinkAccountEmailRoute = LinkAccountEmailRouteImport.update({
-  id: '/link-account/$email',
-  path: '/link-account/$email',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConfirmLinkingEmailRoute = ConfirmLinkingEmailRouteImport.update({
-  id: '/confirm-linking/$email',
-  path: '/confirm-linking/$email',
+const LinkAccountLinkingIdRoute = LinkAccountLinkingIdRouteImport.update({
+  id: '/link-account/$linkingId',
+  path: '/link-account/$linkingId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HeaderLayoutTagsRoute = HeaderLayoutTagsRouteImport.update({
@@ -105,6 +100,12 @@ const SignUpEmailTokenRoute = SignUpEmailTokenRouteImport.update({
   path: '/sign-up/$email/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfirmLinkingEmailLinkingIdRoute =
+  ConfirmLinkingEmailLinkingIdRouteImport.update({
+    id: '/confirm-linking/$email/$linkingId',
+    path: '/confirm-linking/$email/$linkingId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/register-email': typeof RegisterEmailRoute
@@ -118,9 +119,9 @@ export interface FileRoutesByFullPath {
   '/home': typeof HeaderLayoutHomeRoute
   '/saves': typeof HeaderLayoutSavesRoute
   '/tags': typeof HeaderLayoutTagsRoute
-  '/confirm-linking/$email': typeof ConfirmLinkingEmailRoute
-  '/link-account/$email': typeof LinkAccountEmailRoute
+  '/link-account/$linkingId': typeof LinkAccountLinkingIdRoute
   '/': typeof HeaderLayoutIndexRoute
+  '/confirm-linking/$email/$linkingId': typeof ConfirmLinkingEmailLinkingIdRoute
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
 }
 export interface FileRoutesByTo {
@@ -135,9 +136,9 @@ export interface FileRoutesByTo {
   '/home': typeof HeaderLayoutHomeRoute
   '/saves': typeof HeaderLayoutSavesRoute
   '/tags': typeof HeaderLayoutTagsRoute
-  '/confirm-linking/$email': typeof ConfirmLinkingEmailRoute
-  '/link-account/$email': typeof LinkAccountEmailRoute
+  '/link-account/$linkingId': typeof LinkAccountLinkingIdRoute
   '/': typeof HeaderLayoutIndexRoute
+  '/confirm-linking/$email/$linkingId': typeof ConfirmLinkingEmailLinkingIdRoute
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
 }
 export interface FileRoutesById {
@@ -154,9 +155,9 @@ export interface FileRoutesById {
   '/_header-layout/home': typeof HeaderLayoutHomeRoute
   '/_header-layout/saves': typeof HeaderLayoutSavesRoute
   '/_header-layout/tags': typeof HeaderLayoutTagsRoute
-  '/confirm-linking/$email': typeof ConfirmLinkingEmailRoute
-  '/link-account/$email': typeof LinkAccountEmailRoute
+  '/link-account/$linkingId': typeof LinkAccountLinkingIdRoute
   '/_header-layout/': typeof HeaderLayoutIndexRoute
+  '/confirm-linking/$email/$linkingId': typeof ConfirmLinkingEmailLinkingIdRoute
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
 }
 export interface FileRouteTypes {
@@ -173,9 +174,9 @@ export interface FileRouteTypes {
     | '/home'
     | '/saves'
     | '/tags'
-    | '/confirm-linking/$email'
-    | '/link-account/$email'
+    | '/link-account/$linkingId'
     | '/'
+    | '/confirm-linking/$email/$linkingId'
     | '/sign-up/$email/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -190,9 +191,9 @@ export interface FileRouteTypes {
     | '/home'
     | '/saves'
     | '/tags'
-    | '/confirm-linking/$email'
-    | '/link-account/$email'
+    | '/link-account/$linkingId'
     | '/'
+    | '/confirm-linking/$email/$linkingId'
     | '/sign-up/$email/$token'
   id:
     | '__root__'
@@ -208,9 +209,9 @@ export interface FileRouteTypes {
     | '/_header-layout/home'
     | '/_header-layout/saves'
     | '/_header-layout/tags'
-    | '/confirm-linking/$email'
-    | '/link-account/$email'
+    | '/link-account/$linkingId'
     | '/_header-layout/'
+    | '/confirm-linking/$email/$linkingId'
     | '/sign-up/$email/$token'
   fileRoutesById: FileRoutesById
 }
@@ -218,8 +219,8 @@ export interface RootRouteChildren {
   HeaderLayoutRoute: typeof HeaderLayoutRouteWithChildren
   RegisterEmailRoute: typeof RegisterEmailRoute
   SignInRoute: typeof SignInRoute
-  ConfirmLinkingEmailRoute: typeof ConfirmLinkingEmailRoute
-  LinkAccountEmailRoute: typeof LinkAccountEmailRoute
+  LinkAccountLinkingIdRoute: typeof LinkAccountLinkingIdRoute
+  ConfirmLinkingEmailLinkingIdRoute: typeof ConfirmLinkingEmailLinkingIdRoute
   SignUpEmailTokenRoute: typeof SignUpEmailTokenRoute
 }
 
@@ -253,18 +254,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HeaderLayoutIndexRouteImport
       parentRoute: typeof HeaderLayoutRoute
     }
-    '/link-account/$email': {
-      id: '/link-account/$email'
-      path: '/link-account/$email'
-      fullPath: '/link-account/$email'
-      preLoaderRoute: typeof LinkAccountEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/confirm-linking/$email': {
-      id: '/confirm-linking/$email'
-      path: '/confirm-linking/$email'
-      fullPath: '/confirm-linking/$email'
-      preLoaderRoute: typeof ConfirmLinkingEmailRouteImport
+    '/link-account/$linkingId': {
+      id: '/link-account/$linkingId'
+      path: '/link-account/$linkingId'
+      fullPath: '/link-account/$linkingId'
+      preLoaderRoute: typeof LinkAccountLinkingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_header-layout/tags': {
@@ -337,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpEmailTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/confirm-linking/$email/$linkingId': {
+      id: '/confirm-linking/$email/$linkingId'
+      path: '/confirm-linking/$email/$linkingId'
+      fullPath: '/confirm-linking/$email/$linkingId'
+      preLoaderRoute: typeof ConfirmLinkingEmailLinkingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -374,8 +375,8 @@ const rootRouteChildren: RootRouteChildren = {
   HeaderLayoutRoute: HeaderLayoutRouteWithChildren,
   RegisterEmailRoute: RegisterEmailRoute,
   SignInRoute: SignInRoute,
-  ConfirmLinkingEmailRoute: ConfirmLinkingEmailRoute,
-  LinkAccountEmailRoute: LinkAccountEmailRoute,
+  LinkAccountLinkingIdRoute: LinkAccountLinkingIdRoute,
+  ConfirmLinkingEmailLinkingIdRoute: ConfirmLinkingEmailLinkingIdRoute,
   SignUpEmailTokenRoute: SignUpEmailTokenRoute,
 }
 export const routeTree = rootRouteImport

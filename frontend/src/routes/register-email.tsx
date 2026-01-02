@@ -44,7 +44,7 @@ function RouteComponent() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch("http://127.0.0.1:2020/api/register-email", {
+      const response = await fetch(`http://127.0.0.1:2020/api/register-email?returnTo=${returnTo}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

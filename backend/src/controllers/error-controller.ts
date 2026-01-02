@@ -26,7 +26,7 @@ export interface CustomErrorType extends Error {
 }
 
 const devErrors = (error: CustomErrorType, res: Response) => {
-  res.status(error.statusCode).json({
+  return res.status(error.statusCode).json({
     statusCode: error.statusCode,
     status: error.status,
     message: error.message,
@@ -37,13 +37,13 @@ const devErrors = (error: CustomErrorType, res: Response) => {
 
 const prodErrors = (error: CustomErrorType, res: Response) => {
   if (error.isOperational) {
-    res.status(error.statusCode).json({
+    return res.status(error.statusCode).json({
       statusCode: error.statusCode,
       status: error.status,
       message: error.message,
     });
   } else {
-    res.status(500).json({
+    return res.status(500).json({
       statusCode: 500,
       status: "Internal Server Error",
       message: "Something went wrong. Try again later.",

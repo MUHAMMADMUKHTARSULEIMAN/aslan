@@ -52,7 +52,7 @@ export const addFeedURL = asyncErrorHandler(
       return next(error);
     }
 
-    res.status(201).json({
+    return res.status(201).json({
       status: "OK",
     });
   }

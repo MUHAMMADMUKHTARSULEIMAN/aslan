@@ -25,7 +25,7 @@ const limiter = rateLimit({
   message: "Too many requests from this address. Try again later.",
   handler: asyncErrorHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      res.status(429).json({
+      return res.status(429).json({
         status: "Too Many Requests",
         message: "Rate limit exceeded. Wait a moment.",
       });
@@ -42,7 +42,6 @@ router.route("/login/federated/google").get(
   passport.authenticate("google", {
     scope: ["profile", "email"],
     prompt: "select_account",
-		session: false,
   })
 );
 
@@ -50,7 +49,7 @@ router
   .route("/google/redirect")
   .get(passport.authenticate("google"), googleAuthCallback);
 
-router.route("/link-account/:email").post(linkAccount);
+router.route("/link-account/:linkingId").post(linkAccount);
 
 router.route("/register-email").post(limiter, emailRegistration);
 
