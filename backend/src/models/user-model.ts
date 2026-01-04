@@ -172,8 +172,9 @@ userSchema.methods.isPasswordModified = function (
   if (this.passwordLastModified) {
     const timestamp = this.passwordLastModified.getTime() / 1000;
     return JWTTimestamp < timestamp;
-  }
-  return false;
+  } else {
+		return false;
+	}
 };
 
 userSchema.methods.generateAccessToken = function (): string {

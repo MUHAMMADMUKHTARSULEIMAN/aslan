@@ -6,6 +6,8 @@ import Processor from "../utils/processor";
 import Feeds from "../models/feed-model";
 import CustomError from "../utils/custom-error";
 import Discoveries from "../models/discovery-model";
+import Users from "../models/user-model";
+import jwt from "jsonwebtoken";
 
 interface Discovery {
   url: string;
@@ -54,7 +56,9 @@ export const createFeeds = asyncErrorHandler(
                     image = item.enclosure.url;
                   } else if (item.itunesImage) {
                     image = item.itunesImage.$.href;
-                  } else if (processor.findThumbnail(HTML, item.link) !== null) {
+                  } else if (
+                    processor.findThumbnail(HTML, item.link) !== null
+                  ) {
                     image = processor.findThumbnail(HTML, item.link);
                   } else {
                     if (!BingIotD) {
@@ -66,7 +70,9 @@ export const createFeeds = asyncErrorHandler(
                     }
                     image = BingIotD;
                   }
-                  const siteName = processor.findSiteName(HTML) || processor.getHostname(item.link);
+                  const siteName =
+                    processor.findSiteName(HTML) ||
+                    processor.getHostname(item.link);
                   const discovery: Discovery = {
                     url: item.link,
                     title: article.title,
@@ -90,14 +96,8 @@ export const createFeeds = asyncErrorHandler(
                 }
               }
             }
-            if (j === 1) {
-              break;
-            }
           }
         }
-      }
-      if (i === 1) {
-        break;
       }
     }
 
@@ -121,5 +121,20 @@ export const createFeeds = asyncErrorHandler(
     return res.status(201).json({
       status: "OK",
     });
+  }
+);
+
+export const getSelectFeeds = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const JWT = req.signedCookies.jwt;
+
+    // @ts-expect-error
+    const decodedToken = await promisify(jwt.verify)(JWT, JWTSecret);
+    const id = decodedToken.id;
+
+    const user = await Users.findById(id);
+		const name = user?.firstName
+
+		const feedAggregate = await Discoveries.aggregate([])
   }
 );

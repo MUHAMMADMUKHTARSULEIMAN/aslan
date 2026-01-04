@@ -393,13 +393,9 @@ export const protectRoutes = asyncErrorHandler(
     const iat = decodedToken.iat;
 
     const user = await Users.findById(id);
-    if (!user) {
+    if (!user || user.isPasswordModified(iat)) {
       return res.redirect(`${frontendBaseURL}/sign-in`);
     } else {
-      if (user.isPasswordModified(iat)) {
-        return res.redirect(`${frontendBaseURL}/sign-in`);
-      }
-
       req.user = user;
       next();
     }
