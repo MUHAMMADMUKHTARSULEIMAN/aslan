@@ -74,12 +74,11 @@ app.use(
     }),
   })
 );
-app.use(passport.session())
 initializeGooglePassport();
-app.use("/api", userRouter);
+app.use("/api", userRouter, discoveryRouter);
 app.use(refreshAccessToken);
 app.use(doubleCsrfProtection);
-app.use("/api", feedRouter, discoveryRouter, userRouter);
+app.use("/api", feedRouter);
 app.use("/api/saves", saveRouter);
 app.use("/api/saves/tags", tagRouter);
 app.use("/api/saves/highlights", highlightRouter);

@@ -204,6 +204,11 @@ code {
 }
 
 @theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -230,10 +235,6 @@ code {
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -244,36 +245,28 @@ code {
   --color-sidebar-ring: var(--sidebar-ring);
   --color-article-foreground: var(--article-foreground);
   --color-article-background: var(--article-background);
-	
 	--color-red-dark: var(--red-dark);
   --color-red-light: var(--red-light);
-  
   --color-green-dark: var(--green-dark);
   --color-green-light: var(--green-light);
-
   --color-blue-dark: var(--blue-dark);
   --color-blue-light: var(--blue-light);
-
   --color-cyan-dark: var(--cyan-dark);
   --color-cyan-light: var(--cyan-light);
-	
   --color-magenta-dark: var(--magenta-dark);
   --color-magenta-light: var(--magenta-light);
-	
   --color-yellow-dark: var(--yellow-dark);
   --color-yellow-light: var(--yellow-light);
-	
   --color-orange-dark: var(--orange-dark);
   --color-orange-light: var(--orange-light);
-	
   --color-violet-dark: var(--violet-dark);
   --color-violet-light: var(--violet-light);
-	
   --color-teal-dark: var(--teal-dark);
   --color-teal-light: var(--teal-light);
-	
   --color-gold-dark: var(--gold-dark);
   --color-gold-light: var(--gold-light);
+
+	--font-alegreya: "Alegreya", sans-serif
 }
 
 @layer base {

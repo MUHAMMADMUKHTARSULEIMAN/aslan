@@ -1,4 +1,4 @@
-import { SavesCard } from "@/components/saves-card";
+import SavesCard from "@/components/saves-card";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_header-layout/saves")({

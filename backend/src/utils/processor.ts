@@ -1,5 +1,5 @@
 import { Readability, isProbablyReaderable } from "@mozilla/readability";
-import axios from "axios";
+import { request } from "undici";
 import { JSDOM } from "jsdom";
 import * as cheerio from "cheerio";
 import CustomError from "../utils/custom-error";
@@ -44,34 +44,31 @@ class Processor {
       return null;
     }
   }
-  public async fetchHTML(URL: string): Promise<string | null> {
-    try {
-      const response = await axios.get(URL, {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-          Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-          "Accept-Language": "en-US,en;q=0.5",
-          Connection: "keep-alive",
-        },
-        timeout: 10000,
-        responseType: "text",
-      });
+  public async fetchHTML(
+    URL: string
+  ): Promise<string | null | void> {
+    const { statusCode, body } = await request(URL, {
+      method: "GET",
+      headers: {
+        "user-agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        connection: "keep-alive",
+      },
+    });
 
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const err = new CustomError(error.response.status, error.message);
-        logger(JSON.stringify(err));
-      } else {
-        const err = new CustomError(
-          400,
-          `Unable to fetch HTML from provided URL. Check URL and try again.`
-        );
-        logger(JSON.stringify(err));
-      }
-      return null;
+    if (statusCode !== 200) {
+      await body.dump();
+      const message =
+        statusCode < 500
+          ? "Check url and try again."
+          : "Something went wrong. Try again later.";
+      const error = new CustomError(statusCode, message);
+			logger(JSON.stringify(error))
+    } else {
+      return await body.text();
     }
   }
 
@@ -149,18 +146,11 @@ class Processor {
 
   public findSiteName(HTML: string): string | null {
     const $ = cheerio.load(HTML);
-    const script = $('script[type="application/ld+json"]').html();
-    let scriptJSON;
-    if (script) {
-      scriptJSON = JSON.parse(script);
-    }
-    const schemaName: string = scriptJSON?.publisher?.name || scriptJSON?.name;
     return (
       $('meta[property="og:site_name"]').attr("content") ||
       $('meta[name="og:site_name"]').attr("content") ||
       $('meta[name="application-name"]').attr("content") ||
       $('meta[name="twitter:site:id"]').attr("content") ||
-      schemaName ||
       $('meta[itemprop="name"]').attr("content") ||
       $('meta[name="apple-mobile-web-app-title"]').attr("content") ||
       null
@@ -169,20 +159,12 @@ class Processor {
 
   public findPublishedTime(HTML: string): string | null {
     const $ = cheerio.load(HTML);
-    const script = $('script[type="application/ld+json"]').html();
-    let schemaDate;
-    let scriptJSON;
-    if (script) {
-      scriptJSON = JSON.parse(script);
-    }
-    schemaDate = scriptJSON?.datePublished;
     return (
       $("time").attr("datetime") ||
       $("time").text() ||
       $('meta[name="date"]').attr("content") ||
       $('meta[property="article:published_time"]').attr("content") ||
       $('meta[name="article:published_time"]').attr("content") ||
-      schemaDate ||
       $('meta[name="DC.date"]').attr("content") ||
       $('meta[itemprop="datePublished"]').attr("content") ||
       $('meta[property="published_time"]').attr("content") ||
@@ -193,17 +175,10 @@ class Processor {
 
   public findTitle(HTML: string): string | null {
     const $ = cheerio.load(HTML);
-    const script = $('script[type="application/ld+json"]').html();
-    let scriptJSON;
-    if (script) {
-      scriptJSON = JSON.parse(script);
-    }
-    const schemaHeadline = scriptJSON?.headline;
     return (
       $("title").text() ||
       $("h1").first().text() ||
       $('meta[property="og:title"]').attr("content") ||
-      schemaHeadline ||
       $('meta[name="DC.title"]').attr("content") ||
       $('meta[name="twitter:title"]').attr("content") ||
       $('meta[name="og:title"]').attr("content") ||
@@ -294,14 +269,8 @@ class Processor {
 
   public findAuthor(HTML: string): string | null {
     const $ = cheerio.load(HTML);
-    const script = $('script[type="application/ld+json"]').html();
-    let scriptJSON;
-    if (script) {
-      scriptJSON = JSON.parse(script);
-    }
-    const schemaAuthor = scriptJSON?.author?.name;
+
     return (
-      schemaAuthor ||
       $('meta[name="author"]').attr("content") ||
       $('meta[property="article:author"]').attr("content") ||
       $('meta[name="twitter:creator:id"]').attr("content") ||

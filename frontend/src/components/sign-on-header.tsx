@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "./ui/button";
 
-export const SignOnHeader = () => {
+const SignOnHeader = () => {
   const logged = false;
   return (
     <div className="sticky w-full min-w-screen bg-background top-0 left-0 right-0 z-50">
@@ -17,13 +17,13 @@ export const SignOnHeader = () => {
             </Link>
           </div>
           <div className="flex gap-2 items-center">
-						{
-							logged ? 
-							"" :
-            <Button variant="first" className="font-bold">
-              <Link to="/register-email">Sign up</Link>
-            </Button>
-						}
+            {logged ? (
+              ""
+            ) : (
+              <Button variant="first" className="font-bold">
+                <Link to="/register-email">Sign up</Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -31,3 +31,5 @@ export const SignOnHeader = () => {
     </div>
   );
 };
+
+export default SignOnHeader;

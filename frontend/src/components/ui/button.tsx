@@ -19,13 +19,12 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-none hover:bg-secondary/80",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary font-normal underline-offset-2 hover:underline text-base cursor-pointer",
-				first: "bg-emerald-200 dark:bg-emerald-950/75 text-emerald-950 dark:text-emerald-200 hover:bg-emerald-200/60 dark:hover:bg-emerald-950/50 shadow-xs cursor-pointer",
-				"first-link": "text-sm font-normal text-primary hover:underline underline-offset-2 cursor-pointer p-0 m-0",
-				"first-icon": "h-auto w-auto p-0 bg-inherit text-inherit hover:text-emerald-600 dark:hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 cursor-pointer",
+        link: "text-primary font-normal hover:underline hover:underline-offset-2 cursor-pointer",
+				"first-icon": "p-0 bg-inherit text-inherit hover:text-emerald-600 dark:hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 cursor-pointer",
+				first: "bg-emerald-200 text-emerald-950 dark:bg-emerald-950/75 dark:text-emerald-200 hover:bg-emerald-200/60 dark:hover:bg-emerald-950/50 shadow-xs cursor-pointer",
 				"sign-on": "bg-card/50 hover:bg-card/90 dark:hover:bg-card/20 text-inherit border-2 border-input/50 dark:border-input/20 rounded-xl shadow-xs cursor-pointer",
 				"nav-icon": "hover:text-emerald-800 dark:hover:text-emerald-200 bg-background text-foreground",
-				"card-save-ghost": "bg-inherit text-inherit hover:bg-secondary/80 dark:hover:bg-secondary hover:text-secondary-foreground border-2 border-border/20 dark:border-input/20 hover:border-none",
+				"card-save": "bg-emerald-100 text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground border-2 border-emerald-600/25 hover:border-primary dark:hover:border-primary",
 				"secondary-full":
           "w-full py-5 bg-secondary text-secondary-foreground shadow-none hover:bg-secondary/80",
       },

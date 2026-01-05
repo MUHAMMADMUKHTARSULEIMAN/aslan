@@ -16,7 +16,6 @@ const discoverySchema = new mongoose.Schema({
   },
   excerpt: {
     type: String,
-    required: [false, "Excerpt not provided"],
   },
   siteName: {
     type: String,
@@ -28,7 +27,6 @@ const discoverySchema = new mongoose.Schema({
   },
   length: {
     type: Number,
-    required: [true, "Length of article not provided"],
   },
   categories: {
     type: [String],

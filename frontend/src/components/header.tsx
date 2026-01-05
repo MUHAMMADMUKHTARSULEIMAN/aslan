@@ -4,11 +4,11 @@ import { useSidebar } from "./ui/sidebar";
 import { Link } from "@tanstack/react-router";
 import { Button } from "./ui/button";
 
-interface HeaderProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
+interface DefaultComponentProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   pathname: string;
 }
 
-const Header = React.forwardRef<HTMLDivElement, HeaderProps>(({ pathname }, ref) => {
+const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(({ pathname }, ref) => {
   const { toggleSidebar } = useSidebar();
   const logged = false;
   return (

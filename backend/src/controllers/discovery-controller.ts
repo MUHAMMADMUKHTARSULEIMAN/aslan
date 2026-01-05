@@ -8,6 +8,10 @@ import CustomError from "../utils/custom-error";
 import Discoveries from "../models/discovery-model";
 import Users from "../models/user-model";
 import jwt from "jsonwebtoken";
+import { promisify } from "util";
+import config from "../config/config";
+
+const { JWTSecret } = config;
 
 interface Discovery {
   url: string;
@@ -31,6 +35,7 @@ export const createFeeds = asyncErrorHandler(
     let BingIotD = null;
     let discoveriesContainer: Array<Discovery> = [];
     for (let i = 0; i < feeds.length; i++) {
+			console.log(i)
       const name = feeds[i].name;
       const url = feeds[i].url;
       const categories = feeds[i].categories;
@@ -38,63 +43,64 @@ export const createFeeds = asyncErrorHandler(
       if (feed) {
         if (feed.items.length > 0) {
           for (let j = 0; j < feed.items.length; j++) {
+						console.log(j)
             const item = feed.items[j];
             if (typeof item.link === "string") {
               const HTML = await processor.fetchHTML(item.link);
               if (HTML) {
-                const article = processor.extractContent(HTML);
-                if (article) {
-                  let image = null;
-                  if (item.mediaContent) {
-                    image = item.mediaContent.$.url;
-                  } else if (item.mediaThumbnail) {
-                    image = item.mediaThumbnail.$.url;
-                  } else if (
-                    item.enclosure &&
-                    item.enclosure.type === "image/jpeg"
-                  ) {
-                    image = item.enclosure.url;
-                  } else if (item.itunesImage) {
-                    image = item.itunesImage.$.href;
-                  } else if (
-                    processor.findThumbnail(HTML, item.link) !== null
-                  ) {
-                    image = processor.findThumbnail(HTML, item.link);
-                  } else {
-                    if (!BingIotD) {
-                      const fetchBingIotD = await axios(
-                        "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US"
-                      );
-                      const imageURLEnd = fetchBingIotD.data.images[0].url;
-                      BingIotD = `https://www.bing.com${imageURLEnd}`;
-                    }
-                    image = BingIotD;
+                const title = processor.findTitle(HTML);
+                if (!title) break;
+                const excerpt = processor.findDescription(HTML, 200) || "";
+                const length = processor.findLength(HTML) || 0;
+                let image = null;
+                if (item.mediaContent) {
+                  image = item.mediaContent.$.url;
+                } else if (item.mediaThumbnail) {
+                  image = item.mediaThumbnail.$.url;
+                } else if (
+                  item.enclosure &&
+                  item.enclosure.type === "image/jpeg"
+                ) {
+                  image = item.enclosure.url;
+                } else if (item.itunesImage) {
+                  image = item.itunesImage.$.href;
+                } else if (processor.findThumbnail(HTML, item.link) !== null) {
+                  image = processor.findThumbnail(HTML, item.link);
+                } else {
+                  if (!BingIotD) {
+                    const fetchBingIotD = await axios(
+                      "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US"
+                    );
+                    const imageURLEnd = fetchBingIotD.data.images[0].url;
+                    BingIotD = `https://www.bing.com${imageURLEnd}`;
                   }
-                  const siteName =
-                    processor.findSiteName(HTML) ||
-                    processor.getHostname(item.link);
-                  const discovery: Discovery = {
-                    url: item.link,
-                    title: article.title,
-                    image,
-                    excerpt: article.excerpt,
-                    siteName,
-                    feedName: name,
-                    length: article.length,
-                    categories: categories,
-                  };
-                  let checker = false;
-                  for (let k = 0; k < discoveriesContainer.length; k++) {
-                    if (discovery.url === discoveriesContainer[k].url) {
-                      checker = true;
-                      break;
-                    }
-                  }
-                  if (!checker) {
-                    discoveriesContainer.push(discovery);
+                  image = BingIotD;
+                }
+                const siteName =
+                  processor.findSiteName(HTML) ||
+                  processor.getHostname(item.link);
+                const discovery: Discovery = {
+                  url: item.link,
+                  title,
+                  image,
+                  excerpt,
+                  siteName,
+                  feedName: name,
+                  length,
+                  categories: categories,
+                };
+                let checker = false;
+                for (let k = 0; k < discoveriesContainer.length; k++) {
+                  if (discovery.url === discoveriesContainer[k].url) {
+                    checker = true;
+                    break;
                   }
                 }
+                if (!checker) {
+                  discoveriesContainer.push(discovery);
+                }
               }
+              if (j === 5) break;
             }
           }
         }
@@ -124,17 +130,88 @@ export const createFeeds = asyncErrorHandler(
   }
 );
 
-export const getSelectFeeds = asyncErrorHandler(
+export const getSelectedFeeds = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const JWT = req.signedCookies.jwt;
+    let id;
+    let user;
 
-    // @ts-expect-error
-    const decodedToken = await promisify(jwt.verify)(JWT, JWTSecret);
-    const id = decodedToken.id;
+    if (JWT) {
+      // @ts-expect-error
+      const decodedToken = await promisify(jwt.verify)(JWT, JWTSecret);
+      // @ts-expect-error
+      id = decodedToken.id;
+      user = await Users.findById(id);
+    }
 
-    const user = await Users.findById(id);
-		const name = user?.firstName
+    const name = user?.firstName;
 
-		const feedAggregate = await Discoveries.aggregate([])
+    const categories = [
+      "business",
+      "health and fitness",
+      "politics",
+      "science",
+      "self improvement",
+      "technology",
+      "travel",
+    ];
+
+    const feedAggregate = await Discoveries.aggregate([
+      {
+        $match: {
+          categories: { $in: categories },
+        },
+      },
+      { $unwind: "$categories" },
+      {
+        $match: {
+          categories: { $in: categories },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          newcategories: { $push: "$categories" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          newcategories: 1,
+        },
+      },
+      // {
+      //   $group: {
+      //     _id: "categories",
+      //     articles: {
+      //       $push: {
+      //         _id: "$_id",
+      //         url: "$url",
+      //         title: "$title",
+      //         image: "$image",
+      //         excerpt: "$excerpt",
+      //         siteName: "$siteName",
+      //       },
+      //     },
+      //   },
+      // },
+      // {
+      //   $project: {
+      //     _id: 0,
+      //     category: "$_id",
+      //     data: { $slice: ["$articles", 3] },
+      //   },
+      // },
+    ]);
+
+    const article = feedAggregate.length > 0 ? feedAggregate[0] : [];
+
+    res.status(200).json({
+      status: "OK",
+      data: {
+        user: name,
+        articles: article,
+      },
+    });
   }
 );

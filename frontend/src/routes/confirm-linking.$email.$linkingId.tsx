@@ -29,7 +29,7 @@ function RouteComponent() {
         </Link>
       </Button>
       <Link
-        className={cn(buttonVariants({ variant: "first-link" }))}
+        className={cn(buttonVariants({ variant: "link" }))}
         to="/sign-in"
       >
         Return to sign in
