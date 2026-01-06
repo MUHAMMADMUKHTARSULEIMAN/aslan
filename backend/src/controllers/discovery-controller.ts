@@ -35,17 +35,17 @@ export const createFeeds = asyncErrorHandler(
     let BingIotD = null;
     let discoveriesContainer: Array<Discovery> = [];
     for (let i = 0; i < feeds.length; i++) {
-			console.log(i)
-      const name = feeds[i].name;
+			const name = feeds[i].name;
       const url = feeds[i].url;
       const categories = feeds[i].categories;
+			console.log(i, name)
       const feed = await processor.fetchFeed(url);
       if (feed) {
         if (feed.items.length > 0) {
           for (let j = 0; j < feed.items.length; j++) {
-						console.log(j)
-            const item = feed.items[j];
+						const item = feed.items[j];
             if (typeof item.link === "string") {
+							console.log(j, item.link)
               const HTML = await processor.fetchHTML(item.link);
               if (HTML) {
                 const title = processor.findTitle(HTML);
@@ -100,7 +100,7 @@ export const createFeeds = asyncErrorHandler(
                   discoveriesContainer.push(discovery);
                 }
               }
-              if (j === 5) break;
+              if (j === 2) break;
             }
           }
         }
@@ -144,22 +144,22 @@ export const getSelectedFeeds = asyncErrorHandler(
       user = await Users.findById(id);
     }
 
-    const name = user?.firstName;
+    const name = user?.firstName || null;
 
     const categories = [
-      "business",
-      "health and fitness",
-      "politics",
-      "science",
-      "self improvement",
-      "technology",
-      "travel",
+      "Business",
+      "Health & Fitness",
+      "Politics",
+      "Science",
+      "Self Improvement",
+      "Technology",
+      "Travel",
     ];
 
     const feedAggregate = await Discoveries.aggregate([
       {
         $match: {
-          categories: { $in: categories },
+					categories: {$in: categories}
         },
       },
       { $unwind: "$categories" },
@@ -170,38 +170,26 @@ export const getSelectedFeeds = asyncErrorHandler(
       },
       {
         $group: {
-          _id: null,
-          newcategories: { $push: "$categories" },
+          _id: "$categories",
+          articles: {
+            $push: {
+              _id: "$_id",
+              url: "$url",
+              title: "$title",
+              image: "$image",
+              excerpt: "$excerpt",
+              siteName: "$siteName",
+            },
+          },
         },
       },
       {
         $project: {
           _id: 0,
-          newcategories: 1,
+          category: "$_id",
+          data: { $slice: ["$articles", 3] },
         },
       },
-      // {
-      //   $group: {
-      //     _id: "categories",
-      //     articles: {
-      //       $push: {
-      //         _id: "$_id",
-      //         url: "$url",
-      //         title: "$title",
-      //         image: "$image",
-      //         excerpt: "$excerpt",
-      //         siteName: "$siteName",
-      //       },
-      //     },
-      //   },
-      // },
-      // {
-      //   $project: {
-      //     _id: 0,
-      //     category: "$_id",
-      //     data: { $slice: ["$articles", 3] },
-      //   },
-      // },
     ]);
 
     const article = feedAggregate.length > 0 ? feedAggregate[0] : [];
