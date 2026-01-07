@@ -4,13 +4,13 @@ import asyncErrorHandler from "../utils/async-error-handler";
 import CustomError from "../utils/custom-error";
 import config from "../config/config";
 
-const {frontendBaseURL} = config
+const {FRONTEND_BASE_URL} = config
 
 export const getAllHighlights = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const savesHighlightsAggregate = await Users.aggregate([
@@ -85,7 +85,7 @@ export const getSaveHighlights = asyncErrorHandler(
     const userId = req.user?._id;
     const {saveId} = req.params;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const highlightsAggregate = await Users.aggregate([
@@ -133,7 +133,7 @@ export const addHighlight = asyncErrorHandler(
     const {saveId} = req.params;
     const highlight = req.body.highlight;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const addedHighlight = await Users.updateOne(
@@ -161,7 +161,7 @@ export const updateHighlight = asyncErrorHandler(
     const {saveId, highlightId} = req.params;
     const highlight = req.body.highlight;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const updatedHighlight = await Users.updateOne(
@@ -193,7 +193,7 @@ export const deleteHighlights = asyncErrorHandler(
     const {saveId} = req.params;
     const highlightIds = req.body?.highlightIds;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     if (highlightIds) {

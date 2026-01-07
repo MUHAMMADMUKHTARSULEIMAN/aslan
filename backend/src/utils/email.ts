@@ -3,7 +3,7 @@ import config from "./../config/config";
 import CustomError from "./custom-error";
 import logger from "./logger";
 
-const { SMTPService, SMTPHost, SMTPPort, SMTPUser, SMTPPass } = config;
+const { SMTP_SERVICE, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = config;
 
 interface Options {
   from?: string;
@@ -15,13 +15,13 @@ interface Options {
 
 const sendEmail = async (options: Options) => {
   const transporter = nodemailer.createTransport({
-    service: SMTPService,
-    host: SMTPHost,
-    port: SMTPPort,
+    service: SMTP_SERVICE,
+    host: SMTP_HOST,
+    port: SMTP_PORT,
     secure: false,
     auth: {
-      user: SMTPUser,
-      pass: SMTPPass,
+      user: SMTP_USER,
+      pass: SMTP_PASS,
     },
   });
 

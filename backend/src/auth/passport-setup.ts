@@ -8,7 +8,7 @@ import { createLink } from "../controllers/link-controller";
 import type { Types } from "mongoose";
 import CustomError from "../utils/custom-error";
 
-const { googleClientId, googleClientSecret } = config;
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = config;
 
 export interface LinkingData {
   user: IUser;
@@ -28,8 +28,8 @@ export const initializeGooglePassport = () => {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: googleClientId,
-        clientSecret: googleClientSecret,
+        clientID: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
         callbackURL: "/api/google/redirect",
 				scope: ["profile", "email"],
 				session: false,

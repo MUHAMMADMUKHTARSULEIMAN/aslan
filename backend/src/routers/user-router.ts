@@ -15,11 +15,11 @@ import rateLimit from "express-rate-limit";
 import asyncErrorHandler from "../utils/async-error-handler";
 import config from "../config/config";
 
-const { windowMs, limit } = config;
+const { WINDOW_MS, LIMIT } = config;
 
 const limiter = rateLimit({
-  windowMs,
-  limit,
+  windowMs: WINDOW_MS,
+  limit: LIMIT,
   legacyHeaders: false,
   standardHeaders: "draft-7",
   message: "Too many requests from this address. Try again later.",

@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive cursor-pointer",
   {
     variants: {
       variant: {
@@ -26,7 +26,7 @@ const buttonVariants = cva(
 				"nav-icon": "hover:text-emerald-800 dark:hover:text-emerald-200 bg-background text-foreground",
 				"card-save": "bg-emerald-100 text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground border-2 border-emerald-600/25 hover:border-primary dark:hover:border-primary",
 				"secondary-full":
-          "w-full py-5 bg-secondary text-secondary-foreground shadow-none hover:bg-secondary/80",
+          "w-full bg-secondary text-secondary-foreground shadow-none hover:bg-secondary/80",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

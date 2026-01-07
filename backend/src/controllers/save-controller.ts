@@ -7,14 +7,14 @@ import Processor from "../utils/processor";
 import Users from "../models/user-model";
 import config from "../config/config";
 
-const {frontendBaseURL} = config
+const {FRONTEND_BASE_URL} = config
 
 
 export const getSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
     const savesAggregate = await Users.aggregate([
       {
@@ -78,7 +78,7 @@ export const getSave = asyncErrorHandler(
     const userId = req.user?._id;
     const { saveId } = req.params;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const articleAggregate = await Users.aggregate([
@@ -149,7 +149,7 @@ export const searchSaves = asyncErrorHandler(
 		}
     const searchRegex = `\\${unescapedSearchString}\\`;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const searchAggregate = await Users.aggregate([
@@ -231,7 +231,7 @@ export const getArchives = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
     const archivesAggregate = await Users.aggregate([
       {
@@ -294,7 +294,7 @@ export const getFavourites = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
     const favouritesAggregate = await Users.aggregate([
       {
@@ -360,7 +360,7 @@ export const addSave = asyncErrorHandler(
     const url = req.body.url;
     const reqHTML = req.body?.html;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
     if (typeof url !== "string") {
       const error = new CustomError(400, "A valid URL must be provided");
@@ -457,7 +457,7 @@ export const updateSaves = asyncErrorHandler(
     const saveIds = req.body.saveIds;
     const updateQuery = req.body.updates;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
     if (!saveIds) {
       const error = new CustomError(400, `No saveId was provided.`);
@@ -510,7 +510,7 @@ export const deleteSaves = asyncErrorHandler(
     const userId = req.user?._id;
     const saveIds = req.body.saveIds;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
     if (!saveIds) {
       const error = new CustomError(400, `No id was provided.`);

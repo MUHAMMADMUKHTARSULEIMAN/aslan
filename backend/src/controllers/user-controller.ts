@@ -14,11 +14,10 @@ import { generateCsrfToken } from "../index";
 import Sessions from "../models/session-model";
 
 const {
-  frontendBaseURL,
-  JWTCookieExpiry,
-  refreshCookieExpiry,
-  nodeENV,
-  JWTSecret,
+  FRONTEND_BASE_URL,
+  JWT_COOKIE_EXPIRY,
+  REFRESH_COOKIE_EXPIRY,
+  JWT_SECRET,
 } = config;
 
 export const signInResponse = async (
@@ -35,19 +34,21 @@ export const signInResponse = async (
   const refreshToken = await user.generateRefreshToken(next);
 
   res.cookie("jwt", accessToken, {
-    sameSite: "lax",
+    sameSite: "none",
     signed: true,
-    secure: nodeENV === "production",
+    secure: true,
     httpOnly: true,
-    maxAge: JWTCookieExpiry,
+    maxAge: JWT_COOKIE_EXPIRY,
+    path: "/",
   });
 
   res.cookie("refresh", refreshToken, {
-    sameSite: "lax",
+    sameSite: "none",
     signed: true,
-    secure: nodeENV === "production",
+    secure: true,
     httpOnly: true,
-    maxAge: refreshCookieExpiry,
+    maxAge: REFRESH_COOKIE_EXPIRY,
+    path: "/",
   });
 
   sendEmail({
@@ -67,65 +68,87 @@ export const googleAuth = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const returnTo = (req.query.returnTo as string) || "/";
 
-    res.cookie("returnTo", returnTo, {
-      httpOnly: true,
-      secure: nodeENV === "production",
-      sameSite: "lax",
-      signed: true,
-    });
+    const JWT = req.signedCookies.jwt;
+    const refresh = req.signedCookies.refresh;
 
-    next();
+    if (JWT || refresh) {
+      return res.redirect(`${FRONTEND_BASE_URL}${returnTo}`);
+    } else {
+      res.cookie("returnTo", returnTo, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        signed: true,
+        path: "/",
+      });
+
+      next();
+    }
   }
 );
 
 export const googleAuthCallback = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    res.clearCookie("connect.sid");
+
     const returnTo = req.signedCookies.returnTo || "/";
     res.clearCookie("returnTo");
-		console.log(req.sessionID);
-		await Sessions.deleteOne({_id: req.sessionID})
+
+    await Sessions.deleteOne({ _id: req.sessionID });
     req.session.destroy(() => {});
-    const user = req.user;
-    if (!user) {
-      return res.redirect(`${frontendBaseURL}/sign-in?returnTo=${returnTo}`);
+
+    const JWT = req.signedCookies.jwt;
+    const refresh = req.signedCookies.refresh;
+
+    if (JWT || refresh) {
+      return res.redirect(`${FRONTEND_BASE_URL}${returnTo}`);
     } else {
-      const linkingId = user.linkingId;
-      if (linkingId) {
+      const user = req.user;
+      if (!user) {
         return res.redirect(
-          `${frontendBaseURL}/confirm-linking/${user.email}/${linkingId}`
+          `${FRONTEND_BASE_URL}/sign-in?returnTo=${returnTo}`
         );
       } else {
-        const accessToken = user.generateAccessToken();
-        const refreshToken = await user.generateRefreshToken(next);
+        const linkingId = user.linkingId;
+        if (linkingId) {
+          return res.redirect(
+            `${FRONTEND_BASE_URL}/confirm-linking/${user.email}/${linkingId}`
+          );
+        } else {
+          const accessToken = user.generateAccessToken();
+          const refreshToken = await user.generateRefreshToken(next);
 
-        res.cookie("jwt", accessToken, {
-          sameSite: "lax",
-          signed: true,
-          secure: nodeENV === "production",
-          httpOnly: true,
-          maxAge: JWTCookieExpiry,
-        });
+          res.cookie("jwt", accessToken, {
+            sameSite: "none",
+            signed: true,
+            secure: true,
+            httpOnly: true,
+            maxAge: JWT_COOKIE_EXPIRY,
+            path: "/",
+          });
 
-        res.cookie("refresh", refreshToken, {
-          sameSite: "lax",
-          signed: true,
-          secure: nodeENV === "production",
-          httpOnly: true,
-          maxAge: refreshCookieExpiry,
-        });
-				const token = await user.generateResetToken(next);
+          res.cookie("refresh", refreshToken, {
+            sameSite: "none",
+            signed: true,
+            secure: true,
+            httpOnly: true,
+            maxAge: REFRESH_COOKIE_EXPIRY,
+            path: "/",
+          });
 
-        const resetURL = `${frontendBaseURL}/reset-password/${token}`;
-        const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
-        const subject = "Sanctum: Google Sign-in";
+          const token = await user.generateResetToken(next);
+          const resetURL = `${FRONTEND_BASE_URL}/reset-password/${token}`;
+          const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
+          const subject = "Sanctum: Google Sign-in";
 
-        sendEmail({
-          email: user.email,
-          subject: subject,
-          message: message,
-        });
+          sendEmail({
+            email: user.email,
+            subject: subject,
+            message: message,
+          });
 
-        return res.redirect(`${frontendBaseURL}${returnTo}`);
+          return res.redirect(`${FRONTEND_BASE_URL}${returnTo}`);
+        }
       }
     }
   }
@@ -178,7 +201,7 @@ export const linkAccount = asyncErrorHandler(
 export const emailRegistration = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
-		const returnTo = req.query.returnTo as string || "/"
+    const returnTo = (req.query.returnTo as string) || "/";
     console.log(email);
 
     if (!email) {
@@ -210,7 +233,7 @@ export const emailRegistration = asyncErrorHandler(
       }
 
       const token = await userEmail.generateVerificationToken(next);
-      const verificationUrl = `${frontendBaseURL}/sign-up/${email}/${token}?returnTo=${returnTo}`;
+      const verificationUrl = `${FRONTEND_BASE_URL}/sign-up/${email}/${token}?returnTo=${returnTo}`;
       const message = `Please use the link below to verify your email.\n\n${verificationUrl}\n\nThe link expires in 15 minutes.\n\nYou can safely ignore this email if you did not register your email at Sanctum.`;
 
       sendEmail({
@@ -323,14 +346,14 @@ export const userSignIn = asyncErrorHandler(
       const error = new CustomError(400, "Invalid credentials.");
       return next(error);
     } else {
-			const token = await user.generateResetToken(next);
-			
-			const resetURL = `${frontendBaseURL}/reset-password/${token}`;
-			const message = `Your Sanctum was just signed into using your email address. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
-			const subject = "Sanctum: Email Sign-in";
-			
-			await signInResponse(user, res, next, 201, subject, message);
-		}
+      const token = await user.generateResetToken(next);
+
+      const resetURL = `${FRONTEND_BASE_URL}/reset-password/${token}`;
+      const message = `Your Sanctum was just signed into using your email address. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
+      const subject = "Sanctum: Email Sign-in";
+
+      await signInResponse(user, res, next, 201, subject, message);
+    }
   }
 );
 
@@ -338,42 +361,47 @@ export const refreshAccessToken = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const JWT = req.signedCookies.jwt;
     if (JWT) {
-      next();
-    }
+			console.log("JWT refresh access", JWT)
+			next();
+    } else {
+			const token = req.signedCookies.refresh;
+      if (token) {
+				console.log("token refresh access", token)
+				const refreshToken = createHash("sha256").update(token).digest("hex");
+				
+        const user = await Users.findOne({
+					refreshToken,
+          refreshTokenExpiry: { $gt: Date.now() },
+        });
+        if (!user) {
+					next();
+        } else {
+					console.log("user refresh access", user)
+          const newJWT = user.generateAccessToken();
+          const newRefresh = await user.generateRefreshToken(next);
 
-    const token = req.signedCookies.refresh;
-    if (token) {
-      const refreshToken = createHash("sha256").update(token).digest("hex");
+          res.cookie("jwt", newJWT, {
+            sameSite: "none",
+            signed: true,
+            secure: true,
+            httpOnly: true,
+            maxAge: JWT_COOKIE_EXPIRY,
+            path: "/",
+          });
+          res.cookie("refresh", newRefresh, {
+            sameSite: "none",
+            signed: true,
+            secure: true,
+            httpOnly: true,
+            maxAge: REFRESH_COOKIE_EXPIRY,
+            path: "/",
+          });
 
-      const user = await Users.findOne({
-        refreshToken,
-        refreshTokenExpiry: { $gt: Date.now() },
-      });
-      if (!user) {
-        next();
+          next();
+        }
       } else {
-        const newJWT = user.generateAccessToken();
-        const newRefresh = await user.generateRefreshToken(next);
-
-        res.cookie("jwt", newJWT, {
-          sameSite: "lax",
-          signed: true,
-          secure: nodeENV === "production",
-          httpOnly: true,
-          maxAge: JWTCookieExpiry,
-        });
-        res.cookie("refresh", newRefresh, {
-          sameSite: "lax",
-          signed: true,
-          secure: nodeENV === "production",
-          httpOnly: true,
-          maxAge: refreshCookieExpiry,
-        });
-
         next();
       }
-    } else {
-      next();
     }
   }
 );
@@ -382,11 +410,11 @@ export const protectRoutes = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const JWT = req.signedCookies.jwt;
     if (!JWT) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     // @ts-expect-error
-    const decodedToken = await promisify(jwt.verify)(JWT, JWTSecret);
+    const decodedToken = await promisify(jwt.verify)(JWT, JWT_SECRET);
     // @ts-expect-error
     const id = decodedToken.id;
     // @ts-expect-error
@@ -394,7 +422,7 @@ export const protectRoutes = asyncErrorHandler(
 
     const user = await Users.findById(id);
     if (!user || user.isPasswordModified(iat)) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     } else {
       req.user = user;
       next();
@@ -407,7 +435,7 @@ export const restrictUsers = (level: number): RequestHandler => {
     async (req: Request, res: Response, next: NextFunction) => {
       const user = req.user;
       if (!user) {
-        return res.redirect(`${frontendBaseURL}/sign-in`);
+        return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
       } else {
         const key = Object.keys(user.level)[0];
         if (user.level[key] < level) {
@@ -446,7 +474,7 @@ export const forgotPassword = asyncErrorHandler(
     } else {
       const token = await user.generateResetToken(next);
 
-      const resetURL = `${frontendBaseURL}/reset-password/${token}`;
+      const resetURL = `${FRONTEND_BASE_URL}/reset-password/${token}`;
       const message = `Use the link below to reset your password. It expires in 10 minutes.\n\n${resetURL}\n\nIf you did not perform this action, you can safely ignore this email.\n\nAnd don't forget that we will never ask you for your password, a token or any other sensitive info. Thank you.`;
 
       sendEmail({

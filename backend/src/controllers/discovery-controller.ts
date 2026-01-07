@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
 import { promisify } from "util";
 import config from "../config/config";
 
-const { JWTSecret } = config;
+const { JWT_SECRET } = config;
 
 interface Discovery {
   url: string;
@@ -130,17 +130,19 @@ export const createFeeds = asyncErrorHandler(
   }
 );
 
-export const getSelectedFeeds = asyncErrorHandler(
+export const getHomeFeed = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const JWT = req.signedCookies.jwt;
+		console.log("JWT", JWT);
+		
     let id;
     let user;
-
+		
     if (JWT) {
-      // @ts-expect-error
-      const decodedToken = await promisify(jwt.verify)(JWT, JWTSecret);
-      // @ts-expect-error
-      id = decodedToken.id;
+			const decodedToken = jwt.verify(JWT, JWT_SECRET);
+			console.log("decodedToken", decodedToken);
+			// @ts-expect-error
+			const id = decodedToken.id
       user = await Users.findById(id);
     }
 

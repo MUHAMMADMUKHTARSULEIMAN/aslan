@@ -4,13 +4,13 @@ import CustomError from "../utils/custom-error";
 import Users from "../models/user-model";
 import config from "../config/config";
 
-const {frontendBaseURL} = config
+const {FRONTEND_BASE_URL} = config
 
 export const getAllTags = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
     const tagsAggregate = await Users.aggregate([
       { $match: { _id: userId } },
@@ -46,7 +46,7 @@ export const getAllSavesWithSpecificTag = asyncErrorHandler(
     const userId = req.user?._id;
     const { tagName } = req.params;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const tagSavesAggregate = await Users.aggregate([
@@ -111,7 +111,7 @@ export const addTagstoSaves = asyncErrorHandler(
     const newTagNamesList = req.body?.newTags;
     const tagsList = [];
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     if (newTagNamesList) {
@@ -162,7 +162,7 @@ export const editTagsOnSave = asyncErrorHandler(
     const removedTagNamesList = req.body?.removedTags;
     const tagsList = [];
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     if (removedTagNamesList) {
@@ -222,7 +222,7 @@ export const editTag = asyncErrorHandler(
     const {tagId} = req.params;
     const newTagName = req.body.newTagName;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const renamedTag = await Users.updateOne(
@@ -252,7 +252,7 @@ export const deleteTags = asyncErrorHandler(
     const userId = req.user?._id;
     const removedTagNamesList = req.body.tags;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const deletedTags = await Users.updateOne(

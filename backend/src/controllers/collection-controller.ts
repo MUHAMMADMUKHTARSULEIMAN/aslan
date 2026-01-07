@@ -4,13 +4,13 @@ import CustomError from "../utils/custom-error";
 import Users from "../models/user-model";
 import config from "../config/config";
 
-const {frontendBaseURL} = config
+const {FRONTEND_BASE_URL} = config
 
 export const getAllCollections = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
     const collectionsAggregate = await Users.aggregate([
       { $match: { _id: userId } },
@@ -48,7 +48,7 @@ export const getAllSavesInACollection = asyncErrorHandler(
     const userId = req.user?._id;
     const {collectionName} = req.params;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const collectionSavesAggregate = await Users.aggregate([
@@ -172,7 +172,7 @@ export const createCollection = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const collection = await Users.updateOne(
@@ -198,7 +198,7 @@ export const addSavesToCollection = asyncErrorHandler(
     const {collectionId} = req.params;
     const saveIds = req.body.saveIds;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const addedArticles = await Users.updateOne(
@@ -228,7 +228,7 @@ export const editCollection = asyncErrorHandler(
     const editQuery = req.body.updateQuery;
     const removedSaveIds = req.body?.saveIds;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     if (editQuery) {
@@ -284,7 +284,7 @@ export const deleteCollection = asyncErrorHandler(
     const userId = req.user?._id;
     const {collectionId} = req.params;
     if (!userId) {
-      return res.redirect(`${frontendBaseURL}/sign-in`);
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
 
     const deletedCollection = await Users.updateOne(

@@ -6,7 +6,7 @@ import CustomError from "../utils/custom-error";
 import type { IEmail } from "../types/email";
 import config from "../config/config";
 
-const { verificationTokenExpiry } = config;
+const { VERIFICATION_TOKEN_EXPIRY } = config;
 
 const emailSchema = new mongoose.Schema<IEmail>(
   {
@@ -40,7 +40,7 @@ emailSchema.methods.generateVerificationToken = async function (
     { _id: this._id },
     {
       verificationToken,
-      verificationTokenExpiry: Date.now() + verificationTokenExpiry,
+      verificationTokenExpiry: Date.now() + VERIFICATION_TOKEN_EXPIRY,
     }
   );
 

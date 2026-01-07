@@ -53,8 +53,9 @@ function RouteComponent() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch("http://127.0.0.1:2020/api/sign-in", {
+      const response = await fetch(`https://localhost:2020/api/sign-in?returnTo=${returnTo}`, {
         method: "POST",
+				credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -88,8 +89,8 @@ function RouteComponent() {
       </div>
       <div className="w-full">
         <a
-          href={`http://localhost:2020/api/login/federated/google?returnTo=${returnTo}`}
-          className="w-full hover:bg-card/50 dark:hover:bg-card text-inherit border-2 border-border/40 dark:border-muted-foreground/30 flex items-center justify-center gap-2 py-2 rounded-xl cursor-pointer shadow-none text-sm"
+          href={`https://localhost:2020/api/login/federated/google?returnTo=${returnTo}`}
+          className="w-full hover:bg-card/50 dark:hover:bg-card text-inherit border-2 border-border/40 dark:border-muted-foreground/30 flex items-center justify-center gap-2 py-2 rounded-lg cursor-pointer shadow-none text-sm"
         >
           <FcGoogle size={20} />
           Continue with Google
@@ -154,7 +155,7 @@ function RouteComponent() {
             <Button
               variant="secondary-full"
               disabled={formState.isSubmitting}
-              className="mt-4"
+              className="mt-4 py-5"
             >
               {formState.isSubmitting ? (
                 <span className="flex justify-center items-center gap-1">

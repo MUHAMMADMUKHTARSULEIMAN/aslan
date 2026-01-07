@@ -8,7 +8,7 @@ import { IUser } from "../types/user";
 import type { NextFunction } from "express";
 import CustomError from "../utils/custom-error";
 
-const { refreshTokenExpiry, resetTokenExpiry, JWTSecret, JWTExpiry } = config;
+const { REFRESH_TOKEN_EXPIRY, RESET_TOKEN_EXPIRY, JWT_SECRET, JWT_EXPIRY } = config;
 
 const highlightSchema = new Schema(
   {
@@ -178,8 +178,8 @@ userSchema.methods.isPasswordModified = function (
 };
 
 userSchema.methods.generateAccessToken = function (): string {
-  return jwt.sign({ id: this._id }, JWTSecret, {
-    expiresIn: JWTExpiry,
+  return jwt.sign({ id: this._id }, JWT_SECRET, {
+    expiresIn: JWT_EXPIRY,
   });
 };
 
@@ -190,7 +190,7 @@ userSchema.methods.generateRefreshToken = async function (
   const refreshToken = createHash("sha256").update(token).digest("hex");
   const user = await Users.updateOne(
     { _id: this._id },
-    { refreshToken, refreshTokenExpiry: Date.now() + refreshTokenExpiry }
+    { refreshToken, refreshTokenExpiry: Date.now() + REFRESH_TOKEN_EXPIRY }
   );
 
   if (!user) {
@@ -211,7 +211,7 @@ userSchema.methods.generateResetToken = async function (
   const resetToken = createHash("sha256").update(token).digest("hex");
   const user = await Users.updateOne(
     { _id: this._id },
-    { resetToken, resetTokenExpiry: Date.now() + resetTokenExpiry }
+    { resetToken, resetTokenExpiry: Date.now() + RESET_TOKEN_EXPIRY }
   );
 
   if (!user) {

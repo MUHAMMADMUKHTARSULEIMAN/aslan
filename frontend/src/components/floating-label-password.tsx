@@ -41,7 +41,7 @@ const FloatingLabelPassword = forwardRef<HTMLInputElement, FloatingLabelInputPro
 				<Input
 				ref={ref}
 				type={visible ? "text" : "password"}
-					className={`peer rounded-xl border-2 pr-9.5 border-border/40 dark:border-muted-foreground/30 bg-background dark:bg-background hover:bg-card/50 dark:hover:bg-card focus:bg-card/50 dark:focus:bg-card shadow-none pt-5 pb-4 ${className}`}
+					className={`peer rounded-lg border-2 pr-9.5 border-border/40 dark:border-muted-foreground/30 bg-background dark:bg-background hover:bg-card/50 dark:hover:bg-card focus:bg-card/50 dark:focus:bg-card shadow-none pt-5 pb-4 ${className}`}
 					{...props}
 				/>
         <FormLabel

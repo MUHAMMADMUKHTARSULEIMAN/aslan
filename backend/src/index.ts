@@ -23,24 +23,31 @@ import hpp from "hpp";
 import { doubleCsrf } from "csrf-csrf";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import passport from "passport";
 
-const { cookieSecret, nodeENV, CSRFSecret, sessionSecret, mongodbURI } = config;
+const {
+  COOKIE_SECRET,
+  NODE_ENV,
+  CSRF_SECRET,
+  SESSION_SECRET,
+  MONGODB_URI,
+  FRONTEND_BASE_URL,
+} = config;
 
 export const {
   generateCsrfToken,
   invalidCsrfTokenError,
   doubleCsrfProtection,
 } = doubleCsrf({
-  getSecret: (req) => CSRFSecret,
+  getSecret: (req) => CSRF_SECRET,
   getSessionIdentifier: (req) => req.user?.id || req.session.id,
   cookieName:
-    nodeENV === "production"
+    NODE_ENV === "production"
       ? "__Host-psifi.x-csrf-token"
       : "psifi.x-csrf-token",
   cookieOptions: {
-    sameSite: "lax",
-    secure: nodeENV === "production",
+    sameSite: "none",
+    secure: true,
+    path: "/",
   },
   errorConfig: {
     message: "You're not authorized to perform this action.",
@@ -50,35 +57,43 @@ export const {
 const app = express();
 export default app;
 
-
 app.disable("X-powered-by");
-app.use(cors());
+
+app.use(
+  cors({
+    origin: FRONTEND_BASE_URL,
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.options("{/*path}", cors());
 app.use(compression());
 app.use(helmet());
 app.use(hpp());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser(cookieSecret));
+app.use(cookieParser(COOKIE_SECRET));
 app.use(
-	session({
-		secret: sessionSecret,
+  session({
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-			secure: nodeENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
+      path: "/",
     },
     store: MongoStore.create({
-			mongoUrl: mongodbURI,
+      mongoUrl: MONGODB_URI,
     }),
   })
 );
 initializeGooglePassport();
-app.use("/api", userRouter, discoveryRouter);
+app.use("/api", userRouter);
 app.use(refreshAccessToken);
 app.use(doubleCsrfProtection);
-app.use("/api", feedRouter);
+app.use("/api", discoveryRouter, feedRouter);
 app.use("/api/saves", saveRouter);
 app.use("/api/saves/tags", tagRouter);
 app.use("/api/saves/highlights", highlightRouter);

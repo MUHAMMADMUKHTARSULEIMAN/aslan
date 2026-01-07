@@ -126,9 +126,10 @@ function RouteComponent() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:2020/api/sign-up/${email}/${token}`,
+        `https://localhost:2020/api/sign-up/${email}/${token}`,
         {
           method: "POST",
+					credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -419,7 +420,7 @@ function RouteComponent() {
             <Button
               variant="secondary-full"
               disabled={formState.isSubmitting || disableSubmitForPassword}
-              className="mt-4"
+              className="mt-4 py-5"
             >
               {formState.isSubmitting ? (
                 <span className="flex justify-center items-center gap-1">

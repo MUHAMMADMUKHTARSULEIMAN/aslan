@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 
 const ArticleCard = () => {
   return (
-    <Card className="p-0 border-5 border-input/25 dark:border-input/20">
+    <Card className="p-0 gap-4 border-5 border-input/25 dark:border-input/20">
       <img
         src="https://i0.wp.com/www.themarginalian.org/wp-content/uploads/2013/05/einstein1.jpg?w=680&ssl=1"
         alt=""

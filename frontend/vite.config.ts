@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import fs from "fs"
+import path from "path"
 
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 // Avoid Node built-in imports in the Vite ESM config so TS doesn't require
@@ -8,6 +10,13 @@ import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	server: {
+		https: {
+			key: fs.readFileSync(path.resolve(__dirname, "../certs/localhost+1-key.pem")),
+      cert: fs.readFileSync(path.resolve(__dirname, "../certs/localhost+1.pem")),
+		},
+		port: 3000
+	},
   plugins: [
     TanStackRouterVite({ autoCodeSplitting: true }),
     viteReact(),

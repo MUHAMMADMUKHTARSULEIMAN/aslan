@@ -30,7 +30,7 @@ const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInput
         </FormLabel>
         <Input
 				ref={ref}
-          className={`rounded-xl border-2 border-border/40 dark:border-muted-foreground/30 bg-background dark:bg-background hover:bg-card/50 dark:hover:bg-card focus:bg-card/50 dark:focus:bg-card shadow-none pt-5 pb-4 ${className}`}
+          className={`rounded-lg border-2 border-border/40 dark:border-muted-foreground/30 bg-background dark:bg-background hover:bg-card/50 dark:hover:bg-card focus:bg-card/50 dark:focus:bg-card shadow-none pt-5 pb-4 ${className}`}
           {...props}
         />
       </div>

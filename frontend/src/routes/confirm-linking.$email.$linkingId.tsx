@@ -23,7 +23,7 @@ function RouteComponent() {
         sign-in. Do you want to enable Google sign-in for{" "}
         <span className="font-semibold">{email}</span>?
       </p>
-      <Button variant="secondary-full" className=" mb-6">
+      <Button variant="secondary-full" className=" mb-6 py-5">
         <Link to="/link-account/$linkingId" params={{ linkingId }}>
           Link account
         </Link>
