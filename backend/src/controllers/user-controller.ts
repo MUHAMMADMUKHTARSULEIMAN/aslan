@@ -68,8 +68,8 @@ export const googleAuth = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const returnTo = (req.query.returnTo as string) || "/";
 
-    const JWT = req.signedCookies.jwt;
-    const refresh = req.signedCookies.refresh;
+    const JWT = req.signedCookies.jwt || res.locals.jwt;
+    const refresh = req.signedCookies.refresh || res.locals.refresh;
 
     if (JWT || refresh) {
       return res.redirect(`${FRONTEND_BASE_URL}${returnTo}`);
@@ -81,7 +81,6 @@ export const googleAuth = asyncErrorHandler(
         signed: true,
         path: "/",
       });
-
       next();
     }
   }
@@ -97,8 +96,8 @@ export const googleAuthCallback = asyncErrorHandler(
     await Sessions.deleteOne({ _id: req.sessionID });
     req.session.destroy(() => {});
 
-    const JWT = req.signedCookies.jwt;
-    const refresh = req.signedCookies.refresh;
+    const JWT = req.signedCookies.jwt || res.locals.jwt;
+    const refresh = req.signedCookies.refresh || res.locals.refresh;
 
     if (JWT || refresh) {
       return res.redirect(`${FRONTEND_BASE_URL}${returnTo}`);
@@ -361,24 +360,28 @@ export const refreshAccessToken = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const JWT = req.signedCookies.jwt;
     if (JWT) {
-			console.log("JWT refresh access", JWT)
-			next();
+      console.log("JWT refresh access", JWT);
+      next();
     } else {
-			const token = req.signedCookies.refresh;
+      const token = req.signedCookies.refresh;
       if (token) {
-				console.log("token refresh access", token)
-				const refreshToken = createHash("sha256").update(token).digest("hex");
-				
+        console.log("token refresh access", token);
+        const refreshToken = createHash("sha256").update(token).digest("hex");
+
         const user = await Users.findOne({
-					refreshToken,
+          refreshToken,
           refreshTokenExpiry: { $gt: Date.now() },
         });
+        console.log("user outside", user);
         if (!user) {
-					next();
+          next();
         } else {
-					console.log("user refresh access", user)
+          console.log("user refresh access", user);
           const newJWT = user.generateAccessToken();
           const newRefresh = await user.generateRefreshToken(next);
+
+          res.locals.jwt = newJWT;
+          res.locals.refresh = newRefresh;
 
           res.cookie("jwt", newJWT, {
             sameSite: "none",
@@ -388,6 +391,7 @@ export const refreshAccessToken = asyncErrorHandler(
             maxAge: JWT_COOKIE_EXPIRY,
             path: "/",
           });
+
           res.cookie("refresh", newRefresh, {
             sameSite: "none",
             signed: true,

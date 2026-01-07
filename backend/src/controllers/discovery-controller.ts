@@ -132,7 +132,7 @@ export const createFeeds = asyncErrorHandler(
 
 export const getHomeFeed = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const JWT = req.signedCookies.jwt;
+    const JWT = req.signedCookies.jwt || res.locals.jwt
 		console.log("JWT", JWT);
 		
     let id;
