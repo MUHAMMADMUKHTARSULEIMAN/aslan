@@ -133,14 +133,12 @@ export const createFeeds = asyncErrorHandler(
 export const getHomeFeed = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const JWT = req.signedCookies.jwt || res.locals.jwt
-		console.log("JWT", JWT);
 		
     let id;
     let user;
 		
     if (JWT) {
 			const decodedToken = jwt.verify(JWT, JWT_SECRET);
-			console.log("decodedToken", decodedToken);
 			// @ts-expect-error
 			const id = decodedToken.id
       user = await Users.findById(id);

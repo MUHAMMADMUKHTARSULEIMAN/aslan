@@ -9,32 +9,47 @@ export const Route = createFileRoute("/_header-layout/")({
   component: App,
 });
 
-function App() {
-	const fetchHomeFeed = async () => {
-		const response = await fetch("https://localhost:2020/api/get-feed-articles", {
+export const fetchHomeFeed = async () => {
+	const response = await fetch(
+		"https://localhost:2020/api/get-feed-articles",
+		{
 			method: "GET",
 			credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-		});
-		if(!response.ok) {
-			throw new Error("Something went wrong. Try again later.")
+			headers: {
+				"Content-Type": "application/json",
+			},
 		}
-
-		return await response.json()
+	);
+	if (!response.ok) {
+		throw new Error("Something went wrong. Try again later.");
 	}
 
-	const result = useQuery({queryKey: ["home-feed"], queryFn: fetchHomeFeed})
-	const data = result.data
+	return await response.json();
+};
+
+function App() {
+
+  const { data, isFetching, isError } = useQuery({
+    queryKey: ["home-feed"],
+    queryFn: fetchHomeFeed,
+  });
 	console.log(data)
+  const user = data?.data.user;
+	const time = new Date().getHours()
+	console.log(time)
 
   return (
     <div>
       <section className="mx-4 mt-4 mb-24">
-        <h3 className="font-medium mb-4 text-sm">Good morning!</h3>
+        {user ? (
+          <h3 className="font-medium mb-4 text-sm">Good {
+						time < 12 ? "morning" : time >= 12 && time < 18 ? "afternoon" :  "evening"
+					}, {user}!</h3>
+        ) : (
+          ""
+        )}
         <div className="mb-1 flex justify-between items-baseline">
-          <h1 className="font-medium text-base">Last Save</h1>
+          <h1 className="font-medium text-base">Recent Saves</h1>
           <Link
             to="/saves"
             className={cn(
@@ -45,14 +60,16 @@ function App() {
             Go to Saves
           </Link>
         </div>
-        <RecentCard className="mb-4"/>
+        <RecentCard className="mb-4" />
         <div className="mb-4">
-          <h1 className="font-medium text-xl">Stories that Belong in Sanctum</h1>
+          <h1 className="font-medium text-xl">
+            Stories that Belong in Sanctum
+          </h1>
           <p className="text-[15px]">Stories to fuel your mind</p>
         </div>
-          <div className="flex flex-col gap-6">
-            <ArticleCard />
-          </div>
+        <div className="flex flex-col gap-6">
+          <ArticleCard />
+        </div>
       </section>
     </div>
   );

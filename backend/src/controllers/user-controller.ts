@@ -360,23 +360,19 @@ export const refreshAccessToken = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const JWT = req.signedCookies.jwt;
     if (JWT) {
-      console.log("JWT refresh access", JWT);
       next();
     } else {
       const token = req.signedCookies.refresh;
       if (token) {
-        console.log("token refresh access", token);
         const refreshToken = createHash("sha256").update(token).digest("hex");
 
         const user = await Users.findOne({
           refreshToken,
           refreshTokenExpiry: { $gt: Date.now() },
         });
-        console.log("user outside", user);
         if (!user) {
           next();
         } else {
-          console.log("user refresh access", user);
           const newJWT = user.generateAccessToken();
           const newRefresh = await user.generateRefreshToken(next);
 

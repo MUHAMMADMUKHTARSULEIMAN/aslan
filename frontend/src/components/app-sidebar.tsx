@@ -88,7 +88,7 @@ const AppSidebar = () => {
 
   return (
     <Sidebar side="right">
-      <SidebarHeader className="px-3 py-4.5">
+      <SidebarHeader className="px-2 py-2">
         <div className="flex items-center justify-between">
           <ModeToggle />
           <Button onClick={toggleSidebar} variant="first-icon" size="icon">
