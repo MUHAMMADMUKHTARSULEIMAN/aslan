@@ -92,7 +92,7 @@ app.use(
 initializeGooglePassport();
 app.use("/api", userRouter);
 app.use(refreshAccessToken);
-app.use(doubleCsrfProtection);
+// app.use(doubleCsrfProtection);
 app.use("/api", discoveryRouter, feedRouter);
 app.use("/api/saves", saveRouter);
 app.use("/api/saves/tags", tagRouter);

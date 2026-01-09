@@ -5,4 +5,4 @@ export const router = express.Router()
 
 router.route("/create-feeds").post(createFeeds)
 
-router.route("/get-feed-articles").get(getHomeFeed)
+router.route("/get-home-feed").get(getHomeFeed)

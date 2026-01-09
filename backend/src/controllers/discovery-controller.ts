@@ -8,7 +8,6 @@ import CustomError from "../utils/custom-error";
 import Discoveries from "../models/discovery-model";
 import Users from "../models/user-model";
 import jwt from "jsonwebtoken";
-import { promisify } from "util";
 import config from "../config/config";
 
 const { JWT_SECRET } = config;
@@ -35,17 +34,17 @@ export const createFeeds = asyncErrorHandler(
     let BingIotD = null;
     let discoveriesContainer: Array<Discovery> = [];
     for (let i = 0; i < feeds.length; i++) {
-			const name = feeds[i].name;
+      const name = feeds[i].name;
       const url = feeds[i].url;
       const categories = feeds[i].categories;
-			console.log(i, name)
+      console.log(i, name);
       const feed = await processor.fetchFeed(url);
       if (feed) {
         if (feed.items.length > 0) {
           for (let j = 0; j < feed.items.length; j++) {
-						const item = feed.items[j];
+            const item = feed.items[j];
             if (typeof item.link === "string") {
-							console.log(j, item.link)
+              console.log(j, item.link);
               const HTML = await processor.fetchHTML(item.link);
               if (HTML) {
                 const title = processor.findTitle(HTML);
@@ -132,34 +131,29 @@ export const createFeeds = asyncErrorHandler(
 
 export const getHomeFeed = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const JWT = req.signedCookies.jwt || res.locals.jwt
-		
-    let id;
-    let user;
-		
-    if (JWT) {
-			const decodedToken = jwt.verify(JWT, JWT_SECRET);
-			// @ts-expect-error
-			const id = decodedToken.id
-      user = await Users.findById(id);
-    }
+    const JWT = req.signedCookies.jwt || res.locals.jwt;
+
+    const decodedToken = jwt.verify(JWT || "", JWT_SECRET);
+    // @ts-expect-error
+    const id = decodedToken.id;
+    const user = await Users.findById(id);
 
     const name = user?.firstName || null;
 
     const categories = [
       "Business",
+      "Technology",
       "Health & Fitness",
-      "Politics",
       "Science",
       "Self Improvement",
-      "Technology",
+      "Politics",
       "Travel",
     ];
 
     const feedAggregate = await Discoveries.aggregate([
       {
         $match: {
-					categories: {$in: categories}
+          categories: { $in: categories },
         },
       },
       { $unwind: "$categories" },
@@ -192,13 +186,64 @@ export const getHomeFeed = asyncErrorHandler(
       },
     ]);
 
-    const article = feedAggregate.length > 0 ? feedAggregate[0] : [];
+    const articles = feedAggregate.length > 0 ? feedAggregate : null;
+
+    const recentsAggregate = await Users.aggregate([
+      {
+        $match: {
+          _id: user?._id,
+        },
+      },
+      { $unwind: "$saves" },
+      {
+        $match: {
+          "saves.archived": false,
+        },
+      },
+			{$sort: {"saves.createdAt": -1}},
+			{$limit: 3},
+      {
+        $lookup: {
+          from: "saves",
+          localField: "saves.saveId",
+          foreignField: "_id",
+          as: "saves.save",
+          pipeline: [
+            {
+              $project: {
+                url: 1,
+                title: 1,
+                image: 1,
+                siteName: 1,
+                length: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          recents: { $push: "$saves.save" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          recents: 1,
+        },
+      },
+    ]);
+
+    const recents =
+      recentsAggregate.length > 0 ? recentsAggregate[0].recents : null;
 
     res.status(200).json({
       status: "OK",
       data: {
         user: name,
-        articles: article,
+        articles,
+				recents
       },
     });
   }

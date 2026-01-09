@@ -3,8 +3,7 @@ import { Menu } from "lucide-react";
 import { useSidebar } from "./ui/sidebar";
 import { Link } from "@tanstack/react-router";
 import { Button } from "./ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { fetchHomeFeed } from "../routes/_header-layout/index";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface DefaultComponentProps
   extends React.HtmlHTMLAttributes<HTMLDivElement> {
@@ -13,11 +12,13 @@ interface DefaultComponentProps
 
 const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
   ({ pathname }, ref) => {
-    const { data } = useQuery({
-      queryKey: ["home-feed"],
-      queryFn: fetchHomeFeed,
-      select: (result) => result.data.user,
-    });
+
+		const queryClient = useQueryClient()
+
+		const result = queryClient.getQueryData(["home-feed"])
+
+		// @ts-expect-error
+		const user =  result?.data.user
 
     const { toggleSidebar } = useSidebar();
     return (
@@ -33,7 +34,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
               </Link>
             </div>
             <div className="flex gap-1 items-center">
-              {data ? (
+              {user ? (
                 ""
               ) : (
                 <Button variant="secondary" className="px-3">

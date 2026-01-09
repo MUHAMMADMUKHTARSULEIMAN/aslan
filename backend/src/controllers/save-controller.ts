@@ -7,8 +7,7 @@ import Processor from "../utils/processor";
 import Users from "../models/user-model";
 import config from "../config/config";
 
-const {FRONTEND_BASE_URL} = config
-
+const { FRONTEND_BASE_URL } = config;
 
 export const getSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -127,14 +126,15 @@ export const getSave = asyncErrorHandler(
       },
     ]);
 
-		const article = articleAggregate.length > 0 ? articleAggregate[0].saves : []
+    const article =
+      articleAggregate.length > 0 ? articleAggregate[0].saves : [];
 
-		return res.status(200).json({
-			status: "OK",
-			data: {
-				article
-			}
-		})
+    return res.status(200).json({
+      status: "OK",
+      data: {
+        article,
+      },
+    });
   }
 );
 
@@ -142,11 +142,11 @@ export const searchSaves = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
     const archived = req.body.archived;
-    const searchString = req.query.q
-		let unescapedSearchString = ""
-		if(typeof searchString === "string") {
-			unescapedSearchString = escapeStringRegexp(searchString);
-		}
+    const searchString = req.query.q;
+    let unescapedSearchString = "";
+    if (typeof searchString === "string") {
+      unescapedSearchString = escapeStringRegexp(searchString);
+    }
     const searchRegex = `\\${unescapedSearchString}\\`;
     if (!userId) {
       return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
@@ -359,6 +359,7 @@ export const addSave = asyncErrorHandler(
     const userId = req.user?._id;
     const url = req.body.url;
     const reqHTML = req.body?.html;
+
     if (!userId) {
       return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
@@ -378,12 +379,12 @@ export const addSave = asyncErrorHandler(
         },
       });
       if (existingUserSave) {
-        const error = new CustomError(409, "Article already saved.");
+        const error = new CustomError(409, "Article already added.");
         return next(error);
       }
 
       const userSave = await Users.updateOne(
-        { id: userId },
+        { _id: userId },
         { $push: { saves: { saveId: existingSave._id } } }
       );
 
@@ -397,57 +398,60 @@ export const addSave = asyncErrorHandler(
 
       return res.status(201).json({
         status: "OK",
+    		message: "Article added successfully."
+      });
+    } else {
+      const processor = new Processor();
+      let html = null;
+      if (!reqHTML) {
+        html = await processor.fetchHTML(url);
+      }
+      const title =
+        processor.findTitle(reqHTML || html || "") ||
+        processor.getHostname(url);
+      const image = processor.findThumbnail(reqHTML || html || "", url);
+      const siteName =
+        processor.findSiteName(reqHTML || html || "") ||
+        processor.getHostname(url);
+      const length = processor.findLength(reqHTML || html || "");
+      const description = processor.findDescription(reqHTML || html || "", 197);
+
+      const packet = {
+        url,
+        title,
+        image,
+        description,
+        siteName,
+        html: reqHTML || html,
+        length,
+      };
+      const save = await Saves.create(packet);
+      if (!save) {
+        const error = new CustomError(
+          500,
+          "Article could not be added. Try again later."
+        );
+        return next(error);
+      }
+
+      const userSave = await Users.updateOne(
+        { _id: userId },
+        { $push: { saves: { saveId: save._id } } }
+      );
+
+      if (!userSave) {
+        const error = new CustomError(
+          500,
+          "Article could not be added. Try again later."
+        );
+        return next(error);
+      }
+
+      return res.status(201).json({
+        status: "OK",
+    		message: "Article added successfully."
       });
     }
-
-    const processor = new Processor();
-    let html = null;
-    if (!reqHTML) {
-      html = await processor.fetchHTML(url);
-    }
-    const title =
-      processor.findTitle(reqHTML || html || "") || processor.getHostname(url);
-    const image = processor.findThumbnail(reqHTML || html || "", url);
-    const siteName =
-      processor.findSiteName(reqHTML || html || "") ||
-      processor.getHostname(url);
-    const length = processor.findLength(reqHTML || html || "");
-    const description = processor.findDescription(reqHTML || html || "", 197);
-
-    const packet = {
-      url,
-      title,
-      image,
-      description,
-      siteName,
-      html: reqHTML || html,
-      length,
-    };
-    const save = await Saves.create(packet);
-    if (!save) {
-      const error = new CustomError(
-        500,
-        "Article could not be added. Try again later."
-      );
-      return next(error);
-    }
-
-    const userSave = await Users.updateOne(
-      { id: userId },
-      { $push: { saves: { saveId: save._id } } }
-    );
-
-    if (!userSave) {
-      const error = new CustomError(
-        500,
-        "Article could not be added. Try again later."
-      );
-      return next(error);
-    }
-
-    return res.status(201).json({
-      status: "OK",
-    });
   }
 );
 

@@ -116,7 +116,7 @@ const AppSidebar = () => {
                       className="px-3 py-2 cursor-pointer hover:bg-emerald-600/90 dark:hover:bg-emerald-600/75 hover:text-sidebar-primary-foreground rounded-none ring-transparent"
                     >
                       <item.icon className="h-5 w-5 stroke-2.5" />
-                      <span className="font-semibold text-lg">
+                      <span className="font-medium text-lg">
                         {item.title}
                       </span>
                     </SidebarMenuButton>

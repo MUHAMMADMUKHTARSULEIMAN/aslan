@@ -20,7 +20,7 @@ router.route("/search").get(searchSaves);
 
 router.route("/archived").get(getArchives);
 
-router.route("/favourites").post(getFavourites);
+router.route("/favourites").get(getFavourites);
 
 router.route("/add-save").post(addSave);
 

@@ -136,7 +136,7 @@ class Processor {
       null;
     if (
       image &&
-      (!image.startsWith("https://") || !image.startsWith("/http://"))
+      (!image.startsWith("https://") && !image.startsWith("http://"))
     ) {
       const parsedURL = new URL(url);
       image = `${parsedURL.origin}${image}`;
