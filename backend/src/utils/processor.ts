@@ -176,12 +176,12 @@ class Processor {
   public findTitle(HTML: string): string | null {
     const $ = cheerio.load(HTML);
     return (
-      $("title").text() ||
       $("h1").first().text() ||
       $('meta[property="og:title"]').attr("content") ||
-      $('meta[name="DC.title"]').attr("content") ||
       $('meta[name="twitter:title"]').attr("content") ||
+      $('meta[name="DC.title"]').attr("content") ||
       $('meta[name="og:title"]').attr("content") ||
+      $("title").text() ||
       null
     );
   }

@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import RecentCard from "@/components/recent-card";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
+import LinkHelper from "@/components/link-helper";
 
 export const Route = createFileRoute("/_header-layout/")({
   component: App,
@@ -74,21 +75,7 @@ function App() {
             <div>
               <div className="mb-1 mx-4 flex justify-between items-baseline">
                 <h1 className="font-medium text-base">Recent Saves</h1>
-                <div className="relative group">
-                  <Link
-                    to="/saves"
-                    className={cn(
-                      buttonVariants({ variant: "link" }),
-                      "p-0 m-0 font-normal text-sm flex gap-0 hover:no-underline"
-                    )}
-                  >
-                    Go to Saves{" "}
-                    <span>
-                      <ChevronRight />
-                    </span>
-                  </Link>
-                  <span className="absolute bottom-2.5 left-0 w-[83%] h-[0.5px] bg-primary scale-x-0 transition-transform group-hover:scale-x-100"></span>
-                </div>
+                <LinkHelper label="Go to Saves" to="/saves" width="w-[83%]" textSize="text-sm" icon={<ChevronRight className="w-4.5! h-4.5!" />}/>
               </div>
               <div className="mb-4 w-screen flex shrink-0 flex-nowrap overflow-x-auto">
                 {recents.map((recent: Recent[]) => {
@@ -104,7 +91,7 @@ function App() {
 										    _id={_id}
 										    image={image}
 										    siteName={siteName}
-										    title={"Do Scientists Pray? Einstein Answers a Little Girl’s Question."}
+										    title={title}
 										    url={url}
 										  />
 										</div>
@@ -118,13 +105,11 @@ function App() {
         <div className="mx-4">
           <div className="mb-4">
             <h1 className="font-medium text-xl">
-              Stories that Belong in Sanctum
+              Popular Topics
             </h1>
-            <p className="text-[15px]">Stories to fuel your mind</p>
           </div>
           <div className="flex flex-col gap-6">
-            <ArticleCard />
-						<RecentCard _id={recents?.[0]?.[0]._id || ""} image={recents?.[1]?.[0].image || "https://i0.wp.com/www.themarginalian.org/wp-content/uploads/2013/05/einstein1.jpg?w=680&ssl=1"} siteName={recents?.[0]?.[0].siteName || ""} url={recents?.[0]?.[0].url || ""} title={"normAL title form my head"} />
+            {/* <ArticleCard /> */}
           </div>
         </div>
       </section>

@@ -371,6 +371,7 @@ export const refreshAccessToken = asyncErrorHandler(
           refreshTokenExpiry: { $gt: Date.now() },
         });
         if (!user) {
+					res.clearCookie("refresh");
           next();
         } else {
           const newJWT = user.generateAccessToken();

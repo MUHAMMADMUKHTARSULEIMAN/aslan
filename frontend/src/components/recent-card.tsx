@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "./ui/card";
-import { cn } from "@/lib/utils";
+import { cn, textTrimmer } from "@/lib/utils";
 
 interface DefaultComponentProps
   extends React.HtmlHTMLAttributes<HTMLDivElement> {
@@ -13,9 +13,10 @@ interface DefaultComponentProps
 
 const RecentCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
   ({ _id, image, siteName, title, url, className }, ref) => {
+		title = textTrimmer(title, true, 50)
     return (
-      <div className={cn(className)} ref={ref}>
-        <Card className="p-0 border-5 border-input/20 dark:border-muted/10">
+      <div ref={ref}>
+        <Card className={cn("p-0 border-5 border-input/20 dark:border-muted/10", className)}>
           <div className="grid grid-cols-[4fr_5fr] gap-2">
             <img
               className="rounded-l-lg w-full aspect-8/7 object-cover"
@@ -23,7 +24,7 @@ const RecentCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
               alt=""
             />
             <div className="flex flex-col justify-between aspect-10/7">
-              <h3 className="font-medium text-[13px]">
+              <h3 className="font-medium text-[13px] text-pretty wrap-anywhere">
                 {title}
               </h3>
               <h3 className="font-medium text-muted-foreground text-[13px]">

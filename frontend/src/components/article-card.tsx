@@ -1,20 +1,25 @@
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import React from "react";
+import { cn, textTrimmer } from "@/lib/utils";
 
 interface DefaultComponentProps
   extends React.HtmlHTMLAttributes<HTMLDivElement> {
-		image?: string,
-		title?: string,
-		excerpt?: string,
-		siteName?: string,
-	}
+  _id: string;
+  excerpt?: string;
+  image: string;
+  siteName: string;
+  title: string;
+  url: string;
+}
 
 const ArticleCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
-  ({ className }, ref) => {
+  ({ className, _id, excerpt, image, siteName, title, url }, ref) => {
+		title = textTrimmer(title)
+		excerpt = textTrimmer(excerpt || "", false, 200)
     return (
-      <div className={className} ref={ref}>
-        <Card className="p-0 gap-4 border-5 border-input/25 dark:border-input/20">
+      <div ref={ref}>
+        <Card className={cn("p-0 gap-4 border-5 border-input/25 dark:border-input/20", className)}>
           <img
             src="https://i0.wp.com/www.themarginalian.org/wp-content/uploads/2013/05/einstein1.jpg?w=680&ssl=1"
             alt=""
@@ -22,17 +27,14 @@ const ArticleCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
           />
           <div className="mx-4">
             <h3 className="font-medium mb-2">
-              Do Scientists Pray? Einstein Answers a Little Girl’s Question
-              about Science vs. Religion
+              {title}
             </h3>
             <p className="mb-4 text-sm">
-              However, we must concede that our actual knowledge of these forces
-              is imperfect, so that in the end the belief in the existence of a
-              final, ultimate spirit rests on a kind of faith.
+              {excerpt}
             </p>
             <div className="mb-4 flex items-center justify-between">
               <span className="text-muted-foreground font-medium">
-                The Marginalian
+                {siteName}
               </span>
               <Button variant="card-save" className="font-medium text-base">
                 Save
