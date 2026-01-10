@@ -406,17 +406,18 @@ export const addSave = asyncErrorHandler(
       if (!reqHTML) {
         html = await processor.fetchHTML(url);
       }
+			const metadata = processor.findMetadata(reqHTML || html || "", url, 200)
       const title =
-        processor.findTitle(reqHTML || html || "") ||
+        metadata.title||
         processor.getHostname(url);
-      const image = processor.findThumbnail(reqHTML || html || "", url);
+      const image = metadata.thumbnail;
       const siteName =
-        processor.findSiteName(reqHTML || html || "") ||
+        metadata.siteName ||
         processor.getHostname(url);
-      const length = processor.findLength(reqHTML || html || "");
-      const description = processor.findDescription(reqHTML || html || "", 200);
-      const publishedTime = processor.findPublishedTime(html || "");
-      const author = processor.findAuthor(html || "");
+      const length = metadata.length
+      const description = metadata.description
+      const publishedTime = metadata.publishedTime
+      const author = metadata.author
 
       const packet = {
         url,

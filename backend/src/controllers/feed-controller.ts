@@ -8,19 +8,19 @@ export const addFeedURL = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const url = req.body.url;
     const name = req.body.name;
-    const processor = new Processor();
-
+		
     if (!url) {
-      const error = new CustomError(400, "A valid URL must be provided");
+			const error = new CustomError(400, "A valid URL must be provided");
       return next(error);
     }
-
+		
+		const processor = new Processor();
     const feed = await processor.fetchFeed(url);
     if (!feed) {
-      const error = new CustomError(500, `unable to parse ${url}`);
+			const error = new CustomError(500, `unable to parse ${url}`);
       return next(error);
     }
-
+		
     if (feed.items.length > 0 && feed.items[0].link) {
       const HTML = await processor.fetchHTML(feed.items[0].link);
       if (!HTML) {
@@ -43,7 +43,7 @@ export const addFeedURL = asyncErrorHandler(
       return next(error);
     }
 
-    const entry = await Feeds.create(req.body);
+    const entry = await Feeds.insertOne(req.body);
     if (!entry) {
       const error = new CustomError(
         500,

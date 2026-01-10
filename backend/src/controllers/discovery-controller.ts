@@ -35,6 +35,7 @@ export const createFeeds = asyncErrorHandler(
     }
     let BingIotD = null;
     let discoveriesContainer: Array<Discovery> = [];
+    const date = format(subDays(new Date(), 1), "yyyy-MM-dd");
     let k = 0;
     for (let i = 0; i < feeds.length; i++) {
       const name = feeds[i].name;
@@ -49,12 +50,24 @@ export const createFeeds = asyncErrorHandler(
             if (typeof item.link === "string") {
               k++;
               console.log(k, item.link);
+
+              const existingDiscovery = await Discoveries.findOne({
+                url: item.link,
+                dateCreated: date,
+              });
+              if (existingDiscovery) continue;
+
               const HTML = await processor.fetchHTML(item.link);
               if (HTML) {
-                const title = item.title || processor.findTitle(HTML)
-                if (!title) break;
-                const excerpt = processor.findDescription(HTML, 200) || item.summary || null
-                const length = processor.findLength(HTML)
+                const metadata = processor.findMetadata(HTML, item.link, 200);
+
+                const title = item.title || metadata.title;
+                if (!title) continue;
+
+                const excerpt = metadata.description || item.summary || null;
+
+                const length = metadata.length;
+
                 let image = null;
                 if (item.mediaContent) {
                   image = item.mediaContent.$.url;
@@ -67,8 +80,8 @@ export const createFeeds = asyncErrorHandler(
                   image = item.enclosure.url;
                 } else if (item.itunesImage) {
                   image = item.itunesImage.$.href;
-                } else if (processor.findThumbnail(HTML, item.link) !== null) {
-                  image = processor.findThumbnail(HTML, item.link);
+                } else if (metadata.thumbnail !== null) {
+                  image = metadata.thumbnail;
                 } else {
                   if (!BingIotD) {
                     const fetchBingIotD = await axios(
@@ -79,11 +92,17 @@ export const createFeeds = asyncErrorHandler(
                   }
                   image = BingIotD;
                 }
+
                 const siteName =
-                  processor.findSiteName(HTML) ||
-                  processor.getHostname(item.link);
-                const publishedTime = processor.findPublishedTime(HTML || "") || item.pubDate || item.isoDate || null
-                const author = processor.findAuthor(HTML || "") || item.creator || null
+                  metadata.siteName || processor.getHostname(item.link);
+
+                const publishedTime =
+                  metadata.publishedTime ||
+                  item.pubDate ||
+                  item.isoDate ||
+                  null;
+
+                const author = metadata.author || item.creator || null;
 
                 const discovery: Discovery = {
                   url: item.link,
@@ -97,39 +116,16 @@ export const createFeeds = asyncErrorHandler(
                   publishedTime,
                   author,
                 };
-                let checker = false;
-                for (let k = 0; k < discoveriesContainer.length; k++) {
-                  if (discovery.url === discoveriesContainer[k].url) {
-                    checker = true;
-                    break;
-                  }
-                }
-                if (!checker) {
-                  discoveriesContainer.push(discovery);
-                }
+
+                await Discoveries.insertOne(discovery);
               }
-              if (j === 10) break;
             }
+            if (j === 10) break;
           }
         }
       }
     }
 
-    if (discoveriesContainer.length === 0) {
-      const error = new CustomError(404, "No new article was discoved.");
-      return next(error);
-    }
-
-    const discoveries = await Discoveries.create(discoveriesContainer);
-    if (!discoveries) {
-      const error = new CustomError(
-        500,
-        "Articles could not be added. Please try again later."
-      );
-      return next(error);
-    }
-
-    const date = format(subDays(new Date(), 1), "yyyy-MM-dd");
     await Discoveries.deleteMany({ dateCreated: !date });
 
     return res.status(201).json({

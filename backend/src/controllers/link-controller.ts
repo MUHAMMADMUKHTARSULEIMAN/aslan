@@ -8,7 +8,7 @@ export const getAndDeleteLink = async (linkingId: string): Promise<LinkingData |
 }
 
 export const createLink = async (data: LinkingData): Promise<Types.ObjectId> => {
-	const link = await Links.create({data})
+	const link = await Links.insertOne({data})
 	if(!link) {
 		console.error(`Unable to create linking data`)
 	}
