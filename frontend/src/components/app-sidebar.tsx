@@ -14,7 +14,7 @@ import {
 import {
   House,
   Box,
-  Compass,
+  Rss,
   GalleryVerticalEnd,
   Archive,
   Star,
@@ -38,9 +38,9 @@ const AppSidebar = () => {
       icon: House,
     },
     {
-      title: "Discover",
-      url: "/discover",
-      icon: Compass,
+      title: "Feeds",
+      url: "/feeds",
+      icon: Rss,
     },
     {
       title: "Saves",

@@ -1,4 +1,5 @@
 import { Readability, isProbablyReaderable } from "@mozilla/readability";
+import { request } from "undici";
 import { JSDOM } from "jsdom";
 import * as cheerio from "cheerio";
 import CustomError from "../utils/custom-error";
@@ -16,6 +17,16 @@ export interface Article {
   siteName: string;
   lang: string;
   publishedTime: string;
+}
+
+export interface Metadata {
+		thumbnail: string | null;
+			siteName: string | null;
+			publishedTime: string | null;
+			title: string | null;
+			description: string | null;
+			author: string | null;
+			length: number | null;
 }
 
 class Processor {
@@ -45,7 +56,7 @@ class Processor {
   }
 
   public async fetchHTML(URL: string): Promise<string | null> {
-    const response = await fetch(URL, {
+    const { body, statusCode } = await request(URL, {
       method: "GET",
       headers: {
         "user-agent":
@@ -57,16 +68,16 @@ class Processor {
       },
     });
 
-    if (!response.ok) {
+    if (statusCode !== 200) {
       const message =
-        response.status < 500
+        statusCode < 500
           ? "Check url and try again."
           : "Something went wrong. Try again later.";
-      const error = new CustomError(response.status, message);
+      const error = new CustomError(statusCode, message);
       logger(JSON.stringify(error));
       return null;
     } else {
-      return await response.json();
+      return await body.text();
     }
   }
 
@@ -120,8 +131,20 @@ class Processor {
     }
   }
 
-  public findThumbnail(HTML: string, url: string): string | null {
-    const $ = cheerio.load(HTML);
+	public findMetadata(html: string, url: string, maxLength: number): Metadata {
+		const $ = cheerio.load(html);
+		return {
+			thumbnail: this.findThumbnail($, url),
+			siteName: this.findSiteName($),
+			publishedTime: this.findPublishedTime($),
+			title: this.findTitle($),
+			description: this.findDescription($, html, maxLength),
+			author: this.findAuthor($),
+			length: this.findLength($)
+		}
+	}
+
+  private findThumbnail($: cheerio.CheerioAPI, url: string): string | null {
     let image =
       $('meta[name="image"]').attr("content") ||
       $('meta[property="og:image"]').attr("content") ||
@@ -142,8 +165,7 @@ class Processor {
     return image;
   }
 
-  public findSiteName(HTML: string): string | null {
-    const $ = cheerio.load(HTML);
+  private findSiteName($: cheerio.CheerioAPI): string | null {
     return (
       $('meta[property="og:site_name"]').attr("content") ||
       $('meta[name="og:site_name"]').attr("content") ||
@@ -155,8 +177,7 @@ class Processor {
     );
   }
 
-  public findPublishedTime(HTML: string): string | null {
-    const $ = cheerio.load(HTML);
+  private findPublishedTime($: cheerio.CheerioAPI): string | null {
     return (
       $("time").attr("datetime") ||
       $("time").text() ||
@@ -171,8 +192,7 @@ class Processor {
     );
   }
 
-  public findTitle(HTML: string): string | null {
-    const $ = cheerio.load(HTML);
+  private findTitle($: cheerio.CheerioAPI): string | null {
     return (
       $("h1").first().text() ||
       $('meta[property="og:title"]').attr("content") ||
@@ -184,7 +204,18 @@ class Processor {
     );
   }
 
-  public findDescription(HTML: string, maxLength: number): string | null {
+  private findDescription($: cheerio.CheerioAPI, HTML: string, maxLength: number): string | null {
+		const description =
+			$('meta[name="description"]').attr("content") ||
+			$('meta[property="og:description"]').attr("content") ||
+			$('meta[name="og:description"]').attr("content") ||
+			$('meta[name="twitter:description"]').attr("content") ||
+			null;
+
+		if (description) {
+			return description;
+		}
+
     const dom = new JSDOM(HTML);
     const document = dom.window.document;
 
@@ -208,19 +239,6 @@ class Processor {
 
     const readable = isProbablyReaderable(document);
     if (readable) {
-      const $ = cheerio.load(HTML);
-
-      const description =
-        $('meta[name="description"]').attr("content") ||
-        $('meta[property="og:description"]').attr("content") ||
-        $('meta[name="og:description"]').attr("content") ||
-        $('meta[name="twitter:description"]').attr("content") ||
-        null;
-
-      if (description) {
-        return description;
-      }
-
       const BODY_NOISE_SELECTORS: string = [
         "h1, h2, h3, h4, h5, h6",
         "header",
@@ -239,6 +257,7 @@ class Processor {
         body
           .querySelectorAll(BODY_NOISE_SELECTORS)
           .forEach((el) => el.remove());
+
         const bodyText = body.textContent
           .replace(/(\r\n|\n|\r|\t)/gm, " ")
           .replace(/\s+/g, " ")
@@ -265,8 +284,7 @@ class Processor {
     }
   }
 
-  public findAuthor(HTML: string): string | null {
-    const $ = cheerio.load(HTML);
+  private findAuthor($: cheerio.CheerioAPI): string | null {
 
     return (
       $('meta[name="author"]').attr("content") ||
@@ -279,8 +297,7 @@ class Processor {
     );
   }
 
-  public findLength(HTML: string): number | null {
-    const $ = cheerio.load(HTML);
+  private findLength($: cheerio.CheerioAPI): number | null {
     let articleLength = 0;
     let divLength = 0;
 

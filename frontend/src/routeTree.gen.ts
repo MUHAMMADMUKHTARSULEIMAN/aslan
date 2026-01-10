@@ -18,9 +18,9 @@ import { Route as HeaderLayoutTagsRouteImport } from './routes/_header-layout/ta
 import { Route as HeaderLayoutSavesRouteImport } from './routes/_header-layout/saves'
 import { Route as HeaderLayoutHomeRouteImport } from './routes/_header-layout/home'
 import { Route as HeaderLayoutHighlightsRouteImport } from './routes/_header-layout/highlights'
+import { Route as HeaderLayoutFeedsRouteImport } from './routes/_header-layout/feeds'
 import { Route as HeaderLayoutFavouritesRouteImport } from './routes/_header-layout/favourites'
 import { Route as HeaderLayoutExportRouteImport } from './routes/_header-layout/export'
-import { Route as HeaderLayoutDiscoverRouteImport } from './routes/_header-layout/discover'
 import { Route as HeaderLayoutCollectionsRouteImport } from './routes/_header-layout/collections'
 import { Route as HeaderLayoutArchiveRouteImport } from './routes/_header-layout/archive'
 import { Route as SignUpEmailTokenRouteImport } from './routes/sign-up.$email.$token'
@@ -70,6 +70,11 @@ const HeaderLayoutHighlightsRoute = HeaderLayoutHighlightsRouteImport.update({
   path: '/highlights',
   getParentRoute: () => HeaderLayoutRoute,
 } as any)
+const HeaderLayoutFeedsRoute = HeaderLayoutFeedsRouteImport.update({
+  id: '/feeds',
+  path: '/feeds',
+  getParentRoute: () => HeaderLayoutRoute,
+} as any)
 const HeaderLayoutFavouritesRoute = HeaderLayoutFavouritesRouteImport.update({
   id: '/favourites',
   path: '/favourites',
@@ -78,11 +83,6 @@ const HeaderLayoutFavouritesRoute = HeaderLayoutFavouritesRouteImport.update({
 const HeaderLayoutExportRoute = HeaderLayoutExportRouteImport.update({
   id: '/export',
   path: '/export',
-  getParentRoute: () => HeaderLayoutRoute,
-} as any)
-const HeaderLayoutDiscoverRoute = HeaderLayoutDiscoverRouteImport.update({
-  id: '/discover',
-  path: '/discover',
   getParentRoute: () => HeaderLayoutRoute,
 } as any)
 const HeaderLayoutCollectionsRoute = HeaderLayoutCollectionsRouteImport.update({
@@ -112,9 +112,9 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/archive': typeof HeaderLayoutArchiveRoute
   '/collections': typeof HeaderLayoutCollectionsRoute
-  '/discover': typeof HeaderLayoutDiscoverRoute
   '/export': typeof HeaderLayoutExportRoute
   '/favourites': typeof HeaderLayoutFavouritesRoute
+  '/feeds': typeof HeaderLayoutFeedsRoute
   '/highlights': typeof HeaderLayoutHighlightsRoute
   '/home': typeof HeaderLayoutHomeRoute
   '/saves': typeof HeaderLayoutSavesRoute
@@ -129,9 +129,9 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/archive': typeof HeaderLayoutArchiveRoute
   '/collections': typeof HeaderLayoutCollectionsRoute
-  '/discover': typeof HeaderLayoutDiscoverRoute
   '/export': typeof HeaderLayoutExportRoute
   '/favourites': typeof HeaderLayoutFavouritesRoute
+  '/feeds': typeof HeaderLayoutFeedsRoute
   '/highlights': typeof HeaderLayoutHighlightsRoute
   '/home': typeof HeaderLayoutHomeRoute
   '/saves': typeof HeaderLayoutSavesRoute
@@ -148,9 +148,9 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/_header-layout/archive': typeof HeaderLayoutArchiveRoute
   '/_header-layout/collections': typeof HeaderLayoutCollectionsRoute
-  '/_header-layout/discover': typeof HeaderLayoutDiscoverRoute
   '/_header-layout/export': typeof HeaderLayoutExportRoute
   '/_header-layout/favourites': typeof HeaderLayoutFavouritesRoute
+  '/_header-layout/feeds': typeof HeaderLayoutFeedsRoute
   '/_header-layout/highlights': typeof HeaderLayoutHighlightsRoute
   '/_header-layout/home': typeof HeaderLayoutHomeRoute
   '/_header-layout/saves': typeof HeaderLayoutSavesRoute
@@ -167,9 +167,9 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/archive'
     | '/collections'
-    | '/discover'
     | '/export'
     | '/favourites'
+    | '/feeds'
     | '/highlights'
     | '/home'
     | '/saves'
@@ -184,9 +184,9 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/archive'
     | '/collections'
-    | '/discover'
     | '/export'
     | '/favourites'
+    | '/feeds'
     | '/highlights'
     | '/home'
     | '/saves'
@@ -202,9 +202,9 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/_header-layout/archive'
     | '/_header-layout/collections'
-    | '/_header-layout/discover'
     | '/_header-layout/export'
     | '/_header-layout/favourites'
+    | '/_header-layout/feeds'
     | '/_header-layout/highlights'
     | '/_header-layout/home'
     | '/_header-layout/saves'
@@ -289,6 +289,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HeaderLayoutHighlightsRouteImport
       parentRoute: typeof HeaderLayoutRoute
     }
+    '/_header-layout/feeds': {
+      id: '/_header-layout/feeds'
+      path: '/feeds'
+      fullPath: '/feeds'
+      preLoaderRoute: typeof HeaderLayoutFeedsRouteImport
+      parentRoute: typeof HeaderLayoutRoute
+    }
     '/_header-layout/favourites': {
       id: '/_header-layout/favourites'
       path: '/favourites'
@@ -301,13 +308,6 @@ declare module '@tanstack/react-router' {
       path: '/export'
       fullPath: '/export'
       preLoaderRoute: typeof HeaderLayoutExportRouteImport
-      parentRoute: typeof HeaderLayoutRoute
-    }
-    '/_header-layout/discover': {
-      id: '/_header-layout/discover'
-      path: '/discover'
-      fullPath: '/discover'
-      preLoaderRoute: typeof HeaderLayoutDiscoverRouteImport
       parentRoute: typeof HeaderLayoutRoute
     }
     '/_header-layout/collections': {
@@ -344,9 +344,9 @@ declare module '@tanstack/react-router' {
 interface HeaderLayoutRouteChildren {
   HeaderLayoutArchiveRoute: typeof HeaderLayoutArchiveRoute
   HeaderLayoutCollectionsRoute: typeof HeaderLayoutCollectionsRoute
-  HeaderLayoutDiscoverRoute: typeof HeaderLayoutDiscoverRoute
   HeaderLayoutExportRoute: typeof HeaderLayoutExportRoute
   HeaderLayoutFavouritesRoute: typeof HeaderLayoutFavouritesRoute
+  HeaderLayoutFeedsRoute: typeof HeaderLayoutFeedsRoute
   HeaderLayoutHighlightsRoute: typeof HeaderLayoutHighlightsRoute
   HeaderLayoutHomeRoute: typeof HeaderLayoutHomeRoute
   HeaderLayoutSavesRoute: typeof HeaderLayoutSavesRoute
@@ -357,9 +357,9 @@ interface HeaderLayoutRouteChildren {
 const HeaderLayoutRouteChildren: HeaderLayoutRouteChildren = {
   HeaderLayoutArchiveRoute: HeaderLayoutArchiveRoute,
   HeaderLayoutCollectionsRoute: HeaderLayoutCollectionsRoute,
-  HeaderLayoutDiscoverRoute: HeaderLayoutDiscoverRoute,
   HeaderLayoutExportRoute: HeaderLayoutExportRoute,
   HeaderLayoutFavouritesRoute: HeaderLayoutFavouritesRoute,
+  HeaderLayoutFeedsRoute: HeaderLayoutFeedsRoute,
   HeaderLayoutHighlightsRoute: HeaderLayoutHighlightsRoute,
   HeaderLayoutHomeRoute: HeaderLayoutHomeRoute,
   HeaderLayoutSavesRoute: HeaderLayoutSavesRoute,

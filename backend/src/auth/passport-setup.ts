@@ -69,7 +69,7 @@ export const initializeGooglePassport = () => {
           return cb(null, existingUser);
         }
 
-        user = await Users.create({
+        user = await Users.insertOne({
           email,
           googleId: profile.id,
           firstName: profile.name?.givenName || profile.displayName,

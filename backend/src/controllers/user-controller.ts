@@ -228,7 +228,7 @@ export const emailRegistration = asyncErrorHandler(
     } else {
       let userEmail = await Emails.findOne({ email });
       if (!userEmail) {
-        userEmail = await Emails.create({ email });
+        userEmail = await Emails.insertOne({ email });
       }
 
       const token = await userEmail.generateVerificationToken(next);
@@ -297,7 +297,7 @@ export const userSignUp = asyncErrorHandler(
       return next(error);
     }
 
-    const newUser = await Users.create({
+    const newUser = await Users.insertOne({
       email,
       firstName,
       lastName,
