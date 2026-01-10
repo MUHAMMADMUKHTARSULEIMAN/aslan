@@ -1,5 +1,4 @@
 import { Readability, isProbablyReaderable } from "@mozilla/readability";
-import { request } from "undici";
 import { JSDOM } from "jsdom";
 import * as cheerio from "cheerio";
 import CustomError from "../utils/custom-error";
@@ -44,10 +43,9 @@ class Processor {
       return null;
     }
   }
-  public async fetchHTML(
-    URL: string
-  ): Promise<string | null | void> {
-    const { statusCode, body } = await request(URL, {
+
+  public async fetchHTML(URL: string): Promise<string | null> {
+    const response = await fetch(URL, {
       method: "GET",
       headers: {
         "user-agent":
@@ -59,16 +57,16 @@ class Processor {
       },
     });
 
-    if (statusCode !== 200) {
-      await body.dump();
+    if (!response.ok) {
       const message =
-        statusCode < 500
+        response.status < 500
           ? "Check url and try again."
           : "Something went wrong. Try again later.";
-      const error = new CustomError(statusCode, message);
-			logger(JSON.stringify(error))
+      const error = new CustomError(response.status, message);
+      logger(JSON.stringify(error));
+      return null;
     } else {
-      return await body.text();
+      return await response.json();
     }
   }
 
@@ -136,7 +134,7 @@ class Processor {
       null;
     if (
       image &&
-      (!image.startsWith("https://") && !image.startsWith("http://"))
+      !(image.startsWith("https://") || image.startsWith("http://"))
     ) {
       const parsedURL = new URL(url);
       image = `${parsedURL.origin}${image}`;
@@ -274,9 +272,9 @@ class Processor {
       $('meta[name="author"]').attr("content") ||
       $('meta[property="article:author"]').attr("content") ||
       $('meta[name="twitter:creator:id"]').attr("content") ||
+      $('[rel="author"]').first().text() ||
       $("address").text() ||
       $("address a").text() ||
-      $('[rel="author"]').first().text() ||
       null
     );
   }

@@ -15,23 +15,26 @@ interface DefaultComponentProps
 
 const ArticleCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
   ({ className, _id, excerpt, image, siteName, title, url }, ref) => {
-		title = textTrimmer(title)
-		excerpt = textTrimmer(excerpt || "", false, 200)
+    title = textTrimmer(title);
+    excerpt = textTrimmer(excerpt || "", false, 120);
     return (
       <div ref={ref}>
-        <Card className={cn("p-0 gap-4 border-5 border-input/25 dark:border-input/20", className)}>
+        <Card
+          className={cn(
+            "p-0 gap-4 border-5 border-input/25 dark:border-input/20",
+            className
+          )}
+        >
           <img
-            src="https://i0.wp.com/www.themarginalian.org/wp-content/uploads/2013/05/einstein1.jpg?w=680&ssl=1"
+            src={image}
             alt=""
             className="rounded-t-lg w-full aspect-3/2 object-cover"
           />
-          <div className="mx-4">
-            <h3 className="font-medium mb-2">
-              {title}
-            </h3>
-            <p className="mb-4 text-sm">
-              {excerpt}
-            </p>
+          <div className="h-52 max-h-52 mx-4 flex flex-col justify-between">
+            <div className="h-35 max-h-35">
+              <h3 className="font-medium mb-2">{title}</h3>
+              <p className="mb-4 text-sm">{excerpt}</p>
+            </div>
             <div className="mb-4 flex items-center justify-between">
               <span className="text-muted-foreground font-medium">
                 {siteName}

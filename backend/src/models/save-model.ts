@@ -27,6 +27,12 @@ const saveSchema = new Schema(
     html: {
       type: String,
     },
+    publishedTime: {
+      type: String,
+    },
+    author: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

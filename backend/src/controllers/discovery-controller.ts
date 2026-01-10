@@ -16,11 +16,13 @@ interface Discovery {
   url: string;
   title: string;
   image: string;
-  excerpt: string;
+  excerpt: string | null;
   siteName: string;
   feedName: string;
-  length: number;
+  length: number | null;
   categories: string[];
+  publishedTime: string | null;
+  author: string | null;
 }
 
 export const createFeeds = asyncErrorHandler(
@@ -33,6 +35,7 @@ export const createFeeds = asyncErrorHandler(
     }
     let BingIotD = null;
     let discoveriesContainer: Array<Discovery> = [];
+    let k = 0;
     for (let i = 0; i < feeds.length; i++) {
       const name = feeds[i].name;
       const url = feeds[i].url;
@@ -44,13 +47,14 @@ export const createFeeds = asyncErrorHandler(
           for (let j = 0; j < feed.items.length; j++) {
             const item = feed.items[j];
             if (typeof item.link === "string") {
-              console.log(j, item.link);
+              k++;
+              console.log(k, item.link);
               const HTML = await processor.fetchHTML(item.link);
               if (HTML) {
-                const title = processor.findTitle(HTML);
+                const title = item.title || processor.findTitle(HTML)
                 if (!title) break;
-                const excerpt = processor.findDescription(HTML, 200) || "";
-                const length = processor.findLength(HTML) || 0;
+                const excerpt = processor.findDescription(HTML, 200) || item.summary || null
+                const length = processor.findLength(HTML)
                 let image = null;
                 if (item.mediaContent) {
                   image = item.mediaContent.$.url;
@@ -78,6 +82,9 @@ export const createFeeds = asyncErrorHandler(
                 const siteName =
                   processor.findSiteName(HTML) ||
                   processor.getHostname(item.link);
+                const publishedTime = processor.findPublishedTime(HTML || "") || item.pubDate || item.isoDate || null
+                const author = processor.findAuthor(HTML || "") || item.creator || null
+
                 const discovery: Discovery = {
                   url: item.link,
                   title,
@@ -86,7 +93,9 @@ export const createFeeds = asyncErrorHandler(
                   siteName,
                   feedName: name,
                   length,
-                  categories: categories,
+                  categories,
+                  publishedTime,
+                  author,
                 };
                 let checker = false;
                 for (let k = 0; k < discoveriesContainer.length; k++) {
@@ -99,7 +108,7 @@ export const createFeeds = asyncErrorHandler(
                   discoveriesContainer.push(discovery);
                 }
               }
-              if (j === 2) break;
+              if (j === 10) break;
             }
           }
         }
@@ -200,8 +209,8 @@ export const getHomeFeed = asyncErrorHandler(
           "saves.archived": false,
         },
       },
-			{$sort: {"saves.createdAt": -1}},
-			{$limit: 3},
+      { $sort: { "saves.createdAt": -1 } },
+      { $limit: 3 },
       {
         $lookup: {
           from: "saves",
@@ -243,7 +252,7 @@ export const getHomeFeed = asyncErrorHandler(
       data: {
         user: name,
         articles,
-				recents
+        recents,
       },
     });
   }

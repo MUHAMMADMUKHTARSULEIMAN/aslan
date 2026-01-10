@@ -32,9 +32,15 @@ const discoverySchema = new mongoose.Schema({
     type: [String],
     required: [true, "Categories not provided"],
   },
+  publishedTime: {
+    type: String,
+  },
+  author: {
+    type: String,
+  },
   dateCreated: {
     type: String,
-    default: format(new Date(), "yyyy-MM-dd")
+    default: format(new Date(), "yyyy-MM-dd"),
   },
 });
 

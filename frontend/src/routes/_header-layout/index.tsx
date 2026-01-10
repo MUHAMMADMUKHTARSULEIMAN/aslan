@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import ArticleCard from "@/components/article-card";
 import RecentCard from "@/components/recent-card";
 import { useQuery } from "@tanstack/react-query";
@@ -78,18 +78,20 @@ function App() {
             ""
           )}
         </div>
-        <div>
+        <div className="mb-6">
           {!recents ? (
             ""
           ) : (
             <div>
               <div className="mb-1 mx-4 flex justify-between items-baseline">
-                <h3 className="font-medium text-base">Recent Saves</h3>
+                <h3 className="font-medium text-lg">Recent Saves</h3>
                 <LinkHelper
                   label="Go to Saves"
                   to="/saves"
                   textSize="text-sm"
-                  icon={<ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 text-primary -mb-[3.5px] opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />}
+                  icon={
+                    <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
+                  }
                 />
               </div>
               <div className="mb-4 w-screen flex shrink-0 flex-nowrap overflow-x-auto">
@@ -116,7 +118,7 @@ function App() {
           )}
         </div>
         <div className="mx-4">
-          <div className="mb-4">
+          <div className="mb-2">
             <h2 className="font-medium text-xl">Popular Topics</h2>
           </div>
           <div className="flex flex-col gap-6">
@@ -127,9 +129,33 @@ function App() {
                   return (
                     <div>
                       <div className="flex justify-between items-baseline">
-												<h3 className="font-medium text-lg">{category}</h3>
-												<LinkHelper to="/" label={`Go to ${category}`} textSize="text-sm"/>
-											</div>
+                        <h3 className="font-medium text-lg">{category}</h3>
+                        <LinkHelper
+                          to="/"
+                          label={`Go to ${category}`}
+                          textSize="text-sm"
+                          icon={
+                            <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        {data.map(
+                          ({ _id, image, excerpt, siteName, title, url }) => {
+                            return (
+                              <ArticleCard
+                                key={_id}
+                                _id={_id}
+                                image={image}
+                                excerpt={excerpt}
+                                siteName={siteName}
+                                title={title}
+                                url={url}
+                              />
+                            );
+                          }
+                        )}
+                      </div>
                     </div>
                   );
                 })}

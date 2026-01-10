@@ -398,7 +398,7 @@ export const addSave = asyncErrorHandler(
 
       return res.status(201).json({
         status: "OK",
-    		message: "Article added successfully."
+        message: "Article added successfully.",
       });
     } else {
       const processor = new Processor();
@@ -414,7 +414,9 @@ export const addSave = asyncErrorHandler(
         processor.findSiteName(reqHTML || html || "") ||
         processor.getHostname(url);
       const length = processor.findLength(reqHTML || html || "");
-      const description = processor.findDescription(reqHTML || html || "", 197);
+      const description = processor.findDescription(reqHTML || html || "", 200);
+      const publishedTime = processor.findPublishedTime(html || "");
+      const author = processor.findAuthor(html || "");
 
       const packet = {
         url,
@@ -424,6 +426,8 @@ export const addSave = asyncErrorHandler(
         siteName,
         html: reqHTML || html,
         length,
+        publishedTime,
+        author,
       };
       const save = await Saves.create(packet);
       if (!save) {
@@ -449,7 +453,7 @@ export const addSave = asyncErrorHandler(
 
       return res.status(201).json({
         status: "OK",
-    		message: "Article added successfully."
+        message: "Article added successfully.",
       });
     }
   }

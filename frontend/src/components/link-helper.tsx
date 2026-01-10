@@ -31,7 +31,7 @@ const LinkHelper = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
             ""
           )}
         </Link>
-            <span className="text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto">
+            <span>
               {Icon}
             </span>
       </div>
