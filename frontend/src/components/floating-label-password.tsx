@@ -41,23 +41,23 @@ const FloatingLabelPassword = forwardRef<HTMLInputElement, FloatingLabelInputPro
 				<Input
 				ref={ref}
 				type={visible ? "text" : "password"}
-					className={`peer rounded-lg border-2 pr-9.5 border-border/40 dark:border-muted-foreground/30 bg-background dark:bg-background hover:bg-card/50 dark:hover:bg-card focus:bg-card/50 dark:focus:bg-card shadow-none pt-5 pb-4 ${className}`}
+					className={`peer rounded-lg border-2 pr-9.5 border-border/40 dark:border-muted-foreground/30 bg-background dark:bg-background shadow-none pt-5 pb-4 ${className}`}
 					{...props}
 				/>
         <FormLabel
           className={`
-            absolute text-md left-[14.5px] top-10/21 cursor-text transition-all duration-300 ease-out transform -translate-y-9/23 text-border dark:text-muted-foreground/50 bg-background pointer-events-none peer-hover:bg-card/50 peer-focus:bg-card/50 dark:peer-hover:bg-card dark:peer-focus:bg-card
+            absolute text-md left-[14.5px] top-10/21 cursor-text transition-all duration-300 ease-out transform -translate-y-9/23 text-border dark:text-muted-foreground/50 bg-background pointer-events-none
 
             ${
               hasValue
-                ? 'text-sm -translate-y-7 left-3 bg-background px-px peer-hover:bg-background peer-focus:bg-background dark:peer-hover:bg-background dark:peer-focus:bg-background peer-disabled:opacity-100'
+                ? 'text-sm -translate-y-7 left-3 bg-background px-px peer-disabled:opacity-100'
                 : ""
             }
           `}
         >
           {label}
         </FormLabel>
-				<Button disabled={isDisabled} size="icon" type="button" onClick={() => setVisible((prev) => !prev)} className="absolute right-0.5 top-0.5 bg-background hover:bg-input dark:hover:bg-muted/40 text-border dark:text-muted-foreground-fifty peer-hover:bg-card p-[5px] rounded-r-md rounded-l-none cursor-pointer shadow-none">
+				<Button disabled={isDisabled} size="icon" type="button" onClick={() => setVisible((prev) => !prev)} className="absolute right-0.5 top-0.5 bg-background hover:bg-input dark:hover:bg-muted/40 text-border dark:text-muted-foreground-fifty p-[5px] rounded-r-md rounded-l-none cursor-pointer shadow-none">
 				{
 					visible
 					? <EyeOff className="h-[1.2rem]! w-[1.2rem]!" />

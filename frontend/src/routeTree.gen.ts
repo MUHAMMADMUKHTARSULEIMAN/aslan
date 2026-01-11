@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as RegisterEmailRouteImport } from './routes/register-email'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as HeaderLayoutRouteImport } from './routes/_header-layout'
 import { Route as HeaderLayoutIndexRouteImport } from './routes/_header-layout/index'
+import { Route as ResetPasswordTokenRouteImport } from './routes/reset-password.$token'
 import { Route as LinkAccountEmailRouteImport } from './routes/link-account.$email'
 import { Route as ConfirmLinkingEmailRouteImport } from './routes/confirm-linking.$email'
 import { Route as HeaderLayoutTagsRouteImport } from './routes/_header-layout/tags'
@@ -36,6 +38,11 @@ const RegisterEmailRoute = RegisterEmailRouteImport.update({
   path: '/register-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HeaderLayoutRoute = HeaderLayoutRouteImport.update({
   id: '/_header-layout',
   getParentRoute: () => rootRouteImport,
@@ -44,6 +51,11 @@ const HeaderLayoutIndexRoute = HeaderLayoutIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => HeaderLayoutRoute,
+} as any)
+const ResetPasswordTokenRoute = ResetPasswordTokenRouteImport.update({
+  id: '/reset-password/$token',
+  path: '/reset-password/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LinkAccountEmailRoute = LinkAccountEmailRouteImport.update({
   id: '/link-account/$email',
@@ -107,6 +119,7 @@ const SignUpEmailTokenRoute = SignUpEmailTokenRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/forgot-password': typeof ForgotPasswordRoute
   '/register-email': typeof RegisterEmailRoute
   '/sign-in': typeof SignInRoute
   '/archive': typeof HeaderLayoutArchiveRoute
@@ -120,10 +133,12 @@ export interface FileRoutesByFullPath {
   '/tags': typeof HeaderLayoutTagsRoute
   '/confirm-linking/$email': typeof ConfirmLinkingEmailRoute
   '/link-account/$email': typeof LinkAccountEmailRoute
+  '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/': typeof HeaderLayoutIndexRoute
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
 }
 export interface FileRoutesByTo {
+  '/forgot-password': typeof ForgotPasswordRoute
   '/register-email': typeof RegisterEmailRoute
   '/sign-in': typeof SignInRoute
   '/archive': typeof HeaderLayoutArchiveRoute
@@ -137,12 +152,14 @@ export interface FileRoutesByTo {
   '/tags': typeof HeaderLayoutTagsRoute
   '/confirm-linking/$email': typeof ConfirmLinkingEmailRoute
   '/link-account/$email': typeof LinkAccountEmailRoute
+  '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/': typeof HeaderLayoutIndexRoute
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_header-layout': typeof HeaderLayoutRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/register-email': typeof RegisterEmailRoute
   '/sign-in': typeof SignInRoute
   '/_header-layout/archive': typeof HeaderLayoutArchiveRoute
@@ -156,12 +173,14 @@ export interface FileRoutesById {
   '/_header-layout/tags': typeof HeaderLayoutTagsRoute
   '/confirm-linking/$email': typeof ConfirmLinkingEmailRoute
   '/link-account/$email': typeof LinkAccountEmailRoute
+  '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/_header-layout/': typeof HeaderLayoutIndexRoute
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/forgot-password'
     | '/register-email'
     | '/sign-in'
     | '/archive'
@@ -175,10 +194,12 @@ export interface FileRouteTypes {
     | '/tags'
     | '/confirm-linking/$email'
     | '/link-account/$email'
+    | '/reset-password/$token'
     | '/'
     | '/sign-up/$email/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/forgot-password'
     | '/register-email'
     | '/sign-in'
     | '/archive'
@@ -192,11 +213,13 @@ export interface FileRouteTypes {
     | '/tags'
     | '/confirm-linking/$email'
     | '/link-account/$email'
+    | '/reset-password/$token'
     | '/'
     | '/sign-up/$email/$token'
   id:
     | '__root__'
     | '/_header-layout'
+    | '/forgot-password'
     | '/register-email'
     | '/sign-in'
     | '/_header-layout/archive'
@@ -210,16 +233,19 @@ export interface FileRouteTypes {
     | '/_header-layout/tags'
     | '/confirm-linking/$email'
     | '/link-account/$email'
+    | '/reset-password/$token'
     | '/_header-layout/'
     | '/sign-up/$email/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   HeaderLayoutRoute: typeof HeaderLayoutRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   RegisterEmailRoute: typeof RegisterEmailRoute
   SignInRoute: typeof SignInRoute
   ConfirmLinkingEmailRoute: typeof ConfirmLinkingEmailRoute
   LinkAccountEmailRoute: typeof LinkAccountEmailRoute
+  ResetPasswordTokenRoute: typeof ResetPasswordTokenRoute
   SignUpEmailTokenRoute: typeof SignUpEmailTokenRoute
 }
 
@@ -239,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_header-layout': {
       id: '/_header-layout'
       path: ''
@@ -252,6 +285,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof HeaderLayoutIndexRouteImport
       parentRoute: typeof HeaderLayoutRoute
+    }
+    '/reset-password/$token': {
+      id: '/reset-password/$token'
+      path: '/reset-password/$token'
+      fullPath: '/reset-password/$token'
+      preLoaderRoute: typeof ResetPasswordTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/link-account/$email': {
       id: '/link-account/$email'
@@ -372,10 +412,12 @@ const HeaderLayoutRouteWithChildren = HeaderLayoutRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   HeaderLayoutRoute: HeaderLayoutRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   RegisterEmailRoute: RegisterEmailRoute,
   SignInRoute: SignInRoute,
   ConfirmLinkingEmailRoute: ConfirmLinkingEmailRoute,
   LinkAccountEmailRoute: LinkAccountEmailRoute,
+  ResetPasswordTokenRoute: ResetPasswordTokenRoute,
   SignUpEmailTokenRoute: SignUpEmailTokenRoute,
 }
 export const routeTree = rootRouteImport

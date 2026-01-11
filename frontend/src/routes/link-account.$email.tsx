@@ -1,10 +1,10 @@
 import FloatingLabelPassword from "@/components/floating-label-password";
+import LinkHelper from "@/components/link-helper";
 import ToastError from "@/components/toast-error";
 import ToastSuccess from "@/components/toast-success";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Spinner } from "@/components/ui/spinner";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createFileRoute,
@@ -12,6 +12,7 @@ import {
   useNavigate,
   useSearch,
 } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod/v4";
 
@@ -85,7 +86,7 @@ function RouteComponent() {
       <div className="w-full mb-6">
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 mb-4">
               <FormField
                 control={control}
                 name="password"
@@ -113,7 +114,7 @@ function RouteComponent() {
             <Button
               variant="secondary-full"
               disabled={formState.isSubmitting}
-              className="mt-4 py-5"
+              className="py-5"
             >
               {formState.isSubmitting ? (
                 <span className="flex justify-center items-center gap-1">
@@ -127,13 +128,26 @@ function RouteComponent() {
           </form>
         </Form>
       </div>
-      <Link
-        className={cn(buttonVariants({ variant: "link" }))}
+			<LinkHelper
+        label="Forgot password?"
+        to="/forgot-password"
+        textSize="text-sm"
+        bottom="bottom-2.5"
+				className="w-fit mb-2"
+        icon={
+          <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
+        }
+      />
+      <LinkHelper
+        label="Return to sign in"
         to="/sign-in"
-        search={{ returnTo }}
-      >
-        Return to sign in
-      </Link>
+				search={{returnTo}}
+        textSize="text-sm"
+        bottom="bottom-2.5"
+        icon={
+          <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
+        }
+      />
     </div>
   );
 }
