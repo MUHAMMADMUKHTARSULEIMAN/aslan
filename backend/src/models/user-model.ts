@@ -1,4 +1,4 @@
-import { Schema, model} from "mongoose";
+import { Schema, model } from "mongoose";
 import validator from "validator";
 import { randomBytes, createHash } from "crypto";
 import { compare, genSalt, hash } from "bcryptjs";
@@ -8,7 +8,8 @@ import { IUser } from "../types/user";
 import type { NextFunction } from "express";
 import CustomError from "../utils/custom-error";
 
-const { REFRESH_TOKEN_EXPIRY, RESET_TOKEN_EXPIRY, JWT_SECRET, JWT_EXPIRY } = config;
+const { REFRESH_TOKEN_EXPIRY, RESET_TOKEN_EXPIRY, JWT_SECRET, JWT_EXPIRY } =
+  config;
 
 const highlightSchema = new Schema(
   {
@@ -26,7 +27,7 @@ const tagSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-			sparse: true,
+      sparse: true,
     },
   },
   { timestamps: true }
@@ -38,7 +39,7 @@ const collectionSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-			sparse: true
+      sparse: true,
     },
     description: {
       type: String,
@@ -135,9 +136,13 @@ const userSchema = new Schema<IUser>(
       enum: [{ user: 1 }, { admin: 2 }, { superuser: 3 }],
       default: { user: 1 },
     },
-		linkingId: {
-			type: Schema.Types.ObjectId
-		},
+    linkingId: {
+      type: Schema.Types.ObjectId,
+    },
+    linkingIdExpiry: {
+      type: Date,
+      select: false,
+    },
     saves: {
       type: [userSaveSchema],
       select: false,
@@ -173,8 +178,8 @@ userSchema.methods.isPasswordModified = function (
     const timestamp = this.passwordLastModified.getTime() / 1000;
     return JWTTimestamp < timestamp;
   } else {
-		return false;
-	}
+    return false;
+  }
 };
 
 userSchema.methods.generateAccessToken = function (): string {
@@ -201,7 +206,7 @@ userSchema.methods.generateRefreshToken = async function (
     return next(error);
   }
 
-	return token
+  return token;
 };
 
 userSchema.methods.generateResetToken = async function (

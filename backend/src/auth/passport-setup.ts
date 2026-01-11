@@ -8,7 +8,7 @@ import { createLink } from "../controllers/link-controller";
 import type { Types } from "mongoose";
 import CustomError from "../utils/custom-error";
 
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = config;
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, LINKING_ID_EXPIRY } = config;
 
 export interface LinkingData {
   user: IUser;
@@ -57,10 +57,10 @@ export const initializeGooglePassport = () => {
         const existingUser = await Users.findOne({
           email,
           password: { $ne: null, $exists: true },
-        });
+        })
         if (existingUser) {
           const linkingId = await createLink(googleId);
-          await existingUser.updateOne({ linkingId });
+          await existingUser.updateOne({ linkingId, linkingIdExpiry: Date.now() + (LINKING_ID_EXPIRY * 1000)  });
           return cb(null, existingUser);
         }
 

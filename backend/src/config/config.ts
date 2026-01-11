@@ -27,6 +27,7 @@ interface Config {
 	LIMIT: number;
 	CSRF_SECRET: string;
 	SESSION_SECRET: string;
+	LINKING_ID_EXPIRY: number;
 }
 
 const config: Config = {
@@ -53,6 +54,7 @@ const config: Config = {
   LIMIT: parseInt(getENVVariable("LIMIT")),
   CSRF_SECRET: getENVVariable("CSRF_SECRET"),
   SESSION_SECRET: getENVVariable("SESSION_SECRET"),
+  LINKING_ID_EXPIRY: parseInt(getENVVariable("LINKING_ID_EXPIRY")),
 };
 
 export default config;

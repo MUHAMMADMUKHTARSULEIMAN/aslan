@@ -131,58 +131,56 @@ export const linkAccount = asyncErrorHandler(
     }
 
     if (!email) {
-      const error = new CustomError(400, "Email missing.");
+      const error = new CustomError(400, "Invalid credentials.");
+      return next(error);
+    }
+
+    const user = await Users.findOne({ email }).select("+password");
+    if (!user) {
+      const error = new CustomError(400, "Invalid credentials.");
+      return next(error);
+    }
+
+    if (!(await user.comparePasswords(password))) {
+      const error = new CustomError(400, "Incorrect password.");
+      return next(error);
+    }
+
+    const linkingId = user.linkingId;
+    if (!linkingId) {
+      const error = new CustomError(
+        410,
+        "Linking ID has expired. Try again later."
+      );
+      return next(error);
+    }
+    const googleId = await getAndDeleteLink(linkingId);
+    if (!googleId) {
+      const error = new CustomError(
+        410,
+        "Linking ID has expired. Try again later."
+      );
       return next(error);
     } else {
-      const user = await Users.findOne({ email });
-      if (!user) {
-        const error = new CustomError(400, "Invalid credentials.");
-        return next(error);
-      }
+      await user.updateOne({
+        googleId,
+        $unset: {
+          linkingId: 1,
+          linkingIdExpiry: 1,
+        },
+      });
 
-      const linkingId = user.linkingId;
-      if (!linkingId) {
-        const error = new CustomError(
-          410,
-          "Linking ID has expired. Try again later."
-        );
-        return next(error);
-      }
-      const googleId = await getAndDeleteLink(linkingId);
-      if (!googleId) {
-        const error = new CustomError(
-          410,
-          "Linking ID has expired. Try again later."
-        );
-        return next(error);
-      } else {
-				if (!(await user.comparePasswords(password))) {
-					const error = new CustomError(400, "Incorrect password.");
-          return next(error);
-        }
-        const updatedUser = await user.updateOne({ googleId });
-        if (!updatedUser) {
-					const error = new CustomError(
-						500,
-            "Something went wrong. Try again later."
-          );
-          return next(error);
-        }
-				
-				await user.updateOne({ linkingId: undefined });
+      const message = `Your Sanctum account has been successfully linked to Google. You can now sign in to your Sanctum account using Google.`;
+      const subject = "Sanctum: Account Linking";
+      const responseMessage =
+        "Your Sanctum account has been successfully linked to Google and you have been signed in.";
 
-        const message = `Your Sanctum account has been successfully linked to Google. You can now sign in to your Sanctum account using Google.`;
-        const subject = "Sanctum: Account Linking";
-        const responseMessage =
-          "Your Sanctum account has been successfully linked to Google and you have been signed in.";
+      await signInResponse(user, res, next, subject, message);
 
-        signInResponse(user, res, next, subject, message);
-
-        return res.status(201).json({
-          status: "OK",
-          message: responseMessage,
-        });
-      }
+      return res.status(201).json({
+        status: "OK",
+        message: responseMessage,
+      });
     }
   }
 );
@@ -522,7 +520,7 @@ export const resetPassword = asyncErrorHandler(
           const responseMessage =
             "Your Sanctum password has been successfully reset and you have been signed in.";
 
-          signInResponse(user, res, next, subject, message);
+          await signInResponse(user, res, next, subject, message);
 
           return res.status(201).json({
             status: "OK",

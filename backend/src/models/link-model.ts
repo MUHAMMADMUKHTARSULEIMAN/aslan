@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import config from "../config/config";
+
+const {LINKING_ID_EXPIRY} = config
 
 const linkSchema = new mongoose.Schema({
   googleId: {
@@ -8,7 +11,7 @@ const linkSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
-    expires: "600s",
+    expires: LINKING_ID_EXPIRY,
   },
 });
 

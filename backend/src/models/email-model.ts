@@ -23,6 +23,7 @@ const emailSchema = new mongoose.Schema<IEmail>(
     },
     verificationTokenExpiry: {
       type: Date,
+			expires: VERIFICATION_TOKEN_EXPIRY
     },
   },
   { timestamps: true }
@@ -40,7 +41,7 @@ emailSchema.methods.generateVerificationToken = async function (
     { _id: this._id },
     {
       verificationToken,
-      verificationTokenExpiry: Date.now() + VERIFICATION_TOKEN_EXPIRY,
+      verificationTokenExpiry: Date.now() + (VERIFICATION_TOKEN_EXPIRY * 1000),
     }
   );
 

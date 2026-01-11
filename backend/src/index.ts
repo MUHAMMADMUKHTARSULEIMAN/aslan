@@ -23,6 +23,8 @@ import hpp from "hpp";
 import { doubleCsrf } from "csrf-csrf";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import expiredTokenCleanup from "./utils/expired-token-cleanup";
+import Users from "./models/user-model";
 
 const {
   COOKIE_SECRET,
@@ -59,6 +61,10 @@ export default app;
 
 app.disable("X-powered-by");
 
+expiredTokenCleanup(Users, "refreshToken", "refreshTokenExpiry");
+expiredTokenCleanup(Users, "linkingId", "linkingIdExpiry");
+expiredTokenCleanup(Users, "resetToken", "resetTokenExpiry");
+
 app.use(
   cors({
     origin: FRONTEND_BASE_URL,
@@ -92,7 +98,8 @@ app.use(
 initializeGooglePassport();
 app.use("/api", userRouter);
 app.use(refreshAccessToken);
-// app.use(doubleCsrfProtection);
+app.use("/api", discoveryRouter);
+app.use(doubleCsrfProtection);
 app.use("/api", discoveryRouter, feedRouter);
 app.use("/api/saves", saveRouter);
 app.use("/api/saves/tags", tagRouter);

@@ -1,12 +1,12 @@
 import type { NextFunction } from "express";
-import { type Document, type Types,} from "mongoose";
+import { type Document, type Types } from "mongoose";
 
 export interface IUser extends Document {
   firstName: string;
   email: string;
   level: {
-		[key: string]: number
-	};
+    [key: string]: number;
+  };
   lastName?: string;
   googleId?: string;
   password?: string;
@@ -15,9 +15,10 @@ export interface IUser extends Document {
   resetTokenExpiry?: Date;
   refreshToken?: string;
   refreshTokenExpiry?: Date;
-	linkingId: Types.ObjectId;
-	saves: Document[];
-	collections: Document[];
+  linkingId: Types.ObjectId;
+  linkingIdExpiry: Date;
+  saves: Document[];
+  collections: Document[];
 
   comparePasswords(candidatePassword: string): Promise<boolean>;
   isPasswordModified(JWTTimestamp: number): boolean;
