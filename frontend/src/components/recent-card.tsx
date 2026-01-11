@@ -19,7 +19,7 @@ const RecentCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
       <div ref={ref}>
         <Card
           className={cn(
-            "p-0 border-5 border-input/20 dark:border-muted/10",
+            "p-0 border-none shadow",
             className
           )}
         >

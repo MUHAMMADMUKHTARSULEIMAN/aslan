@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 const linkSchema = new mongoose.Schema({
-  data: {
-    type: Object,
+  googleId: {
+    type: String,
     required: true,
   },
   createdAt: {

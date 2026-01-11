@@ -1,6 +1,11 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useSearch,
+} from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
@@ -12,21 +17,20 @@ import ToastSuccess from "@/components/toast-success";
 import ToastError from "@/components/toast-error";
 
 const redirectSearchSchema = z.object({
-	returnTo: z.string().optional()
-})
+  returnTo: z.string().optional(),
+});
 
 export const Route = createFileRoute("/register-email")({
   component: RouteComponent,
-	validateSearch: (search) => redirectSearchSchema.parse(search)
+  validateSearch: (search) => redirectSearchSchema.parse(search),
 });
 
 function RouteComponent() {
-  const navigate = useNavigate();
-	const search = useSearch({
-		from: "/register-email"
-	})
+  const search = useSearch({
+    from: "/register-email",
+  });
 
-	const returnTo = search.returnTo || "/"
+  const returnTo = search.returnTo || "/";
 
   const formSchema = z.object({
     email: z
@@ -44,21 +48,23 @@ function RouteComponent() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch(`https://localhost:2020/api/register-email?returnTo=${returnTo}`, {
-        method: "POST",
-				credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: values.email }),
-      });
+      const response = await fetch(
+        `https://localhost:2020/api/register-email?returnTo=${returnTo}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: values.email }),
+        }
+      );
 
       const data = await response.json();
       if (data.status === "OK") {
-        ToastSuccess(data?.message);
-        await navigate({ to: "/", replace: true });
+        if (data?.message) ToastSuccess(data?.message);
       } else {
-        ToastError(data?.message);
+        if (data.message) ToastError(data?.message);
       }
     } catch (error) {
       ToastError("Something went wrong. Try again later.");
@@ -159,7 +165,9 @@ function RouteComponent() {
               "text-sm font-normal p-0"
             )}
           >
-            <Link to="/sign-in" search={{returnTo}}>Sign in</Link>
+            <Link to="/sign-in" search={{ returnTo }}>
+              Sign in
+            </Link>
           </span>
         </p>
       </div>

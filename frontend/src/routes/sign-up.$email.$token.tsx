@@ -34,7 +34,7 @@ function RouteComponent() {
     from: "/sign-up/$email/$token",
   });
 
-	const returnTo = search.returnTo || "/"
+  const returnTo = search.returnTo || "/";
 
   const hasUppercase = new RegExp(".*[A-Z].*");
   const hasLowercase = new RegExp(".*[a-z].*");
@@ -129,7 +129,7 @@ function RouteComponent() {
         `https://localhost:2020/api/sign-up/${email}/${token}`,
         {
           method: "POST",
-					credentials: "include",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -143,10 +143,10 @@ function RouteComponent() {
 
       const data = await response.json();
       if (data.status === "OK") {
-        ToastSuccess(data?.message);
+        if (data?.message) ToastSuccess(data?.message);
         await navigate({ to: returnTo, replace: true });
       } else {
-        ToastError(data?.message);
+        if (data?.message) ToastError(data?.message);
       }
     } catch (error) {
       ToastError("Something went wrong. Try again later.");

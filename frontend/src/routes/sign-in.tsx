@@ -53,24 +53,26 @@ function RouteComponent() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch(`https://localhost:2020/api/sign-in?returnTo=${returnTo}`, {
-        method: "POST",
-				credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-        }),
-      });
+      const response = await fetch(
+        `https://localhost:2020/api/sign-in`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: values.email,
+            password: values.password,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (data.status === "OK") {
-        ToastSuccess(data?.message);
         await navigate({ to: returnTo, replace: true });
       } else {
-        ToastError(data?.message);
+        if (data?.message) ToastError(data?.message);
       }
     } catch (error) {
       ToastError("Something went wrong. Try again later.");
@@ -178,7 +180,9 @@ function RouteComponent() {
               "text-sm font-normal p-0"
             )}
           >
-            <Link to="/register-email" search={{returnTo}}>Sign up</Link>
+            <Link to="/register-email" search={{ returnTo }}>
+              Sign up
+            </Link>
           </span>
         </p>
       </div>

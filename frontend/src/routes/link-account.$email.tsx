@@ -1,21 +1,37 @@
 import FloatingLabelPassword from "@/components/floating-label-password";
 import ToastError from "@/components/toast-error";
 import ToastSuccess from "@/components/toast-success";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useSearch,
+} from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import z from "zod/v4";
 
-export const Route = createFileRoute("/link-account/$linkingId")({
+const redirectSearchSchema = z.object({
+  returnTo: z.string().optional(),
+});
+
+export const Route = createFileRoute("/link-account/$email")({
   component: RouteComponent,
+  validateSearch: (search) => redirectSearchSchema.parse(search),
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const { linkingId } = Route.useParams();
+  const { email } = Route.useParams();
+  const search = useSearch({
+    from: "/link-account/$email",
+  });
+
+  const returnTo = search.returnTo || "/";
 
   const formSchema = z.object({
     password: z.string().min(1, "Field is required."),
@@ -33,10 +49,10 @@ function RouteComponent() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const response = await fetch(
-        `https://localhost:2020/api/link-account/${linkingId}`,
+        `https://localhost:2020/api/link-account/${email}`,
         {
           method: "POST",
-					credentials: "include",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -48,14 +64,10 @@ function RouteComponent() {
 
       const data = await response.json();
       if (data.status === "OK") {
-        if (data.message) {
-          ToastSuccess(data?.message);
-        }
-        await navigate({ to: "/", replace: true });
+        if (data?.message) ToastSuccess(data?.message);
+        await navigate({ to: returnTo, replace: true });
       } else {
-        if (data?.message) {
-          ToastError(data?.message);
-        }
+        if (data?.message) ToastError(data?.message);
       }
     } catch (error) {
       ToastError("Something went wrong. Try again later.");
@@ -70,7 +82,7 @@ function RouteComponent() {
       <p className="mb-6 text-sm text-balance text-center wrap-anywhere">
         Enter password to continue.
       </p>
-      <div className="w-full">
+      <div className="w-full mb-6">
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-4">
@@ -115,6 +127,13 @@ function RouteComponent() {
           </form>
         </Form>
       </div>
+      <Link
+        className={cn(buttonVariants({ variant: "link" }))}
+        to="/sign-in"
+        search={{ returnTo }}
+      >
+        Return to sign in
+      </Link>
     </div>
   );
 }

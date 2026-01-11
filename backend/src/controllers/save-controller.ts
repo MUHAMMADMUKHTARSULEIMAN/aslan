@@ -541,7 +541,7 @@ export const deleteSaves = asyncErrorHandler(
     }
 
     if (deletes.matchedCount !== deletes.modifiedCount) {
-      const error = new CustomError(404, `Not all articles were deleted.`);
+      const error = new CustomError(500, `Not all articles were deleted.`);
       return next(error);
     }
 

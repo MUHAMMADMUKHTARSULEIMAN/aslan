@@ -2,13 +2,13 @@ import type { Types } from "mongoose"
 import type { LinkingData } from "../auth/passport-setup"
 import Links from "../models/link-model"
 
-export const getAndDeleteLink = async (linkingId: string): Promise<LinkingData | null> => {
+export const getAndDeleteLink = async (linkingId: Types.ObjectId): Promise<string | null> => {
 	const link = await Links.findByIdAndDelete(linkingId).lean()
-	return link ? link.data as LinkingData : null 
+	return link ? link.googleId : null 
 }
 
-export const createLink = async (data: LinkingData): Promise<Types.ObjectId> => {
-	const link = await Links.insertOne({data})
+export const createLink = async (googleId: string): Promise<Types.ObjectId> => {
+	const link = await Links.insertOne({googleId})
 	if(!link) {
 		console.error(`Unable to create linking data`)
 	}

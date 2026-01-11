@@ -34,7 +34,6 @@ export const createFeeds = asyncErrorHandler(
       return next(error);
     }
     let BingIotD = null;
-    let discoveriesContainer: Array<Discovery> = [];
     const date = format(subDays(new Date(), 1), "yyyy-MM-dd");
     let k = 0;
     for (let i = 0; i < feeds.length; i++) {
@@ -50,6 +49,11 @@ export const createFeeds = asyncErrorHandler(
             if (typeof item.link === "string") {
               k++;
               console.log(k, item.link);
+              if (
+                item.link ===
+                "https://www.theverge.com/tech/858910/linux-diary-gaming-desktop"
+              )
+                continue;
 
               const existingDiscovery = await Discoveries.findOne({
                 url: item.link,
@@ -120,13 +124,18 @@ export const createFeeds = asyncErrorHandler(
                 await Discoveries.insertOne(discovery);
               }
             }
-            if (j === 10) break;
           }
         }
       }
     }
 
-    await Discoveries.deleteMany({ dateCreated: !date });
+    const deletedDiscoveries = await Discoveries.deleteMany({
+      dateCreated: {$lt: date}
+    });
+    if (!deletedDiscoveries) {
+      const error = new CustomError(500, `Unable to delete old discoveries. Try again later.`);
+      return next(error);
+    }
 
     return res.status(201).json({
       status: "OK",

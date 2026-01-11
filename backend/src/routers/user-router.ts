@@ -49,7 +49,7 @@ router
   .route("/google/redirect")
   .get(passport.authenticate("google"), googleAuthCallback);
 
-router.route("/link-account/:linkingId").post(linkAccount);
+router.route("/link-account/:email").post(linkAccount);
 
 router.route("/register-email").post(limiter, emailRegistration);
 

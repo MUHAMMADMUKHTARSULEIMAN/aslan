@@ -24,10 +24,8 @@ export const signInResponse = async (
   user: IUser,
   res: Response,
   next: NextFunction,
-  statusCode: number,
   mailSubject: string,
   mailMessage: string,
-  message?: string,
   mailHTML?: string
 ) => {
   const accessToken = user.generateAccessToken();
@@ -56,11 +54,6 @@ export const signInResponse = async (
     subject: mailSubject,
     message: mailMessage,
     html: mailHTML,
-  });
-
-  return res.status(statusCode).json({
-    status: "OK",
-    message,
   });
 };
 
@@ -111,40 +104,15 @@ export const googleAuthCallback = asyncErrorHandler(
         const linkingId = user.linkingId;
         if (linkingId) {
           return res.redirect(
-            `${FRONTEND_BASE_URL}/confirm-linking/${user.email}/${linkingId}`
+            `${FRONTEND_BASE_URL}/confirm-linking/${user.email}?returnTo=${returnTo}`
           );
         } else {
-          const accessToken = user.generateAccessToken();
-          const refreshToken = await user.generateRefreshToken(next);
-
-          res.cookie("jwt", accessToken, {
-            sameSite: "none",
-            signed: true,
-            secure: true,
-            httpOnly: true,
-            maxAge: JWT_COOKIE_EXPIRY,
-            path: "/",
-          });
-
-          res.cookie("refresh", refreshToken, {
-            sameSite: "none",
-            signed: true,
-            secure: true,
-            httpOnly: true,
-            maxAge: REFRESH_COOKIE_EXPIRY,
-            path: "/",
-          });
-
           const token = await user.generateResetToken(next);
           const resetURL = `${FRONTEND_BASE_URL}/reset-password/${token}`;
           const message = `Your Sanctum was just signed into using Google. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
           const subject = "Sanctum: Google Sign-in";
 
-          sendEmail({
-            email: user.email,
-            subject: subject,
-            message: message,
-          });
+          await signInResponse(user, res, next, subject, message);
 
           return res.redirect(`${FRONTEND_BASE_URL}${returnTo}`);
         }
@@ -156,42 +124,64 @@ export const googleAuthCallback = asyncErrorHandler(
 export const linkAccount = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body;
-    const { linkingId } = req.params;
+    const { email } = req.params;
     if (!password) {
       const error = new CustomError(400, "Password must be provided.");
       return next(error);
     }
 
-    if (!linkingId) {
-      const error = new CustomError(400, "Linking ID missing.");
+    if (!email) {
+      const error = new CustomError(400, "Email missing.");
       return next(error);
-    } else if (typeof linkingId === "string") {
-      const linkingData = await getAndDeleteLink(linkingId);
-      if (!linkingData) {
+    } else {
+      const user = await Users.findOne({ email });
+      if (!user) {
+        const error = new CustomError(400, "Invalid credentials.");
+        return next(error);
+      }
+
+      const linkingId = user.linkingId;
+      if (!linkingId) {
+        const error = new CustomError(
+          410,
+          "Linking ID has expired. Try again later."
+        );
+        return next(error);
+      }
+      const googleId = await getAndDeleteLink(linkingId);
+      if (!googleId) {
         const error = new CustomError(
           410,
           "Linking ID has expired. Try again later."
         );
         return next(error);
       } else {
-        const { user, googleId } = linkingData;
-        if (!(await user.comparePasswords(password))) {
-          const error = new CustomError(400, "Wrong password provided.");
+				if (!(await user.comparePasswords(password))) {
+					const error = new CustomError(400, "Incorrect password.");
           return next(error);
         }
         const updatedUser = await user.updateOne({ googleId });
         if (!updatedUser) {
-          const error = new CustomError(
-            500,
+					const error = new CustomError(
+						500,
             "Something went wrong. Try again later."
           );
           return next(error);
         }
+				
+				await user.updateOne({ linkingId: undefined });
 
         const message = `Your Sanctum account has been successfully linked to Google. You can now sign in to your Sanctum account using Google.`;
         const subject = "Sanctum: Account Linking";
+        const responseMessage =
+          "Your Sanctum account has been successfully linked to Google and you have been signed in.";
 
-        signInResponse(user, res, next, 201, subject, message);
+        signInResponse(user, res, next, subject, message);
+
+        return res.status(201).json({
+          status: "OK",
+          message: responseMessage,
+        });
       }
     }
   }
@@ -201,7 +191,6 @@ export const emailRegistration = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
     const returnTo = (req.query.returnTo as string) || "/";
-    console.log(email);
 
     if (!email) {
       const error = new CustomError(400, "Email not provided.");
@@ -246,7 +235,6 @@ export const emailRegistration = asyncErrorHandler(
         status: "OK",
         message:
           "Verification link sent successfully. It expires in 15 minutes.",
-        token,
       });
     }
   }
@@ -307,7 +295,7 @@ export const userSignUp = asyncErrorHandler(
     if (!newUser) {
       const error = new CustomError(
         500,
-        "Unable to create account. Please try again."
+        "Unable to create account. Try again later."
       );
       return next(error);
     }
@@ -317,15 +305,12 @@ export const userSignUp = asyncErrorHandler(
     const responseMessage =
       "Your account has been successfully created and you have been signed in.";
 
-    await signInResponse(
-      newUser,
-      res,
-      next,
-      201,
-      subject,
-      message,
-      responseMessage
-    );
+    await signInResponse(newUser, res, next, subject, message);
+
+    return res.status(201).json({
+      status: "OK",
+      message: responseMessage,
+    });
   }
 );
 
@@ -351,7 +336,11 @@ export const userSignIn = asyncErrorHandler(
       const message = `Your Sanctum was just signed into using your email address. If you did not perform this action, please use the link below to reset your password immediately.\n\n${resetURL}\n\nThis signs out all signed in users and a new sign-in is required to continue.`;
       const subject = "Sanctum: Email Sign-in";
 
-      await signInResponse(user, res, next, 201, subject, message);
+      await signInResponse(user, res, next, subject, message);
+
+      return res.status(201).json({
+        status: "OK",
+      });
     }
   }
 );
@@ -371,7 +360,7 @@ export const refreshAccessToken = asyncErrorHandler(
           refreshTokenExpiry: { $gt: Date.now() },
         });
         if (!user) {
-					res.clearCookie("refresh");
+          res.clearCookie("refresh");
           next();
         } else {
           const newJWT = user.generateAccessToken();
@@ -530,8 +519,15 @@ export const resetPassword = asyncErrorHandler(
 
           const message = `Your Sanctum password has been successfully reset and all previously signed in users have been signed out. You have also been signed into your new device.`;
           const subject = "Sanctum: Password Reset";
+          const responseMessage =
+            "Your Sanctum password has been successfully reset and you have been signed in.";
 
-          signInResponse(user, res, next, 201, subject, message);
+          signInResponse(user, res, next, subject, message);
+
+          return res.status(201).json({
+            status: "OK",
+            message: responseMessage,
+          });
         }
       }
     }

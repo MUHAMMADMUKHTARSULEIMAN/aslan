@@ -31,40 +31,35 @@ export const initializeGooglePassport = () => {
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
         callbackURL: "/api/google/redirect",
-				scope: ["profile", "email"],
-				session: false,
+        scope: ["profile", "email"],
+        session: false,
       },
       async function verify(
         issuer: string,
         profile: Profile,
         cb: CustomVerifyCallback
       ) {
-				const googleId = profile.id;
-				
+        const googleId = profile.id;
+
         let user = await Users.findOne({ googleId });
         if (user) {
-					return cb(null, user);
+          return cb(null, user);
         }
-				
-				const email = profile.emails?.[0].value;
-				if (!email) {
-					return cb(
-						new CustomError(404, "Google profile did not contain an email."),
-						false
-					);
-				}
+
+        const email = profile.emails?.[0].value;
+        if (!email) {
+          return cb(
+            new CustomError(404, "Google profile did not contain an email."),
+            false
+          );
+        }
 
         const existingUser = await Users.findOne({
           email,
           password: { $ne: null, $exists: true },
         });
         if (existingUser) {
-          const linkingData: LinkingData = {
-            user: existingUser,
-            googleId: profile.id,
-          };
-
-          const linkingId = await createLink(linkingData);
+          const linkingId = await createLink(googleId);
           await existingUser.updateOne({ linkingId });
           return cb(null, existingUser);
         }
@@ -90,6 +85,6 @@ passport.serializeUser((user: any, cb) => {
 
 passport.deserializeUser((user: IUser, cb) => {
   process.nextTick(async () => {
-      return cb(null, user);
+    return cb(null, user);
   });
 });

@@ -62,10 +62,10 @@ function App() {
 
   return (
     <div>
-      <section className="mt-4 mb-24">
+      <section className="mt-6 mb-24">
         <div className="mx-4">
           {user ? (
-            <h3 className="font-medium mb-4 text-sm">
+            <h3 className="mb-4 font-medium text-sm">
               Good{" "}
               {time < 12
                 ? "morning"
@@ -78,12 +78,12 @@ function App() {
             ""
           )}
         </div>
-        <div className="mb-6">
+        <div className="mb-4">
           {!recents ? (
             ""
           ) : (
             <div>
-              <div className="mb-1 mx-4 flex justify-between items-baseline">
+              <div className="mx-4 flex justify-between items-baseline">
                 <h3 className="font-medium text-lg">Recent Saves</h3>
                 <LinkHelper
                   label="Go to Saves"
@@ -94,7 +94,7 @@ function App() {
                   }
                 />
               </div>
-              <div className="mb-4 w-screen flex shrink-0 flex-nowrap overflow-x-auto">
+              <div className="mb-4 pt-1 pb-3 w-screen flex items-center shrink-0 flex-nowrap overflow-x-auto">
                 {recents.map((recent: Recent[]) => {
                   const unit = recent[0];
                   const { _id, image, siteName, title, url } = unit;
@@ -127,7 +127,7 @@ function App() {
               : feeds.map((feed: Feed) => {
                   const { category, data } = feed;
                   return (
-                    <div>
+                    <div key={category}>
                       <div className="flex justify-between items-baseline">
                         <h3 className="font-medium text-lg">{category}</h3>
                         <LinkHelper

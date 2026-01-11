@@ -21,7 +21,7 @@ const ArticleCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
       <div ref={ref}>
         <Card
           className={cn(
-            "p-0 gap-4 border-5 border-input/25 dark:border-input/20",
+            "p-0 gap-4 border-none shadow",
             className
           )}
         >
@@ -30,7 +30,7 @@ const ArticleCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
             alt=""
             className="rounded-t-lg w-full aspect-3/2 object-cover"
           />
-          <div className="h-52 max-h-52 mx-4 flex flex-col justify-between">
+          <div className="mx-4 h-52 max-h-52 flex flex-col justify-between">
             <div className="h-35 max-h-35">
               <h3 className="font-medium mb-2">{title}</h3>
               <p className="mb-4 text-sm">{excerpt}</p>
