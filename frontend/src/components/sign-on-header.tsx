@@ -12,7 +12,7 @@ const SignOnHeader = () => {
               <img
                 src="images/logo.svg"
                 alt=""
-                className="h-[1.5rem] w-[1.5rem]"
+                className="h-6 w-6"
               />
             </Link>
           </div>
@@ -21,7 +21,7 @@ const SignOnHeader = () => {
               ""
             ) : (
               <Button variant="first" className="font-bold">
-                <Link to="/register-email">Sign up</Link>
+                <Link to="/register-email">Sign in</Link>
               </Button>
             )}
           </div>

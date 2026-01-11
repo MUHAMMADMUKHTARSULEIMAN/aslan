@@ -15,6 +15,8 @@ import FloatingLabelInput from "@/components/floating-label-input";
 import { Spinner } from "@/components/ui/spinner";
 import ToastSuccess from "@/components/toast-success";
 import ToastError from "@/components/toast-error";
+import { ChevronRight } from "lucide-react";
+import LinkHelper from "@/components/link-helper";
 
 const redirectSearchSchema = z.object({
   returnTo: z.string().optional(),
@@ -165,9 +167,16 @@ function RouteComponent() {
               "text-sm font-normal p-0"
             )}
           >
-            <Link to="/sign-in" search={{ returnTo }}>
-              Sign in
-            </Link>
+            <LinkHelper
+              label="Sign in"
+              to="/sign-in"
+              textSize="text-sm"
+              search={{ returnTo }}
+              bottom="bottom-2.5"
+              icon={
+                <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
+              }
+            />
           </span>
         </p>
       </div>

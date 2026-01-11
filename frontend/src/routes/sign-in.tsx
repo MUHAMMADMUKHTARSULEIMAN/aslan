@@ -16,6 +16,8 @@ import ToastError from "@/components/toast-error";
 import FloatingLabelPassword from "@/components/floating-label-password";
 import { FcGoogle } from "react-icons/fc";
 import { cn } from "@/lib/utils";
+import LinkHelper from "@/components/link-helper";
+import { ChevronRight } from "lucide-react";
 
 const redirectSearchSchema = z.object({
   returnTo: z.string().optional(),
@@ -53,20 +55,17 @@ function RouteComponent() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch(
-        `https://localhost:2020/api/sign-in`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: values.email,
-            password: values.password,
-          }),
-        }
-      );
+      const response = await fetch(`https://localhost:2020/api/sign-in`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+      });
 
       const data = await response.json();
       if (data.status === "OK") {
@@ -180,9 +179,16 @@ function RouteComponent() {
               "text-sm font-normal p-0"
             )}
           >
-            <Link to="/register-email" search={{ returnTo }}>
-              Sign up
-            </Link>
+            <LinkHelper
+              label="Sign up"
+              to="/register-email"
+              textSize="text-sm"
+              search={{ returnTo }}
+              bottom="bottom-2.5"
+              icon={
+                <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
+              }
+            />
           </span>
         </p>
       </div>

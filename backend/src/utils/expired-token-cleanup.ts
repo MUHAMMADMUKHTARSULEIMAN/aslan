@@ -18,7 +18,7 @@ const expiredTokenCleanup = (model: Model<IUser>, field: keyof IUser, fieldExpir
 			 }
 		 );
 
-		 if(result.modifiedCount > 0) console.log(`Modified ${result.modifiedCount} documents.`);
+		 if(result.modifiedCount > 0) console.log(`Modified ${result.modifiedCount} document${result.modifiedCount !== 1 ? "s" : ""}.`);
 		  
 		} catch (error) {
 			console.error(`Error during ${field} cleanup:`, error);

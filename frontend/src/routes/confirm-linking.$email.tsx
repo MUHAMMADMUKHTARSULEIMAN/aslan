@@ -1,6 +1,7 @@
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import LinkHelper from "@/components/link-helper";
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { z } from "zod/v4";
 
 const redirectSearchSchema = z.object({
@@ -42,13 +43,16 @@ function RouteComponent() {
           Link account
         </Link>
       </Button>
-      <Link
-        className={cn(buttonVariants({ variant: "link" }))}
+      <LinkHelper
+        label="Return to sign in"
         to="/sign-in"
+        textSize="text-sm"
         search={{ returnTo }}
-      >
-        Return to sign in
-      </Link>
+        bottom="bottom-2.5"
+        icon={
+          <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
+        }
+      />
     </div>
   );
 }
