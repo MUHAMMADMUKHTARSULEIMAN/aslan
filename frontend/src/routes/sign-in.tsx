@@ -171,7 +171,6 @@ function RouteComponent() {
 				<LinkHelper
         label="Forgot password?"
         to="/forgot-password"
-        textSize="text-sm"
         bottom="bottom-2.5"
 				className="w-fit mt-1"
         icon={
@@ -191,7 +190,6 @@ function RouteComponent() {
             <LinkHelper
               label="Sign up"
               to="/register-email"
-              textSize="text-sm"
               search={{ returnTo }}
               bottom="bottom-2.5"
               icon={

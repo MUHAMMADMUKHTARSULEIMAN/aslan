@@ -156,18 +156,19 @@ export const getHomeFeed = asyncErrorHandler(
     if (JWT) {
       const decodedToken = jwt.verify(JWT || "", JWT_SECRET);
       // @ts-expect-error
-      _id = decodedToken.id;
-      const user = await Users.findById(_id);
+      const id = decodedToken.id;
+      const user = await Users.findById(id);
 
+			_id = user?._id
       name = user?.firstName || null;
     }
 
     const categories = [
       "Business",
       "Technology",
-      "Health & Fitness",
+      "Health",
       "Science",
-      "Self Improvement",
+      "Life Hack",
       "Politics",
       "Travel",
     ];

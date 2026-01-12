@@ -8,16 +8,15 @@ interface DefaultComponentProps
   label: string;
   to: keyof RegisteredRouter["routesByPath"];
   icon?: React.ReactNode;
-  textSize: string;
   bottom: string;
   search?: {};
 }
 
 const LinkHelper = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
-  ({ className, icon: Icon, label, to, textSize, search, bottom }, ref) => {
+  ({ className, icon: Icon, label, to, search, bottom }, ref) => {
     return (
       <div
-        className={cn("group p-0 m-0 flex gap-0 items-baseline", className)}
+        className={cn("group p-0 m-0 flex gap-0 items-baseline")}
         ref={ref}
       >
         <Link
@@ -25,7 +24,7 @@ const LinkHelper = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
           search={search}
           className={cn(
             buttonVariants({ variant: "link" }),
-            `relative p-0 m-0 ${textSize}`
+            `relative p-0 m-0 ${className}`
           )}
         >
           {label}

@@ -13,7 +13,7 @@ interface DefaultComponentProps
 
 const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
   ({ pathname }, ref) => {
-    const { data } = useQuery({
+    const { data, isPending } = useQuery({
       queryKey: ["home-feed"],
       queryFn: fetchHomeFeed,
       select: (result) => result.data.user,
@@ -34,7 +34,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
               </Link>
             </div>
             <div className="flex gap-1 items-center">
-              {data ? (
+              {data || isPending ? (
                 ""
               ) : (
                 <Button variant="secondary" className="px-3">

@@ -21,3 +21,5 @@ export const textTrimmer = (text: string, isTitle: boolean = true, limit: number
     return text + "...";
   }
 };
+
+	export const topics = ["Business", "Career", "Education", "Entertainment", "Food", "Gaming", "Health", "Life Hacks", "Parenting", "Personal Finance", "Politics", "Science", "Sports", "Technology", "Travel"]

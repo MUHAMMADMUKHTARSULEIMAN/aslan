@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import {
   createFileRoute,
   Link,
-  useNavigate,
   useSearch,
 } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
@@ -170,7 +169,6 @@ function RouteComponent() {
             <LinkHelper
               label="Sign in"
               to="/sign-in"
-              textSize="text-sm"
               search={{ returnTo }}
               bottom="bottom-2.5"
               icon={

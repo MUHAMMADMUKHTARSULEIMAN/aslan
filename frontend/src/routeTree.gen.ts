@@ -27,6 +27,8 @@ import { Route as HeaderLayoutExportRouteImport } from './routes/_header-layout/
 import { Route as HeaderLayoutCollectionsRouteImport } from './routes/_header-layout/collections'
 import { Route as HeaderLayoutArchiveRouteImport } from './routes/_header-layout/archive'
 import { Route as SignUpEmailTokenRouteImport } from './routes/sign-up.$email.$token'
+import { Route as HeaderLayoutFeedsTopicRouteImport } from './routes/_header-layout/feeds/$topic'
+import { Route as HeaderLayoutFeedsTopicFeedRouteImport } from './routes/_header-layout/feeds/$topic/$feed'
 
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
@@ -117,6 +119,17 @@ const SignUpEmailTokenRoute = SignUpEmailTokenRouteImport.update({
   path: '/sign-up/$email/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HeaderLayoutFeedsTopicRoute = HeaderLayoutFeedsTopicRouteImport.update({
+  id: '/$topic',
+  path: '/$topic',
+  getParentRoute: () => HeaderLayoutFeedsRoute,
+} as any)
+const HeaderLayoutFeedsTopicFeedRoute =
+  HeaderLayoutFeedsTopicFeedRouteImport.update({
+    id: '/$feed',
+    path: '/$feed',
+    getParentRoute: () => HeaderLayoutFeedsTopicRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
@@ -126,7 +139,7 @@ export interface FileRoutesByFullPath {
   '/collections': typeof HeaderLayoutCollectionsRoute
   '/export': typeof HeaderLayoutExportRoute
   '/favourites': typeof HeaderLayoutFavouritesRoute
-  '/feeds': typeof HeaderLayoutFeedsRoute
+  '/feeds': typeof HeaderLayoutFeedsRouteWithChildren
   '/highlights': typeof HeaderLayoutHighlightsRoute
   '/home': typeof HeaderLayoutHomeRoute
   '/saves': typeof HeaderLayoutSavesRoute
@@ -135,7 +148,9 @@ export interface FileRoutesByFullPath {
   '/link-account/$email': typeof LinkAccountEmailRoute
   '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/': typeof HeaderLayoutIndexRoute
+  '/feeds/$topic': typeof HeaderLayoutFeedsTopicRouteWithChildren
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
+  '/feeds/$topic/$feed': typeof HeaderLayoutFeedsTopicFeedRoute
 }
 export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
@@ -145,7 +160,7 @@ export interface FileRoutesByTo {
   '/collections': typeof HeaderLayoutCollectionsRoute
   '/export': typeof HeaderLayoutExportRoute
   '/favourites': typeof HeaderLayoutFavouritesRoute
-  '/feeds': typeof HeaderLayoutFeedsRoute
+  '/feeds': typeof HeaderLayoutFeedsRouteWithChildren
   '/highlights': typeof HeaderLayoutHighlightsRoute
   '/home': typeof HeaderLayoutHomeRoute
   '/saves': typeof HeaderLayoutSavesRoute
@@ -154,7 +169,9 @@ export interface FileRoutesByTo {
   '/link-account/$email': typeof LinkAccountEmailRoute
   '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/': typeof HeaderLayoutIndexRoute
+  '/feeds/$topic': typeof HeaderLayoutFeedsTopicRouteWithChildren
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
+  '/feeds/$topic/$feed': typeof HeaderLayoutFeedsTopicFeedRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -166,7 +183,7 @@ export interface FileRoutesById {
   '/_header-layout/collections': typeof HeaderLayoutCollectionsRoute
   '/_header-layout/export': typeof HeaderLayoutExportRoute
   '/_header-layout/favourites': typeof HeaderLayoutFavouritesRoute
-  '/_header-layout/feeds': typeof HeaderLayoutFeedsRoute
+  '/_header-layout/feeds': typeof HeaderLayoutFeedsRouteWithChildren
   '/_header-layout/highlights': typeof HeaderLayoutHighlightsRoute
   '/_header-layout/home': typeof HeaderLayoutHomeRoute
   '/_header-layout/saves': typeof HeaderLayoutSavesRoute
@@ -175,7 +192,9 @@ export interface FileRoutesById {
   '/link-account/$email': typeof LinkAccountEmailRoute
   '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/_header-layout/': typeof HeaderLayoutIndexRoute
+  '/_header-layout/feeds/$topic': typeof HeaderLayoutFeedsTopicRouteWithChildren
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
+  '/_header-layout/feeds/$topic/$feed': typeof HeaderLayoutFeedsTopicFeedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -196,7 +215,9 @@ export interface FileRouteTypes {
     | '/link-account/$email'
     | '/reset-password/$token'
     | '/'
+    | '/feeds/$topic'
     | '/sign-up/$email/$token'
+    | '/feeds/$topic/$feed'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/forgot-password'
@@ -215,7 +236,9 @@ export interface FileRouteTypes {
     | '/link-account/$email'
     | '/reset-password/$token'
     | '/'
+    | '/feeds/$topic'
     | '/sign-up/$email/$token'
+    | '/feeds/$topic/$feed'
   id:
     | '__root__'
     | '/_header-layout'
@@ -235,7 +258,9 @@ export interface FileRouteTypes {
     | '/link-account/$email'
     | '/reset-password/$token'
     | '/_header-layout/'
+    | '/_header-layout/feeds/$topic'
     | '/sign-up/$email/$token'
+    | '/_header-layout/feeds/$topic/$feed'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -377,15 +402,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpEmailTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_header-layout/feeds/$topic': {
+      id: '/_header-layout/feeds/$topic'
+      path: '/$topic'
+      fullPath: '/feeds/$topic'
+      preLoaderRoute: typeof HeaderLayoutFeedsTopicRouteImport
+      parentRoute: typeof HeaderLayoutFeedsRoute
+    }
+    '/_header-layout/feeds/$topic/$feed': {
+      id: '/_header-layout/feeds/$topic/$feed'
+      path: '/$feed'
+      fullPath: '/feeds/$topic/$feed'
+      preLoaderRoute: typeof HeaderLayoutFeedsTopicFeedRouteImport
+      parentRoute: typeof HeaderLayoutFeedsTopicRoute
+    }
   }
 }
+
+interface HeaderLayoutFeedsTopicRouteChildren {
+  HeaderLayoutFeedsTopicFeedRoute: typeof HeaderLayoutFeedsTopicFeedRoute
+}
+
+const HeaderLayoutFeedsTopicRouteChildren: HeaderLayoutFeedsTopicRouteChildren =
+  {
+    HeaderLayoutFeedsTopicFeedRoute: HeaderLayoutFeedsTopicFeedRoute,
+  }
+
+const HeaderLayoutFeedsTopicRouteWithChildren =
+  HeaderLayoutFeedsTopicRoute._addFileChildren(
+    HeaderLayoutFeedsTopicRouteChildren,
+  )
+
+interface HeaderLayoutFeedsRouteChildren {
+  HeaderLayoutFeedsTopicRoute: typeof HeaderLayoutFeedsTopicRouteWithChildren
+}
+
+const HeaderLayoutFeedsRouteChildren: HeaderLayoutFeedsRouteChildren = {
+  HeaderLayoutFeedsTopicRoute: HeaderLayoutFeedsTopicRouteWithChildren,
+}
+
+const HeaderLayoutFeedsRouteWithChildren =
+  HeaderLayoutFeedsRoute._addFileChildren(HeaderLayoutFeedsRouteChildren)
 
 interface HeaderLayoutRouteChildren {
   HeaderLayoutArchiveRoute: typeof HeaderLayoutArchiveRoute
   HeaderLayoutCollectionsRoute: typeof HeaderLayoutCollectionsRoute
   HeaderLayoutExportRoute: typeof HeaderLayoutExportRoute
   HeaderLayoutFavouritesRoute: typeof HeaderLayoutFavouritesRoute
-  HeaderLayoutFeedsRoute: typeof HeaderLayoutFeedsRoute
+  HeaderLayoutFeedsRoute: typeof HeaderLayoutFeedsRouteWithChildren
   HeaderLayoutHighlightsRoute: typeof HeaderLayoutHighlightsRoute
   HeaderLayoutHomeRoute: typeof HeaderLayoutHomeRoute
   HeaderLayoutSavesRoute: typeof HeaderLayoutSavesRoute
@@ -398,7 +462,7 @@ const HeaderLayoutRouteChildren: HeaderLayoutRouteChildren = {
   HeaderLayoutCollectionsRoute: HeaderLayoutCollectionsRoute,
   HeaderLayoutExportRoute: HeaderLayoutExportRoute,
   HeaderLayoutFavouritesRoute: HeaderLayoutFavouritesRoute,
-  HeaderLayoutFeedsRoute: HeaderLayoutFeedsRoute,
+  HeaderLayoutFeedsRoute: HeaderLayoutFeedsRouteWithChildren,
   HeaderLayoutHighlightsRoute: HeaderLayoutHighlightsRoute,
   HeaderLayoutHomeRoute: HeaderLayoutHomeRoute,
   HeaderLayoutSavesRoute: HeaderLayoutSavesRoute,

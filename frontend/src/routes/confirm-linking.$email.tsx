@@ -46,7 +46,6 @@ function RouteComponent() {
       <LinkHelper
         label="Return to sign in"
         to="/sign-in"
-        textSize="text-sm"
         search={{ returnTo }}
         bottom="bottom-2.5"
         icon={
