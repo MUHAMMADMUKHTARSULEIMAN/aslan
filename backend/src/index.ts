@@ -100,7 +100,7 @@ app.use("/api", userRouter);
 app.use(refreshAccessToken);
 app.use("/api", discoveryRouter);
 app.use(doubleCsrfProtection);
-app.use("/api", discoveryRouter, feedRouter);
+app.use("/api", feedRouter);
 app.use("/api/saves", saveRouter);
 app.use("/api/saves/tags", tagRouter);
 app.use("/api/saves/highlights", highlightRouter);

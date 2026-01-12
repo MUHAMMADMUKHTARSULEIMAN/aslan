@@ -130,10 +130,13 @@ export const createFeeds = asyncErrorHandler(
     }
 
     const deletedDiscoveries = await Discoveries.deleteMany({
-      dateCreated: {$lt: date}
+      dateCreated: { $lt: date },
     });
     if (!deletedDiscoveries) {
-      const error = new CustomError(500, `Unable to delete old discoveries. Try again later.`);
+      const error = new CustomError(
+        500,
+        `Unable to delete old discoveries. Try again later.`
+      );
       return next(error);
     }
 
@@ -147,12 +150,17 @@ export const getHomeFeed = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const JWT = req.signedCookies.jwt || res.locals.jwt;
 
-    const decodedToken = jwt.verify(JWT || "", JWT_SECRET);
-    // @ts-expect-error
-    const id = decodedToken.id;
-    const user = await Users.findById(id);
+    let name = null;
+    let _id = null;
 
-    const name = user?.firstName || null;
+    if (JWT) {
+      const decodedToken = jwt.verify(JWT || "", JWT_SECRET);
+      // @ts-expect-error
+      _id = decodedToken.id;
+      const user = await Users.findById(_id);
+
+      name = user?.firstName || null;
+    }
 
     const categories = [
       "Business",
@@ -205,7 +213,7 @@ export const getHomeFeed = asyncErrorHandler(
     const recentsAggregate = await Users.aggregate([
       {
         $match: {
-          _id: user?._id,
+          _id,
         },
       },
       { $unwind: "$saves" },

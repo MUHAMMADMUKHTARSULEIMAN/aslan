@@ -1,8 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import CustomError from "../utils/custom-error";
 import config from "../config/config";
+import { error } from "console";
 
-const { nodeENV } = config;
+const { NODE_ENV } = config;
 
 interface ValidationError {
   properties: {
@@ -20,8 +21,8 @@ export interface CustomErrorType extends Error {
   status: string;
   value: any;
   path: string;
-	code?: number | string;
-	keyPattern: {}
+  code?: number | string;
+  keyPattern: {};
   errors: Record<string, ValidationError>;
 }
 
@@ -65,10 +66,14 @@ const validationErrorHandler = (error: CustomErrorType) => {
 };
 
 const duplicateKeyErrorHandler = (error: CustomErrorType) => {
-	const field = Object.keys(error.keyPattern)[0]
-	const message = `A document with this ${field} already exists.`
-	return new CustomError(409, message)
-}
+  const field = Object.keys(error.keyPattern)[0];
+  const message = `A document with this ${field} already exists.`;
+  return new CustomError(409, message);
+};
+
+const JWTErrorHandler = (error: CustomErrorType) => {
+  return new CustomError(400, error.message);
+};
 
 const globalErrorHandler = (
   error: CustomErrorType,
@@ -79,11 +84,12 @@ const globalErrorHandler = (
   error.statusCode = error.statusCode || 500;
   error.message = error.message || "Internal Server Error";
 
-  if (nodeENV === "development") {
+  if (NODE_ENV === "development") {
     devErrors(error, res);
   } else {
     if (error.name === "ValidationError") error = validationErrorHandler(error);
-		if(error.code === "11000") error = duplicateKeyErrorHandler(error)
+    if (error.code === "11000") error = duplicateKeyErrorHandler(error);
+    if (error.name === "JsonWebTokenError") error = JWTErrorHandler(error);
 
     prodErrors(error, res);
   }

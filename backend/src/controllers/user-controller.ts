@@ -323,7 +323,7 @@ export const userSignIn = asyncErrorHandler(
       return next(error);
     }
 
-    const user = await Users.findOne({ email });
+    const user = await Users.findOne({ email }).select("+password");
     if (!user || !(await user?.comparePasswords(password))) {
       const error = new CustomError(400, "Invalid credentials.");
       return next(error);

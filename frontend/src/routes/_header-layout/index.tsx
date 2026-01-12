@@ -52,31 +52,24 @@ function App() {
     staleTime: Infinity,
   });
 
-  console.log("data:", data);
   const user = data?.data.user;
   const feeds: Feed[] | null = data?.data.articles;
-  console.log("articles:", feeds);
   const recents: Array<Recent[]> | null = data?.data.recents;
-  console.log("recents:", recents);
   const time = new Date().getHours();
 
   return (
     <div>
       <section className="mt-6 mb-24">
         <div className="mx-4">
-          {user ? (
-            <h3 className="mb-4 font-medium text-sm">
-              Good{" "}
-              {time < 12
-                ? "morning"
-                : time >= 12 && time < 18
-                  ? "afternoon"
-                  : "evening"}
-              , {user}!
-            </h3>
-          ) : (
-            ""
-          )}
+          <h3 className="mb-4 font-medium text-sm">
+            Good{" "}
+            {time < 12
+              ? "morning"
+              : time >= 12 && time < 18
+                ? "afternoon"
+                : "evening"}
+            {user ? `, ${user}!` : "!"}
+          </h3>
         </div>
         <div className="mb-4">
           {!recents ? (
@@ -89,7 +82,7 @@ function App() {
                   label="Go to Saves"
                   to="/saves"
                   textSize="text-sm"
-									bottom="bottom-2.5"
+                  bottom="bottom-2.5"
                   icon={
                     <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
                   }
@@ -135,7 +128,7 @@ function App() {
                           to="/"
                           label={`Go to ${category}`}
                           textSize="text-sm"
-													bottom="bottom-2.5"
+                          bottom="bottom-2.5"
                           icon={
                             <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
                           }
