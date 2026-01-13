@@ -159,7 +159,7 @@ export const getHomeFeed = asyncErrorHandler(
       const id = decodedToken.id;
       const user = await Users.findById(id);
 
-			_id = user?._id
+      _id = user?._id;
       name = user?.firstName || null;
     }
 
@@ -269,5 +269,85 @@ export const getHomeFeed = asyncErrorHandler(
         recents,
       },
     });
+  }
+);
+
+export const getFeedNames = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { category } = req.body;
+
+    const feedNamesAggregate = await Discoveries.aggregate([
+      {
+        $match: {
+          categories: category,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          feedNames: { $addToSet: "$feedName" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          feedNames: 1,
+        },
+      },
+    ]);
+
+    const feedNames =
+      feedNamesAggregate.length > 0 ? feedNamesAggregate[0] : null;
+
+    res.status(200).json({
+      status: "OK",
+      data: {
+        feedNames,
+      },
+    });
+  }
+);
+
+export const getDiscoveries = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { feedName } = req.body;
+
+    const discoveriesAggregate = await Discoveries.aggregate([
+      {
+        $match: {
+          feedName,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          discoveries: {
+            $push: {
+              _id: "$_id",
+              url: "$url",
+              title: "$title",
+              image: "$image",
+              excerpt: "$excerpt",
+              siteName: "$siteName",
+            },
+          },
+        },
+      },
+			{
+				$project: {
+					_id: 0,
+					discoveries: 1
+				}
+			}
+    ]);
+
+		const discoveries = discoveriesAggregate.length > 0 ? discoveriesAggregate[0].discoveries : null
+
+		res.status(200).json({
+			status: "OK",
+			data: {
+				discoveries
+			}
+		})
   }
 );
