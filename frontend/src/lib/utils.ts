@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -53,45 +54,93 @@ export const textLowerCasifierAndHyphenator = (text: string): string => {
   return text;
 };
 
-export const checkFlexWrap = (container: HTMLDivElement): Array<number> => {
-  const items = Array.from(container.children) as HTMLDivElement[];
-	let wrappedItemsArray: number[] = [];
-	
-  for (let i = 0; i < items.length; i++) {
-    if (i === 0 || i === items.length - 1) continue;
-    const currentItem = items[i];
-    const nextItem = items[i + 1];
+export const useFlexWrapDetector = (
+  containerRef: React.RefObject<HTMLDivElement | null>
+): Array<number> => {
+  const observerRef = useRef<ResizeObserver | null>(null);
+  let wrappedItemsRef = useRef<Array<number>>([]);
 
-    const hasWrapped = nextItem.offsetTop > currentItem.offsetTop;
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-    if (hasWrapped) {
-      wrappedItemsArray.push(i);
-			currentItem.dataset.edge = "true"
-		}else {
-				wrappedItemsArray = wrappedItemsArray.filter((item) => item !== i);
-				currentItem.dataset.edge = "false"
+    const updateEdges = () => {
+      const items = Array.from(container.children) as HTMLDivElement[];
 
-			}
-		}
-		return wrappedItemsArray
-	};
-  // const classArray: string[] = [];
-  // wrappedItemsArray.forEach((item: number) => {
-  //   const nonHoverClassString = `nth-${item + 1 }:pr-9`;
-  //   const paddingClassString = `nth-${item + 1}:bg-fuchsia-600!`;
-  //   const hoverClassString = `hover:nth-${item + 1}:pr-0`;
-  //   classArray.push(nonHoverClassString, hoverClassString, paddingClassString);
-  // });
-  // const lastClassString = `last:pr-9`;
-	// const paddingClassString = `last:bg-fuchsia-600!`;
-  // const lastHoverClassString = `hover:last:pr-0`;
-  // classArray.push(lastClassString, lastHoverClassString, paddingClassString);
-  // // const classString = classArray.join(" ");
+      items.forEach((item, i) => {
+        item.dataset.number = `${i + 1}`;
 
-	// for(let i = 0; i < items.length; i++) {
-	// 	classArray.forEach((item) => {
-	// 		items[i].classList.add(item)
-	// 	})
-	// }
+        const next = items[i + 1];
 
-	// return classArray
+        const isEdge = next ? next.offsetTop > item.offsetTop : true;
+
+        if (isEdge) {
+          item.dataset.edge = "true";
+
+          if (wrappedItemsRef.current.length === 0) {
+            wrappedItemsRef.current.push(i);
+          } else if (!wrappedItemsRef.current.includes(i)) {
+            wrappedItemsRef.current.push(i);
+          }
+
+          // for (let j = i - 1; j >= 0; j--) {
+          //   const previous = items[j];
+
+          //   const isBehind = previous
+          //     ? previous.offsetTop === item.offsetTop
+          //     : false;
+          //   if (isBehind) {
+
+          //   }
+          // }
+        } else {
+          item.dataset.edge = "false";
+          wrappedItemsRef.current = wrappedItemsRef.current.filter(
+            (item) => item !== i
+          );
+        }
+      });
+
+      console.log(wrappedItemsRef);
+    };
+
+    observerRef.current = new ResizeObserver(() => {
+      requestAnimationFrame(updateEdges);
+    });
+
+    observerRef.current.observe(container);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+
+      const items = Array.from(container.children) as HTMLDivElement[];
+      items.forEach((item) => delete item.dataset.edge);
+    };
+  }, [containerRef, wrappedItemsRef]);
+
+  return wrappedItemsRef.current;
+};
+
+// const classArray: string[] = [];
+// wrappedItemsRef.forEach((item: number) => {
+//   const nonHoverClassString = `nth-${item + 1 }:pr-9`;
+//   const paddingClassString = `nth-${item + 1}:bg-fuchsia-600!`;
+//   const hoverClassString = `hover:nth-${item + 1}:pr-0`;
+//   classArray.push(nonHoverClassString, hoverClassString, paddingClassString);
+// });
+// const lastClassString = `last:pr-9`;
+// const paddingClassString = `last:bg-fuchsia-600!`;
+// const lastHoverClassString = `hover:last:pr-0`;
+// classArray.push(lastClassString, lastHoverClassString, paddingClassString);
+// // const classString = classArray.join(" ");
+
+// for(let i = 0; i < items.length; i++) {
+// 	classArray.forEach((item) => {
+// 		items[i].classList.add(item)
+// 	})
+// }
+
+// return classArray
