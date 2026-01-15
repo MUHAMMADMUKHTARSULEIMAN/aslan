@@ -12,10 +12,6 @@ const useFlexWrapDetector = (
   useEffect(() => {
     const container = containerRef.current;
     if (!container) {
-<<<<<<< HEAD
-=======
-			console.log("No container")
->>>>>>> 26225c1d8a278c8f85ff4e38bb6b8e9d95d237b2
 			return
 		}
 
@@ -45,10 +41,6 @@ const useFlexWrapDetector = (
           );
         }
       });
-<<<<<<< HEAD
-=======
-			console.log("items:", items.length)
->>>>>>> 26225c1d8a278c8f85ff4e38bb6b8e9d95d237b2
       setWrappedItemsArray(() => {
         return wrappedItemsRef.current;
       });
@@ -70,11 +62,6 @@ const useFlexWrapDetector = (
       items.forEach((item) => delete item.dataset.edge);
     };
   }, [containerRef.current]);
-<<<<<<< HEAD
-=======
-	
-	console.log("wrappedItemsArray", wrappedItemsArray);
->>>>>>> 26225c1d8a278c8f85ff4e38bb6b8e9d95d237b2
 
   return wrappedItemsArray;
 };

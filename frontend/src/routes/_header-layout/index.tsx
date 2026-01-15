@@ -45,16 +45,12 @@ export const fetchHomeFeed = async () => {
   if (!response.ok) {
     throw new Error("Something went wrong. Try again later.");
   }
-	
+
   return await response.json();
 };
 
-
 function App() {
-	const trackRef = useTrackElement()
-	const wrappedItemsArray = useAtomValue(wrappedItemsAtom).sort((a, b) => a- b)
-
-	const { data, isPending, isError } = useQuery({
+  const { data, isPending, isError } = useQuery({
     queryKey: ["home-feed"],
     queryFn: fetchHomeFeed,
     staleTime: Infinity,
@@ -63,45 +59,49 @@ function App() {
   const user = data?.data.user;
   const feeds: Feed[] | null = data?.data.articles;
   const recents: Array<Recent[]> | null = data?.data.recents;
-	
   const time = new Date().getHours();
+
+  const trackRef = useTrackElement();
+  const wrappedItemsArray = useAtomValue(wrappedItemsAtom).sort(
+    (a, b) => a - b
+  );
+
+  const [hoveredIndex, setHoveredIndex] = useAtom(indexAtom);
+
+  const getCustomRule = (): string => {
+    const item = wrappedItemsArray.find((i) => i >= (hoveredIndex ?? -1));
+    // Sad that it has to be this way
+    let previousClass = "";
+    if (item === 0) previousClass = "group-hover:data-[number=1]:mr-0";
+    else if (item === 1) previousClass = "group-hover:data-[number=2]:mr-0";
+    else if (item === 2) previousClass = "group-hover:data-[number=3]:mr-0";
+    else if (item === 3) previousClass = "group-hover:data-[number=4]:mr-0";
+    else if (item === 4) previousClass = "group-hover:data-[number=5]:mr-0";
+    else if (item === 5) previousClass = "group-hover:data-[number=6]:mr-0";
+    else if (item === 6) previousClass = "group-hover:data-[number=7]:mr-0";
+    else if (item === 7) previousClass = "group-hover:data-[number=8]:mr-0";
+    else if (item === 8) previousClass = "group-hover:data-[number=9]:mr-0";
+    else if (item === 9) previousClass = "group-hover:data-[number=10]:mr-0";
+    else if (item === 10) previousClass = "group-hover:data-[number=11]:mr-0";
+    else if (item === 11) previousClass = "group-hover:data-[number=12]:mr-0";
+    else if (item === 12) previousClass = "group-hover:data-[number=13]:mr-0";
+    else if (item === 13) previousClass = "group-hover:data-[number=14]:mr-0";
+    else if (item === 14) previousClass = "group-hover:data-[number=15]:mr-0";
+    else previousClass = "group-hover:data-[number=0]:mr-0";
+    console.log("previousClass", previousClass);
+
+    return previousClass;
+  };
+
   if (isError) {
-		return (
-			<div className="mt-16 mx-4 flex justify-center ">
+    return (
+      <div className="mt-16 mx-4 flex justify-center ">
         <div>
           <p>Something went wrong. Try again</p>
         </div>
       </div>
     );
   }
-	
-	const [hoveredIndex, setHoveredIndex] = useAtom(indexAtom);
-	
-
-	const getCustomRule = (): string => {
-		const item = wrappedItemsArray.find((i) => i >= (hoveredIndex ?? -1));
-		// Sad that it has to be this way
-		let previousClass = "";
-		if (item === 0) previousClass = "group-hover:data-[number=1]:mr-0";
-		else if (item === 1) previousClass = "group-hover:data-[number=2]:mr-0";
-		else if (item === 2) previousClass = "group-hover:data-[number=3]:mr-0";
-		else if (item === 3) previousClass = "group-hover:data-[number=4]:mr-0";
-		else if (item === 4) previousClass = "group-hover:data-[number=5]:mr-0";
-		else if (item === 5) previousClass = "group-hover:data-[number=6]:mr-0";
-		else if (item === 6) previousClass = "group-hover:data-[number=7]:mr-0";
-		else if (item === 7) previousClass = "group-hover:data-[number=8]:mr-0";
-		else if (item === 8) previousClass = "group-hover:data-[number=9]:mr-0";
-		else if (item === 9) previousClass = "group-hover:data-[number=10]:mr-0";
-		else if (item === 10) previousClass = "group-hover:data-[number=11]:mr-0";
-		else if (item === 11) previousClass = "group-hover:data-[number=12]:mr-0";
-		else if (item === 12) previousClass = "group-hover:data-[number=13]:mr-0";
-		else if (item === 13) previousClass = "group-hover:data-[number=14]:mr-0";
-		else if (item === 14) previousClass = "group-hover:data-[number=15]:mr-0";
-		else previousClass = "group-hover:data-[number=0]:mr-0";
-		console.log("previousClass", previousClass);
-
-		return previousClass;
-	};
 
   return (
     <div>
