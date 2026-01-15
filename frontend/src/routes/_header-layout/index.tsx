@@ -5,9 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import LinkHelper from "@/components/link-helper";
 import { cn, topics } from "@/lib/utils";
-import { useEffect, useRef } from "react";
 import { indexAtom, wrappedItemsAtom } from "@/store/atoms";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
+import useTrackElement from "@/hooks/use-track-element";
 
 export const Route = createFileRoute("/_header-layout/")({
   component: App,
@@ -45,97 +45,16 @@ export const fetchHomeFeed = async () => {
   if (!response.ok) {
     throw new Error("Something went wrong. Try again later.");
   }
-
+	
   return await response.json();
 };
 
+
 function App() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<ResizeObserver | null>(null);
-  const wrappedItemsRef = useRef<Array<number>>([]);
-  const [wrappedItemsArray, setWrappedItemsArray] = useAtom(wrappedItemsAtom);
-  const [hoveredIndex, setHoveredIndex] = useAtom(indexAtom);
+	const trackRef = useTrackElement()
+	const wrappedItemsArray = useAtomValue(wrappedItemsAtom)
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const updateEdges = () => {
-      const items = Array.from(container.children) as HTMLDivElement[];
-
-      items.forEach((item, i) => {
-        item.dataset.number = `${i + 1}`;
-
-        const next = items[i + 1];
-
-        const isEdge = next ? next.offsetTop > item.offsetTop : true;
-
-        if (isEdge) {
-          if (wrappedItemsRef.current.length === 0) {
-            wrappedItemsRef.current.push(i);
-          } else if (!wrappedItemsRef.current.includes(i)) {
-            wrappedItemsRef.current.push(i);
-          }
-          item.dataset.edge = "true";
-        } else {
-          wrappedItemsRef.current = wrappedItemsRef.current.filter(
-            (item) => item !== i
-          );
-          item.dataset.edge = "false";
-        }
-
-        setWrappedItemsArray(() => {
-          return wrappedItemsRef.current;
-        });
-      });
-    };
-
-    observerRef.current = new ResizeObserver(() => {
-      requestAnimationFrame(updateEdges);
-    });
-
-    observerRef.current.observe(container);
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
-
-      const items = Array.from(container.children) as HTMLDivElement[];
-      items.forEach((item) => delete item.dataset.edge);
-    };
-  }, [containerRef, wrappedItemsRef]);
-
-  console.log("wrappedItemsArray", wrappedItemsArray);
-
-  const getCustomRule = (): string => {
-    setWrappedItemsArray((prev) => prev.sort((a, b) => a - b));
-    const item = wrappedItemsArray.find((i) => i >= (hoveredIndex ?? -1));
-    // Sad that it has to be this way
-    let previousClass = "";
-    if (item === 0) previousClass = "group-hover:data-[number=1]:mr-0";
-    else if (item === 1) previousClass = "group-hover:data-[number=2]:mr-0";
-    else if (item === 2) previousClass = "group-hover:data-[number=3]:mr-0";
-    else if (item === 3) previousClass = "group-hover:data-[number=4]:mr-0";
-    else if (item === 4) previousClass = "group-hover:data-[number=5]:mr-0";
-    else if (item === 5) previousClass = "group-hover:data-[number=6]:mr-0";
-    else if (item === 6) previousClass = "group-hover:data-[number=7]:mr-0";
-    else if (item === 7) previousClass = "group-hover:data-[number=8]:mr-0";
-    else if (item === 8) previousClass = "group-hover:data-[number=9]:mr-0";
-    else if (item === 9) previousClass = "group-hover:data-[number=10]:mr-0";
-    else if (item === 10) previousClass = "group-hover:data-[number=11]:mr-0";
-    else if (item === 11) previousClass = "group-hover:data-[number=12]:mr-0";
-    else if (item === 12) previousClass = "group-hover:data-[number=13]:mr-0";
-    else if (item === 13) previousClass = "group-hover:data-[number=14]:mr-0";
-    else if (item === 14) previousClass = "group-hover:data-[number=15]:mr-0";
-    console.log("previousClass", previousClass);
-    // setCustomRule(previousClass)
-
-    return previousClass;
-  };
-
-  const { data, isPending, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
     queryKey: ["home-feed"],
     queryFn: fetchHomeFeed,
     staleTime: Infinity,
@@ -144,17 +63,45 @@ function App() {
   const user = data?.data.user;
   const feeds: Feed[] | null = data?.data.articles;
   const recents: Array<Recent[]> | null = data?.data.recents;
-
+	
   const time = new Date().getHours();
   if (isError) {
-    return (
-      <div className="mt-16 mx-4 flex justify-center ">
+		return (
+			<div className="mt-16 mx-4 flex justify-center ">
         <div>
           <p>Something went wrong. Try again</p>
         </div>
       </div>
     );
   }
+	
+	const [hoveredIndex, setHoveredIndex] = useAtom(indexAtom);
+	
+
+	const getCustomRule = (): string => {
+		const item = wrappedItemsArray.find((i) => i >= (hoveredIndex ?? -1));
+		// Sad that it has to be this way
+		let previousClass = "";
+		if (item === 0) previousClass = "group-hover:data-[number=1]:mr-0";
+		else if (item === 1) previousClass = "group-hover:data-[number=2]:mr-0";
+		else if (item === 2) previousClass = "group-hover:data-[number=3]:mr-0";
+		else if (item === 3) previousClass = "group-hover:data-[number=4]:mr-0";
+		else if (item === 4) previousClass = "group-hover:data-[number=5]:mr-0";
+		else if (item === 5) previousClass = "group-hover:data-[number=6]:mr-0";
+		else if (item === 6) previousClass = "group-hover:data-[number=7]:mr-0";
+		else if (item === 7) previousClass = "group-hover:data-[number=8]:mr-0";
+		else if (item === 8) previousClass = "group-hover:data-[number=9]:mr-0";
+		else if (item === 9) previousClass = "group-hover:data-[number=10]:mr-0";
+		else if (item === 10) previousClass = "group-hover:data-[number=11]:mr-0";
+		else if (item === 11) previousClass = "group-hover:data-[number=12]:mr-0";
+		else if (item === 12) previousClass = "group-hover:data-[number=13]:mr-0";
+		else if (item === 13) previousClass = "group-hover:data-[number=14]:mr-0";
+		else if (item === 14) previousClass = "group-hover:data-[number=15]:mr-0";
+		else previousClass = "group-hover:data-[number=0]:mr-0";
+		console.log("previousClass", previousClass);
+
+		return previousClass;
+	};
 
   return (
     <div>
@@ -262,7 +209,7 @@ function App() {
             <div className="mb-4">
               <h2 className="font-medium text-xl">All Topics</h2>
             </div>
-            <div ref={containerRef} className="group flex flex-wrap gap-4">
+            <div ref={trackRef} className="group flex flex-wrap gap-4">
               {topics.map((topic: string, index) => {
                 return (
                   <div
@@ -280,7 +227,6 @@ function App() {
                 );
               })}
             </div>
-           
           </div>
         </section>
       )}

@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
-import { useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
+import { wrappedItemsAtom } from "@/store/atoms";
+import { useAtom } from "jotai";
+import { useRef } from "react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -54,93 +56,37 @@ export const textLowerCasifierAndHyphenator = (text: string): string => {
   return text;
 };
 
-export const useFlexWrapDetector = (
-  containerRef: React.RefObject<HTMLDivElement | null>
-): Array<number> => {
-  const observerRef = useRef<ResizeObserver | null>(null);
-  let wrappedItemsRef = useRef<Array<number>>([]);
+export const updateEdges = (node: HTMLDivElement): Array<number> => {
+  const wrappedItemsRef = useRef<Array<number>>([]);
+  const [wrappedItemsArray, setWrappedItemsArray] = useAtom(wrappedItemsAtom);
+  const items = Array.from(node.children) as HTMLDivElement[];
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+  items.forEach((item, i) => {
+    item.dataset.number = `${i + 1}`;
 
-    const updateEdges = () => {
-      const items = Array.from(container.children) as HTMLDivElement[];
+    const next = items[i + 1];
 
-      items.forEach((item, i) => {
-        item.dataset.number = `${i + 1}`;
+    const isEdge = next ? next.offsetTop > item.offsetTop : true;
 
-        const next = items[i + 1];
+    if (isEdge) {
+      item.dataset.edge = "true";
 
-        const isEdge = next ? next.offsetTop > item.offsetTop : true;
-
-        if (isEdge) {
-          item.dataset.edge = "true";
-
-          if (wrappedItemsRef.current.length === 0) {
-            wrappedItemsRef.current.push(i);
-          } else if (!wrappedItemsRef.current.includes(i)) {
-            wrappedItemsRef.current.push(i);
-          }
-
-          // for (let j = i - 1; j >= 0; j--) {
-          //   const previous = items[j];
-
-          //   const isBehind = previous
-          //     ? previous.offsetTop === item.offsetTop
-          //     : false;
-          //   if (isBehind) {
-
-          //   }
-          // }
-        } else {
-          item.dataset.edge = "false";
-          wrappedItemsRef.current = wrappedItemsRef.current.filter(
-            (item) => item !== i
-          );
-        }
-      });
-
-      console.log(wrappedItemsRef);
-    };
-
-    observerRef.current = new ResizeObserver(() => {
-      requestAnimationFrame(updateEdges);
-    });
-
-    observerRef.current.observe(container);
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
+      if (wrappedItemsRef.current.length === 0) {
+        wrappedItemsRef.current.push(i);
+      } else if (!wrappedItemsRef.current.includes(i)) {
+        wrappedItemsRef.current.push(i);
       }
+    } else {
+      item.dataset.edge = "false";
 
-      const items = Array.from(container.children) as HTMLDivElement[];
-      items.forEach((item) => delete item.dataset.edge);
-    };
-  }, [containerRef, wrappedItemsRef]);
+      wrappedItemsRef.current = wrappedItemsRef.current.filter(
+        (item) => item !== i
+      );
+    }
+  });
+  setWrappedItemsArray(() => {
+    return wrappedItemsRef.current;
+  });
 
-  return wrappedItemsRef.current;
+  return wrappedItemsArray;
 };
-
-// const classArray: string[] = [];
-// wrappedItemsRef.forEach((item: number) => {
-//   const nonHoverClassString = `nth-${item + 1 }:pr-9`;
-//   const paddingClassString = `nth-${item + 1}:bg-fuchsia-600!`;
-//   const hoverClassString = `hover:nth-${item + 1}:pr-0`;
-//   classArray.push(nonHoverClassString, hoverClassString, paddingClassString);
-// });
-// const lastClassString = `last:pr-9`;
-// const paddingClassString = `last:bg-fuchsia-600!`;
-// const lastHoverClassString = `hover:last:pr-0`;
-// classArray.push(lastClassString, lastHoverClassString, paddingClassString);
-// // const classString = classArray.join(" ");
-
-// for(let i = 0; i < items.length; i++) {
-// 	classArray.forEach((item) => {
-// 		items[i].classList.add(item)
-// 	})
-// }
-
-// return classArray
