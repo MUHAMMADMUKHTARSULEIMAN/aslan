@@ -98,6 +98,7 @@ function App() {
 		else if (item === 13) previousClass = "group-hover:data-[number=14]:mr-0";
 		else if (item === 14) previousClass = "group-hover:data-[number=15]:mr-0";
 		else previousClass = "group-hover:data-[number=0]:mr-0";
+		console.log("previousClass", previousClass);
 
 		return previousClass;
 	};

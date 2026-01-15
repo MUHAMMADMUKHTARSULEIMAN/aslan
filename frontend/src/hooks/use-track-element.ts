@@ -15,6 +15,10 @@ const useTrackElement = () => {
     }
 
     if (node) {
+<<<<<<< HEAD
+=======
+			console.log("div found; start tracking")
+>>>>>>> 26225c1d8a278c8f85ff4e38bb6b8e9d95d237b2
       const updateEdges = () => {
         const items = Array.from(node.children) as HTMLDivElement[];
 
@@ -41,6 +45,10 @@ const useTrackElement = () => {
             );
           }
         });
+<<<<<<< HEAD
+=======
+        console.log("items:", items.length);
+>>>>>>> 26225c1d8a278c8f85ff4e38bb6b8e9d95d237b2
         setWrappedItemsArray(() => {
           return wrappedItemsRef.current;
         });
