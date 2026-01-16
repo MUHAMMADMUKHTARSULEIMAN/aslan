@@ -274,7 +274,7 @@ export const getHomeFeed = asyncErrorHandler(
 
 export const getFeedNames = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { category } = req.body;
+    const { category } = req.params;
 
     const feedNamesAggregate = await Discoveries.aggregate([
       {
@@ -310,12 +310,12 @@ export const getFeedNames = asyncErrorHandler(
 
 export const getDiscoveries = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { feedName } = req.body;
+    const { feed } = req.params;
 
     const discoveriesAggregate = await Discoveries.aggregate([
       {
         $match: {
-          feedName,
+          feedName: feed,
         },
       },
       {
