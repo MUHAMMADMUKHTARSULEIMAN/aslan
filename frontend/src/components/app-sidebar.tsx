@@ -96,7 +96,7 @@ const AppSidebar = () => {
           </Button>
         </div>
       </SidebarHeader>
-      <SidebarSeparator className="mx-0 border-2 border-input dark:border-background" />
+      <SidebarSeparator className="mx-0 border border-border" />
       <SidebarContent className="gap-0">
         <SidebarGroup className="p-0">
           <SidebarGroupContent>

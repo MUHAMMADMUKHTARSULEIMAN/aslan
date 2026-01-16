@@ -34,7 +34,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
               </Link>
             </div>
             <div className="flex gap-1 items-center">
-              {data || isPending ? (
+              {data !== null || isPending ? (
                 ""
               ) : (
                 <Button variant="secondary" className="px-3">
@@ -49,7 +49,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
             </div>
           </div>
         </div>
-        <hr className="border-2 border-input/30 dark:border-input/10" />
+        <hr className="border border-border" />
       </div>
     );
   }

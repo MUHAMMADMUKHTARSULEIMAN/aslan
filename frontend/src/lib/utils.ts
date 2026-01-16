@@ -47,7 +47,7 @@ export const topics = [
 export const textLowerCasifierAndHyphenator = (text: string): string => {
   const textArray = text.split(" ");
   for (let i = 0; i < textArray.length; i++) {
-    textArray[i].toLowerCase();
+    textArray[i] = textArray[i].toLowerCase();
   }
   text = textArray.join("-");
   return text;
