@@ -56,6 +56,7 @@ function App() {
     staleTime: Infinity,
   });
 
+	console.log("home data:", data)
   const user = data?.data.user;
   const feeds: Feed[] | null = data?.data.articles;
   const recents: Array<Recent[]> | null = data?.data.recents;
@@ -136,7 +137,7 @@ function App() {
                     }
                   />
                 </div>
-                <div className="mb-4 pt-1 pb-3 w-screen flex items-center shrink-0 flex-nowrap overflow-x-auto">
+                <div className="mb-4 w-screen flex items-center shrink-0 flex-nowrap overflow-x-auto no-scrollbar">
                   {recents.map((recent: Recent[]) => {
                     const unit = recent[0];
                     const { _id, image, siteName, title, url } = unit;
