@@ -9,6 +9,7 @@ import Discoveries from "../models/discovery-model";
 import Users from "../models/user-model";
 import jwt from "jsonwebtoken";
 import config from "../config/config";
+import textCapitalizerAndSpacifier from "../utils/text-capitalizer-and-spacifier";
 
 const { JWT_SECRET } = config;
 
@@ -166,9 +167,9 @@ export const getHomeFeed = asyncErrorHandler(
     const categories = [
       "Business",
       "Technology",
-      "Health",
+      "Health & Fitness",
       "Science",
-      "Life Hack",
+      "Self Improvement",
       "Politics",
       "Travel",
     ];
@@ -274,7 +275,8 @@ export const getHomeFeed = asyncErrorHandler(
 
 export const getFeedNames = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { category } = req.params;
+    const params = req.params;
+		const category = textCapitalizerAndSpacifier(params.category)
 
     const feedNamesAggregate = await Discoveries.aggregate([
       {
@@ -297,7 +299,7 @@ export const getFeedNames = asyncErrorHandler(
     ]);
 
     const feedNames =
-      feedNamesAggregate.length > 0 ? feedNamesAggregate[0] : null;
+      feedNamesAggregate.length > 0 ? feedNamesAggregate[0]?.feedNames : null;
 
     res.status(200).json({
       status: "OK",
@@ -310,7 +312,8 @@ export const getFeedNames = asyncErrorHandler(
 
 export const getDiscoveries = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { feed } = req.params;
+    const params = req.params;
+		const feed = textCapitalizerAndSpacifier(params.feed)
 
     const discoveriesAggregate = await Discoveries.aggregate([
       {

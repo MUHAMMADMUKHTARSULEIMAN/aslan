@@ -17,7 +17,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
       queryKey: ["home-feed"],
       queryFn: fetchHomeFeed,
       select: (result) => result.data.user,
-			staleTime: Infinity
+			staleTime: Infinity,
     });
 
     const { toggleSidebar } = useSidebar();
@@ -30,7 +30,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
           <div className="flex items-center justify-between">
             <div>
               <Link to="/">
-                <img src="images/logo.svg" alt="" className="h-6 w-6" />
+                <img src="/images/logo.svg" alt="" className="h-6 w-6" />
               </Link>
             </div>
             <div className="flex gap-1 items-center">
