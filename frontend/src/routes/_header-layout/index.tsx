@@ -1,37 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
 import ArticleCard from "@/components/article-card";
 import RecentCard from "@/components/recent-card";
-import { useQuery } from "@tanstack/react-query";
+import {queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import LinkHelper from "@/components/link-helper";
 import { cn, topics } from "@/lib/utils";
 import { indexAtom, wrappedItemsAtom } from "@/store/atoms";
 import { useAtom, useAtomValue } from "jotai";
 import useTrackElement from "@/hooks/use-track-element";
-
-export const Route = createFileRoute("/_header-layout/")({
-  component: App,
-});
+import ErrorComponent from "@/components/error-component";
 
 interface Recent {
-  _id: string;
-  image: string;
-  length: number;
-  siteName: string;
-  title: string;
-  url: string;
+	_id: string;
+	image: string;
+	length: number;
+	siteName: string;
+	title: string;
+	url: string;
 }
 interface Article {
-  _id: string;
-  excerpt: string;
-  image: string;
-  siteName: string;
-  title: string;
-  url: string;
+	_id: string;
+	excerpt: string;
+	image: string;
+	siteName: string;
+	title: string;
+	url: string;
 }
 interface Feed {
-  category: string;
-  data: Article[];
+	category: string;
+	data: Article[];
 }
 
 export const fetchHomeFeed = async () => {
@@ -49,14 +46,23 @@ export const fetchHomeFeed = async () => {
   return await response.json();
 };
 
-function App() {
-  const { data, isPending, isError } = useQuery({
-    queryKey: ["home-feed"],
-    queryFn: fetchHomeFeed,
-    staleTime: Infinity,
-  });
+const homeFeedQueryOptions = () => queryOptions({
+  queryKey: ["home-feed"],
+  queryFn: fetchHomeFeed,
+  staleTime: Infinity,
+});
 
-	console.log("home data:", data)
+export const Route = createFileRoute("/_header-layout/")({
+	loader: async ({context: {queryClient}}) => {
+		await queryClient.ensureQueryData(homeFeedQueryOptions());
+  },
+	component: App,
+	errorComponent: ErrorComponent
+});
+
+
+function App() {
+	const {data} = useSuspenseQuery(homeFeedQueryOptions())
   const user = data?.data.user;
   const feeds: Feed[] | null = data?.data.articles;
   const recents: Array<Recent[]> | null = data?.data.recents;
@@ -88,27 +94,13 @@ function App() {
     else if (item === 12) previousClass = "group-hover:data-[number=13]:mr-0";
     else if (item === 13) previousClass = "group-hover:data-[number=14]:mr-0";
     else if (item === 14) previousClass = "group-hover:data-[number=15]:mr-0";
-    else previousClass = "group-hover:data-[number=0]:mr-0";
     console.log("previousClass", previousClass);
 
     return previousClass;
   };
 
-  if (isError) {
-    return (
-      <div className="mt-16 mx-4 flex justify-center ">
-        <div>
-          <p>Something went wrong. Try again</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {isPending ? (
-        ""
-      ) : (
+		<div>
         <section className="mt-6 mb-24">
           <div className="mx-4">
             <h3 className="mb-4 font-medium text-sm">
@@ -230,7 +222,6 @@ function App() {
             </div>
           </div>
         </section>
-      )}
     </div>
   );
 }
