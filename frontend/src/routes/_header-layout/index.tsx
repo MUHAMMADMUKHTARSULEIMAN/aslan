@@ -10,7 +10,7 @@ import { useAtom, useAtomValue } from "jotai";
 import useTrackElement from "@/hooks/use-track-element";
 import ErrorComponent from "@/components/error-component";
 
-interface Recent {
+export interface Save {
 	_id: string;
 	image: string;
 	length: number;
@@ -18,7 +18,7 @@ interface Recent {
 	title: string;
 	url: string;
 }
-interface Article {
+export interface Discovery {
 	_id: string;
 	excerpt: string;
 	image: string;
@@ -28,7 +28,7 @@ interface Article {
 }
 interface Feed {
 	category: string;
-	data: Article[];
+	data: Discovery[];
 }
 
 export const fetchHomeFeed = async () => {
@@ -65,7 +65,7 @@ function App() {
 	const {data} = useSuspenseQuery(homeFeedQueryOptions())
   const user = data?.data.user;
   const feeds: Feed[] | null = data?.data.articles;
-  const recents: Array<Recent[]> | null = data?.data.recents;
+  const recents: Array<Save[]> | null = data?.data.recents;
   const time = new Date().getHours();
 
   const trackRef = useTrackElement();
@@ -130,7 +130,7 @@ function App() {
                   />
                 </div>
                 <div className="mb-4 w-screen flex items-center shrink-0 flex-nowrap overflow-x-auto no-scrollbar">
-                  {recents.map((recent: Recent[]) => {
+                  {recents.map((recent: Save[]) => {
                     const unit = recent[0];
                     const { _id, image, siteName, title, url } = unit;
                     return (

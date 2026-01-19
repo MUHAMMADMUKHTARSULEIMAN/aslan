@@ -2,9 +2,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { textLowerCasifierAndHyphenator, topics } from "@/lib/utils";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
-import { feedNamesQueryOptions } from "../$category";
-import { Suspense } from "react";
+import { createFileRoute, Link,  useRouteContext } from "@tanstack/react-router";
+import type { Discovery } from "../..";
+import ArticleCard from "@/components/article-card";
 
 const fetchDiscoveries = async (feed: string) => {
   const response = await fetch(
@@ -34,22 +34,17 @@ const discoveriesQueryOptions = (feed: string) =>
 export const Route = createFileRoute("/_header-layout/feeds/$category/$feed")({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params }) => {
-    await queryClient.ensureQueryData(feedNamesQueryOptions(params.category));
     await queryClient.ensureQueryData(discoveriesQueryOptions(params.feed));
   },
 });
 
 function RouteComponent() {
   const { category, feed } = Route.useParams();
-	const {pathname} = useLocation()
-	const activeTab = pathname.split("/").pop()
-	console.log("activeTab", activeTab)
+	const {feeds} = useRouteContext({from: "/_header-layout/feeds/$category"})
 
-  const feedNamesData = useSuspenseQuery(feedNamesQueryOptions(category));
   const discoveriesData = useSuspenseQuery(discoveriesQueryOptions(feed));
+  const discoveries: Discovery[] = discoveriesData?.data?.data?.discoveries;
 
-  const feedNames = feedNamesData?.data?.data?.feedNames.sort();
-  const discoveries = discoveriesData?.data?.data?.discoveries;
 
   return (
     <div>
@@ -59,7 +54,7 @@ function RouteComponent() {
             {topics.map((topic: string) => {
               const normalizedTopic = textLowerCasifierAndHyphenator(topic);
               return (
-								<Link to="/feeds/$category" params={{category: normalizedTopic}}>
+								<Link to="/feeds/$category" params={{category: normalizedTopic}} reloadDocument={false}>
                 <TabsTrigger
                   key={topic}
                   value={normalizedTopic}
@@ -77,11 +72,10 @@ function RouteComponent() {
           const normalizedTopic = textLowerCasifierAndHyphenator(topic);
           return (
             <TabsContent key={topic} value={normalizedTopic}>
-              <Tabs defaultValue={activeTab} className="gap-0">
+              <Tabs key={feed} defaultValue={feed} className="gap-0">
                 <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
-									<Suspense></Suspense>
                   <TabsList className="">
-                    {feedNames.map((feed: string) => {
+                    {feeds.map((feed: string) => {
                       const normalizedFeed =
                         textLowerCasifierAndHyphenator(feed);
                       return (
@@ -99,11 +93,16 @@ function RouteComponent() {
                   </TabsList>
                   <ScrollBar orientation="horizontal" className="" />
                 </ScrollArea>
-								{feedNames.map((feed: string) => {
+								{feeds.map((feed: string) => {
 									const normalizedFeed = textLowerCasifierAndHyphenator(feed)
 									return (
 										<TabsContent key={feed} value={normalizedFeed}>
-											{feed}
+											<div className="mt-6 mx-4 flex flex-col gap-4">
+											{discoveries.map(discovery => {
+												const {_id, image, siteName, title, url, excerpt} = discovery
+												return <ArticleCard _id={_id} excerpt={excerpt} image={image} siteName={siteName} title={title} url={url} />
+											})}
+											</div>
 										</TabsContent>
 									)
 								})}

@@ -42,7 +42,7 @@ export const Route = createFileRoute("/_header-layout/feeds/$category")({
 		}
 		
 		const data = await queryClient.ensureQueryData(feedNamesQueryOptions(category))
-		const feeds = data?.data?.feedNames.sort()
+		const feeds: Array<string> = data?.data?.feedNames.sort()
 
     if (
       (location.pathname === `/feeds/${category}` ||
@@ -54,6 +54,10 @@ export const Route = createFileRoute("/_header-layout/feeds/$category")({
         replace: true,
       });
     }
+
+		return {
+			feeds
+		}
   },
 });
 
