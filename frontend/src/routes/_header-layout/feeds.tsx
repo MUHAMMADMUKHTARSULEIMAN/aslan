@@ -15,7 +15,9 @@ export const Route = createFileRoute("/_header-layout/feeds")({
 });
 
 function RouteComponent() {
-  return <div>
+  return (
+	<div className="absolute top-[117.333px]">
 		<Outlet />
-	</div>;
+	</div>
+	)
 }

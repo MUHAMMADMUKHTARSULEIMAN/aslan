@@ -24,7 +24,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
     return (
       <div
         ref={ref}
-        className="sticky w-full min-w-screen bg-background top-0 left-0 right-0 z-50"
+        className="fixed w-full min-w-screen bg-background top-0 z-50"
       >
         <div className="pl-4 pr-2 py-2">
           <div className="flex items-center justify-between">

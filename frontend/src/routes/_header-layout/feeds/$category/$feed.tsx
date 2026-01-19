@@ -48,9 +48,9 @@ function RouteComponent() {
 
   return (
     <div>
-      <Tabs defaultValue={category} className="w-full gap-0">
+      <Tabs key={category} defaultValue={category} className="w-full gap-0">
         <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
-          <TabsList className="">
+          <TabsList className="fixed top-[53.333px] z-40">
             {topics.map((topic: string) => {
               const normalizedTopic = textLowerCasifierAndHyphenator(topic);
               return (
@@ -74,7 +74,7 @@ function RouteComponent() {
             <TabsContent key={topic} value={normalizedTopic}>
               <Tabs key={feed} defaultValue={feed} className="gap-0">
                 <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
-                  <TabsList className="">
+                  <TabsList className="fixed top-[85.3333px]">
                     {feeds.map((feed: string) => {
                       const normalizedFeed =
                         textLowerCasifierAndHyphenator(feed);

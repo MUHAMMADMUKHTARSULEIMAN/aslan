@@ -63,7 +63,7 @@ export const Route = createFileRoute("/_header-layout/feeds/$category")({
 
 function RouteComponent() {
   return (
-    <div>
+    <div className="">
       <Outlet />
     </div>
   );
