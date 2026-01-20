@@ -1,7 +1,10 @@
+import { directionAtom } from "@/store/atoms";
+import { useAtom } from "jotai";
 import { useEffect, useRef } from "react";
 
 export const useScrollDirectionDetector = (): "up" | "down" => {
-  const direction = useRef<"up" | "down">("down");
+  const directionRef = useRef<"up" | "down">("down");
+	const [direction, setDirection] = useAtom(directionAtom)
 
   useEffect(() => {
     let lastScrollY: number = window.scrollY;
@@ -9,13 +12,13 @@ export const useScrollDirectionDetector = (): "up" | "down" => {
     const updateDirection = () => {
       const currentScrollY = window.scrollY;
 
-      const newDirection = lastScrollY < currentScrollY ? "down" : "up";
+      directionRef.current = lastScrollY < currentScrollY ? "down" : "up";
 
       if (
-        newDirection !== direction.current &&
+        direction !== directionRef.current &&
         Math.abs(currentScrollY - lastScrollY) > 5
       ) {
-        direction.current = newDirection;
+        setDirection(directionRef.current)
       }
 
       lastScrollY = currentScrollY <= 0 ? 0 : currentScrollY;
@@ -25,7 +28,8 @@ export const useScrollDirectionDetector = (): "up" | "down" => {
       window.requestAnimationFrame(updateDirection);
     });
     return () => window.removeEventListener("scroll", updateDirection);
-  }, [direction]);
+  }, [directionRef.current]);
 
-  return direction.current;
+	console.log(direction)
+  return direction;
 };
