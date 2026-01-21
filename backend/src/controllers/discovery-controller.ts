@@ -149,20 +149,7 @@ export const createFeeds = asyncErrorHandler(
 
 export const getHomeFeed = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const JWT = req.signedCookies.jwt || res.locals.jwt;
-
-    let name = null;
-    let _id = null;
-
-    if (JWT) {
-      const decodedToken = jwt.verify(JWT || "", JWT_SECRET);
-      // @ts-expect-error
-      const id = decodedToken.id;
-      const user = await Users.findById(id);
-
-      _id = user?._id;
-      name = user?.firstName || null;
-    }
+		const {email} = req.params
 
     const categories = [
       "Business",
@@ -215,7 +202,7 @@ export const getHomeFeed = asyncErrorHandler(
     const recentsAggregate = await Users.aggregate([
       {
         $match: {
-          _id,
+          email
         },
       },
       { $unwind: "$saves" },
@@ -265,7 +252,6 @@ export const getHomeFeed = asyncErrorHandler(
     res.status(200).json({
       status: "OK",
       data: {
-        user: name,
         articles,
         recents,
       },

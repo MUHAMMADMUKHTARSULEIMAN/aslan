@@ -14,6 +14,42 @@ import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 // Create a new router instance
 
+const fetchCSRFToken = async () => {
+  const response = await fetch(`https://localhost:2020/api/get-csrf-token`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Something went wrong. Try again later.");
+  }
+
+	return response.json()
+};
+
+const fetchUser = async () => {
+  const response = await fetch(`https://localhost:2020/api/get-user`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Something went wrong. Try again later.");
+  }
+
+	return response.json()
+};
+
+const CSRFData = await fetchCSRFToken()
+const userData = await fetchUser()
+
+const CSRFToken = CSRFData?.data?.token
+const user = userData?.data?.user
+
 const queryClient = new QueryClient();
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext();
@@ -21,6 +57,8 @@ const router = createRouter({
   routeTree,
   context: {
     ...TanStackQueryProviderContext,
+		CSRFToken: CSRFToken || null,
+		user: user || null
   },
   defaultPreload: "intent",
   scrollRestoration: true,

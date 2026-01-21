@@ -7,9 +7,17 @@ import { Toaster } from "sonner";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { Interface } from "node:readline";
+
+export interface User {
+	name: string | null;
+	email: string | null;
+}
 
 interface RouterContext {
   queryClient: QueryClient;
+	CSRFToken: string | null
+	user: User | null
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({

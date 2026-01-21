@@ -543,3 +543,32 @@ export const getCSRFToken = asyncErrorHandler(
     });
   }
 );
+
+export const getUser = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const JWT = req.signedCookies.jwt || res.locals.jwt;
+
+    let name = null;
+    let email = null;
+
+    if (JWT) {
+      const decodedToken = jwt.verify(JWT || "", JWT_SECRET);
+      // @ts-expect-error
+      const id = decodedToken.id;
+      const user = await Users.findById(id);
+
+      email = user?.email || null;
+      name = user?.firstName || null;
+    }
+
+		res.status(200).json({
+			status: "OK",
+			data: {
+				user: {
+					name,
+					email,
+				}
+			}
+		})
+  }
+);

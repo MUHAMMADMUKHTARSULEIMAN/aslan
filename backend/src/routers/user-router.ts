@@ -3,7 +3,6 @@ import passport from "passport";
 import {
   emailRegistration,
   forgotPassword,
-  getCSRFToken,
   googleAuth,
   googleAuthCallback,
   linkAccount,
@@ -34,8 +33,6 @@ const limiter = rateLimit({
 });
 
 export const router = express.Router();
-
-router.route("/get-csrf-token").get(getCSRFToken);
 
 router.route("/login/federated/google").get(
   googleAuth,

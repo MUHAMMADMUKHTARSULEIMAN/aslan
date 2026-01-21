@@ -5,7 +5,7 @@ export const router = express.Router()
 
 router.route("/create-feeds").post(createFeeds)
 
-router.route("/get-home-feed").get(getHomeFeed)
+router.route("/get-home-feed/:email").get(getHomeFeed)
 
 router.route("/get-feed-names/:category").get(getFeedNames)
 

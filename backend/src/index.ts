@@ -17,7 +17,7 @@ import { router as collectionRouter } from "./routers/collection-router";
 import { initializeGooglePassport } from "./auth/passport-setup";
 import config from "./config/config";
 import helmet from "helmet";
-import { refreshAccessToken } from "./controllers/user-controller";
+import { getCSRFToken, getUser, refreshAccessToken } from "./controllers/user-controller";
 import compression from "compression";
 import hpp from "hpp";
 import { doubleCsrf } from "csrf-csrf";
@@ -96,11 +96,16 @@ app.use(
   })
 );
 initializeGooglePassport();
+
 app.use("/api", userRouter);
+
 app.use(refreshAccessToken);
-app.use("/api", discoveryRouter);
 app.use(doubleCsrfProtection);
-app.use("/api", feedRouter);
+
+app.get("/api/get-csrf-token", getCSRFToken);
+app.get("/api/get-user", getUser);
+
+app.use("/api", discoveryRouter, feedRouter);
 app.use("/api/saves", saveRouter);
 app.use("/api/saves/tags", tagRouter);
 app.use("/api/saves/highlights", highlightRouter);
