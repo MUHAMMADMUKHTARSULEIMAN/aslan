@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,100;0,300;0,400;0,500;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&family=Alegreya:ital,wght@0,400..900;1,400..900&family=Average+Sans&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Text:ital@0;1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=Outfit:wght@100..900&family=Quattrocento+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,100;0,300;0,400;0,500;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&family=Alegreya:ital,wght@0,400..900;1,400..900&family=Average+Sans&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Text:ital@0;1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=Outfit:wght@100..900&family=Quattrocento+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
@@ -11,10 +11,10 @@ body {
 }
 
 @utility no-scrollbar {
-	scrollbar-width: none;
-	&::-webkit-scrollbar {
-		display: none;
-	}
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 code {
@@ -26,29 +26,29 @@ code {
   /* --- Base & Radius --- */
   --radius: 0.625rem;
 
-  --background: oklch(0.98 0.005 160); 
-  --foreground: oklch(0.18 0.01 160); 
+  --background: oklch(0.98 0.005 160);
+  --foreground: oklch(0.18 0.01 160);
 
   /* --- UI Elements --- */
-  --card: oklch(0.99 0 0); 
+  --card: oklch(0.99 0 0);
   --card-foreground: var(--foreground);
 
   --popover: var(--card);
   --popover-foreground: var(--foreground);
 
   /* CORE PRIMARY: Emerald-600 */
-  --primary: oklch(0.596 0.146 163.225); 
+  --primary: oklch(0.596 0.146 163.225);
   --primary-foreground: oklch(0.98 0 0); /* LIGHT Foreground */
 
   /* CORE SECONDARY/ACCENT: Fuchsia-600 */
-  --secondary: oklch(0.591 0.293 322.896); 
+  --secondary: oklch(0.591 0.293 322.896);
   --secondary-foreground: oklch(0.98 0 0); /* LIGHT Foreground */
 
-  --accent: oklch(0.591 0.293 322.896); 
+  --accent: oklch(0.591 0.293 322.896);
   --accent-foreground: oklch(0.98 0 0); /* LIGHT Foreground */
 
   /* DESTRUCTIVE: Red 600 */
-  --destructive: oklch(0.621 0.222 25.1); 
+  --destructive: oklch(0.621 0.222 25.1);
   --destructive-foreground: oklch(0.98 0 0);
 
   --muted: oklch(0.9 0.02 160);
@@ -80,41 +80,41 @@ code {
   --chart-5: oklch(0.505 0.148 300.7); /* Violet 600 */
 
   /* --- Tailwind Utility Colors (Light Mode: 300 Light / 600 Dark) --- */
-  --red-dark: oklch(0.621 0.222 25.1);  
-  --red-light: oklch(0.841 0.117 25.1); 
-  
-  --green-dark: oklch(0.596 0.146 163.225); 
-  --green-light: oklch(0.824 0.08 163.2); 
-  
-  --blue-dark: oklch(0.551 0.126 257.4); 
-  --blue-light: oklch(0.825 0.076 257.4); 
+  --red-dark: oklch(0.621 0.222 25.1);
+  --red-light: oklch(0.841 0.117 25.1);
 
-  --cyan-dark: oklch(0.559 0.118 195.9); 
-  --cyan-light: oklch(0.817 0.063 195.9); 
+  --green-dark: oklch(0.596 0.146 163.225);
+  --green-light: oklch(0.824 0.08 163.2);
 
-  --magenta-dark: oklch(0.591 0.293 322.896); 
-  --magenta-light: oklch(0.817 0.106 334.8); 
+  --blue-dark: oklch(0.551 0.126 257.4);
+  --blue-light: oklch(0.825 0.076 257.4);
 
-  --yellow-dark: oklch(0.817 0.165 91.2); 
-  --yellow-light: oklch(0.917 0.093 91.2); 
+  --cyan-dark: oklch(0.559 0.118 195.9);
+  --cyan-light: oklch(0.817 0.063 195.9);
 
-  --orange-dark: oklch(0.623 0.179 61.2); 
-  --orange-light: oklch(0.844 0.114 61.2); 
+  --magenta-dark: oklch(0.591 0.293 322.896);
+  --magenta-light: oklch(0.817 0.106 334.8);
 
-  --violet-dark: oklch(0.505 0.148 300.7); 
-  --violet-light: oklch(0.796 0.089 300.7); 
-  
-  --teal-dark: oklch(0.570 0.123 174.9); 
-  --teal-light: oklch(0.825 0.072 174.9); 
-  
-  --gold-dark: oklch(0.72 0.176 80.5); 
-  --gold-light: oklch(0.887 0.105 80.5); 
+  --yellow-dark: oklch(0.817 0.165 91.2);
+  --yellow-light: oklch(0.917 0.093 91.2);
+
+  --orange-dark: oklch(0.623 0.179 61.2);
+  --orange-light: oklch(0.844 0.114 61.2);
+
+  --violet-dark: oklch(0.505 0.148 300.7);
+  --violet-light: oklch(0.796 0.089 300.7);
+
+  --teal-dark: oklch(0.57 0.123 174.9);
+  --teal-light: oklch(0.825 0.072 174.9);
+
+  --gold-dark: oklch(0.72 0.176 80.5);
+  --gold-light: oklch(0.887 0.105 80.5);
 }
 
 .dark {
   /* --- Base & Radius --- */
-  --background: oklch(0.15 0.01 160); 
-  --foreground: oklch(0.9 0.005 160); 
+  --background: oklch(0.15 0.01 160);
+  --foreground: oklch(0.9 0.005 160);
 
   /* --- UI Elements --- */
   --card: oklch(0.18 0.01 160);
@@ -124,18 +124,18 @@ code {
   --popover-foreground: var(--foreground);
 
   /* CORE PRIMARY: Emerald-600 */
-  --primary: oklch(0.596 0.146 163.225); 
+  --primary: oklch(0.596 0.146 163.225);
   --primary-foreground: oklch(0.98 0 0); /* LIGHT Foreground */
 
   /* CORE SECONDARY/ACCENT: Fuchsia-600 */
-  --secondary: oklch(0.591 0.293 322.896); 
+  --secondary: oklch(0.591 0.293 322.896);
   --secondary-foreground: oklch(0.98 0 0); /* LIGHT Foreground */
 
-  --accent: oklch(0.591 0.293 322.896); 
+  --accent: oklch(0.591 0.293 322.896);
   --accent-foreground: oklch(0.98 0 0); /* LIGHT Foreground */
 
   /* DESTRUCTIVE: Red 600 */
-  --destructive: oklch(0.621 0.222 25.1); 
+  --destructive: oklch(0.621 0.222 25.1);
   --destructive-foreground: oklch(0.98 0 0); /* Pure White for Max Contrast */
 
   --muted: oklch(0.26 0.02 160);
@@ -170,13 +170,13 @@ code {
 
   /* --- Tailwind Utility Colors (Dark Mode: 600 Dark / 700 Light) --- */
   /* Red */
-  --red-dark: oklch(0.621 0.222 25.1);  /* Red 600 */
+  --red-dark: oklch(0.621 0.222 25.1); /* Red 600 */
   --red-light: oklch(0.323 0.047 25.1); /* Red 700 */
-  
+
   /* Green (using Emerald) */
   --green-dark: oklch(0.596 0.146 163.225); /* Emerald 600 */
   --green-light: oklch(0.339 0.052 163.2); /* Emerald 700 */
-  
+
   /* Blue */
   --blue-dark: oklch(0.551 0.126 257.4); /* Blue 600 */
   --blue-light: oklch(0.354 0.049 257.4); /* Blue 700 */
@@ -200,11 +200,11 @@ code {
   /* Violet (using Violet) */
   --violet-dark: oklch(0.505 0.148 300.7); /* Violet 600 */
   --violet-light: oklch(0.315 0.058 300.7); /* Violet 700 */
-  
+
   /* Teal */
-  --teal-dark: oklch(0.570 0.123 174.9); /* Teal 600 */
+  --teal-dark: oklch(0.57 0.123 174.9); /* Teal 600 */
   --teal-light: oklch(0.357 0.045 174.9); /* Teal 700 */
-  
+
   /* Gold (using Amber) */
   --gold-dark: oklch(0.72 0.176 80.5); /* Amber 600 */
   --gold-light: oklch(0.446 0.066 80.5); /* Amber 700 */
@@ -252,7 +252,7 @@ code {
   --color-sidebar-ring: var(--sidebar-ring);
   --color-article-foreground: var(--article-foreground);
   --color-article-background: var(--article-background);
-	--color-red-dark: var(--red-dark);
+  --color-red-dark: var(--red-dark);
   --color-red-light: var(--red-light);
   --color-green-dark: var(--green-dark);
   --color-green-light: var(--green-light);
@@ -273,9 +273,8 @@ code {
   --color-gold-dark: var(--gold-dark);
   --color-gold-light: var(--gold-light);
 
-	--font-alegreya: "Alegreya", sans-serif
+  --font-alegreya: "Alegreya", sans-serif;
 }
-
 
 @layer base {
   * {
@@ -287,7 +286,7 @@ code {
   a {
     @apply cursor-pointer;
   }
-	button {
-		@apply cursor-pointer;
-	}
+  button {
+    @apply cursor-pointer;
+  }
 }
