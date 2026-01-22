@@ -46,7 +46,7 @@ const FloatingLabelPassword = forwardRef<HTMLInputElement, FloatingLabelInputPro
 				/>
         <FormLabel
           className={`
-            absolute text-md left-[14.5px] top-10/21 cursor-text transition-all duration-300 ease-out transform -translate-y-9/23 text-border dark:text-muted-foreground/50 bg-background pointer-events-none
+            absolute text-md left-[14.5px] top-10/21 cursor-text transition-transform duration-300 ease-out -translate-y-9/23 text-border dark:text-muted-foreground/50 bg-background pointer-events-none
 
             ${
               hasValue
