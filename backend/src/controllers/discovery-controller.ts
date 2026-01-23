@@ -7,11 +7,8 @@ import Feeds from "../models/feed-model";
 import CustomError from "../utils/custom-error";
 import Discoveries from "../models/discovery-model";
 import Users from "../models/user-model";
-import jwt from "jsonwebtoken";
 import config from "../config/config";
-import textCapitalizerAndSpacifier from "../utils/text-capitalizer-and-spacifier";
-
-const { JWT_SECRET } = config;
+import textSpacifier from "../utils/text-spacifier";
 
 interface Discovery {
   url: string;
@@ -262,7 +259,8 @@ export const getHomeFeed = asyncErrorHandler(
 export const getFeedNames = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const params = req.params;
-		const category = textCapitalizerAndSpacifier(params.category)
+		const category = textSpacifier(params.category)
+		console.log(category)
 
     const feedNamesAggregate = await Discoveries.aggregate([
       {
@@ -282,7 +280,7 @@ export const getFeedNames = asyncErrorHandler(
           feedNames: 1,
         },
       },
-    ]);
+    ], {collation:{locale: "en", strength: 1}});
 
     const feedNames =
       feedNamesAggregate.length > 0 ? feedNamesAggregate[0]?.feedNames : null;
@@ -299,11 +297,13 @@ export const getFeedNames = asyncErrorHandler(
 export const getDiscoveries = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const params = req.params;
-		const feed = textCapitalizerAndSpacifier(params.feed)
+		const category = textSpacifier(params.category)
+		const feed = textSpacifier(params.feed)
 
     const discoveriesAggregate = await Discoveries.aggregate([
       {
         $match: {
+					categories: category,
           feedName: feed,
         },
       },
@@ -317,7 +317,7 @@ export const getDiscoveries = asyncErrorHandler(
               title: "$title",
               image: "$image",
               excerpt: "$excerpt",
-              siteName: "$siteName",
+              siteName: "$feedName",
             },
           },
         },
@@ -328,7 +328,7 @@ export const getDiscoveries = asyncErrorHandler(
 					discoveries: 1
 				}
 			}
-    ]);
+    ], {collation:{locale: "en", strength: 1}});
 
 		const discoveries = discoveriesAggregate.length > 0 ? discoveriesAggregate[0].discoveries : null
 

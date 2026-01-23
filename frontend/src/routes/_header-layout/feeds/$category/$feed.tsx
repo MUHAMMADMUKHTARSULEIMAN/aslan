@@ -1,14 +1,20 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { textLowerCasifierAndHyphenator, topics } from "@/lib/utils";
+import {
+  ampersandToAnd,
+  andToAmpersand,
+  textLowerCasifierAndHyphenator,
+  topics,
+} from "@/lib/utils";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link,  useRouteContext } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouteContext } from "@tanstack/react-router";
 import type { Discovery } from "../..";
 import ArticleCard from "@/components/article-card";
+import useScrollTracking from "@/hooks/use-scroll-tracking";
 
-const fetchDiscoveries = async (feed: string) => {
+const fetchDiscoveries = async (category: string, feed: string) => {
   const response = await fetch(
-    `https://localhost:2020/api/get-discoveries/${feed}`,
+    `https://localhost:2020/api/get-discoveries/${category}/${feed}`,
     {
       method: "GET",
       credentials: "include",
@@ -24,45 +30,51 @@ const fetchDiscoveries = async (feed: string) => {
   return await response.json();
 };
 
-const discoveriesQueryOptions = (feed: string) =>
+const discoveriesQueryOptions = (category: string, feed: string) =>
   queryOptions({
     queryKey: ["discoveries", feed],
-    queryFn: () => fetchDiscoveries(feed),
+    queryFn: () => fetchDiscoveries(category, feed),
     staleTime: Infinity,
   });
 
 export const Route = createFileRoute("/_header-layout/feeds/$category/$feed")({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params }) => {
-    await queryClient.ensureQueryData(discoveriesQueryOptions(params.feed));
+		const category = andToAmpersand(params.category)
+    await queryClient.ensureQueryData(discoveriesQueryOptions(category, params.feed));
   },
 });
 
 function RouteComponent() {
   const { category, feed } = Route.useParams();
-	const {feeds} = useRouteContext({from: "/_header-layout/feeds/$category"})
+	const newCategory = andToAmpersand(category)
+  const { feeds } = useRouteContext({
+    from: "/_header-layout/feeds/$category",
+  });
+	const tabRef = useScrollTracking()
 
-  const discoveriesData = useSuspenseQuery(discoveriesQueryOptions(feed));
+  const discoveriesData = useSuspenseQuery(discoveriesQueryOptions(newCategory, feed));
   const discoveries: Discovery[] = discoveriesData?.data?.data?.discoveries;
-
 
   return (
     <div>
-      <Tabs key={category} defaultValue={category} className="w-full gap-0">
-        <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
-          <TabsList className="fixed top-[53.333px] z-40">
+      <Tabs key={newCategory} defaultValue={newCategory} className="w-full gap-0">
+        <ScrollArea className={`w-screen whitespace-nowrap border-b-[1.5px] border-border`}>
+          <TabsList ref={tabRef} className={``}>
             {topics.map((topic: string) => {
               const normalizedTopic = textLowerCasifierAndHyphenator(topic);
+              const redirectTopic = ampersandToAnd(normalizedTopic);
               return (
-								<Link to="/feeds/$category" params={{category: normalizedTopic}} reloadDocument={false}>
-                <TabsTrigger
+                <Link
                   key={topic}
-                  value={normalizedTopic}
-                  className=""
-									>
-                  {topic}
-                </TabsTrigger>
-									</Link>
+                  to="/feeds/$category"
+                  params={{ category: redirectTopic }}
+                  preloadDelay={750}
+                >
+                  <TabsTrigger key={topic} value={normalizedTopic} className="">
+                    {topic}
+                  </TabsTrigger>
+                </Link>
               );
             })}
           </TabsList>
@@ -74,38 +86,58 @@ function RouteComponent() {
             <TabsContent key={topic} value={normalizedTopic}>
               <Tabs key={feed} defaultValue={feed} className="gap-0">
                 <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
-                  <TabsList className="fixed top-[85.3333px]">
+                  <TabsList className="">
                     {feeds.map((feed: string) => {
                       const normalizedFeed =
                         textLowerCasifierAndHyphenator(feed);
+                      const redirectTopic = ampersandToAnd(normalizedTopic);
                       return (
-												<Link to="/feeds/$category/$feed" params={{category: normalizedTopic, feed: normalizedFeed}}>
-                        <TabsTrigger
+                        <Link
                           key={feed}
-                          value={normalizedFeed}
-                          className=""
+                          to="/feeds/$category/$feed"
+                          params={{
+                            category: redirectTopic,
+                            feed: normalizedFeed,
+                          }}
+                          preloadDelay={750}
                         >
-                          {feed}
-                        </TabsTrigger>
-															</Link>
+                          <TabsTrigger
+                            key={feed}
+                            value={normalizedFeed}
+                            className=""
+                          >
+                            {feed}
+                          </TabsTrigger>
+                        </Link>
                       );
                     })}
                   </TabsList>
                   <ScrollBar orientation="horizontal" className="" />
                 </ScrollArea>
-								{feeds.map((feed: string) => {
-									const normalizedFeed = textLowerCasifierAndHyphenator(feed)
-									return (
-										<TabsContent key={feed} value={normalizedFeed}>
-											<div className="mt-6 mx-4 flex flex-col gap-4">
-											{discoveries.map(discovery => {
-												const {_id, image, siteName, title, url, excerpt} = discovery
-												return <ArticleCard _id={_id} excerpt={excerpt} image={image} siteName={siteName} title={title} url={url} />
-											})}
-											</div>
-										</TabsContent>
-									)
-								})}
+                {feeds.map((feed: string) => {
+                  const normalizedFeed = textLowerCasifierAndHyphenator(feed);
+                  return (
+                    <TabsContent key={feed} value={normalizedFeed}>
+                      <div className="mt-6 mx-4 flex flex-col gap-4 mb-12">
+                        {discoveries.map((discovery) => {
+                          const { _id, image, siteName, title, url, excerpt } =
+                            discovery;
+                          return (
+                            <ArticleCard
+                              key={_id}
+                              _id={_id}
+                              excerpt={excerpt}
+                              image={image}
+                              siteName={siteName}
+                              title={title}
+                              url={url}
+                            />
+                          );
+                        })}
+                      </div>
+                    </TabsContent>
+                  );
+                })}
               </Tabs>
             </TabsContent>
           );

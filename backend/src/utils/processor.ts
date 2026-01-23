@@ -20,13 +20,13 @@ export interface Article {
 }
 
 export interface Metadata {
-		thumbnail: string | null;
-			siteName: string | null;
-			publishedTime: string | null;
-			title: string | null;
-			description: string | null;
-			author: string | null;
-			length: number | null;
+  thumbnail: string | null;
+  siteName: string | null;
+  publishedTime: string | null;
+  title: string | null;
+  description: string | null;
+  author: string | null;
+  length: number | null;
 }
 
 class Processor {
@@ -131,18 +131,18 @@ class Processor {
     }
   }
 
-	public findMetadata(html: string, url: string, maxLength: number): Metadata {
-		const $ = cheerio.load(html);
-		return {
-			thumbnail: this.findThumbnail($, url),
-			siteName: this.findSiteName($),
-			publishedTime: this.findPublishedTime($),
-			title: this.findTitle($),
-			description: this.findDescription($, html, maxLength),
-			author: this.findAuthor($),
-			length: this.findLength($)
-		}
-	}
+  public findMetadata(html: string, url: string, maxLength: number): Metadata {
+    const $ = cheerio.load(html);
+    return {
+      thumbnail: this.findThumbnail($, url),
+      siteName: this.findSiteName($),
+      publishedTime: this.findPublishedTime($),
+      title: this.findTitle($),
+      description: this.findDescription($, html, maxLength),
+      author: this.findAuthor($),
+      length: this.findLength($),
+    };
+  }
 
   private findThumbnail($: cheerio.CheerioAPI, url: string): string | null {
     let image =
@@ -160,7 +160,8 @@ class Processor {
       !(image.startsWith("https://") || image.startsWith("http://"))
     ) {
       const parsedURL = new URL(url);
-      image = `${parsedURL.origin}${image}`;
+      if (image.startsWith("/")) image = `${parsedURL.origin}${image}`;
+      else image = `${parsedURL.origin}/${image}`;
     }
     return image;
   }
@@ -204,17 +205,21 @@ class Processor {
     );
   }
 
-  private findDescription($: cheerio.CheerioAPI, HTML: string, maxLength: number): string | null {
-		const description =
-			$('meta[name="description"]').attr("content") ||
-			$('meta[property="og:description"]').attr("content") ||
-			$('meta[name="og:description"]').attr("content") ||
-			$('meta[name="twitter:description"]').attr("content") ||
-			null;
+  private findDescription(
+    $: cheerio.CheerioAPI,
+    HTML: string,
+    maxLength: number
+  ): string | null {
+    const description =
+      $('meta[name="description"]').attr("content") ||
+      $('meta[property="og:description"]').attr("content") ||
+      $('meta[name="og:description"]').attr("content") ||
+      $('meta[name="twitter:description"]').attr("content") ||
+      null;
 
-		if (description) {
-			return description;
-		}
+    if (description) {
+      return description;
+    }
 
     const dom = new JSDOM(HTML);
     const document = dom.window.document;
@@ -285,7 +290,6 @@ class Processor {
   }
 
   private findAuthor($: cheerio.CheerioAPI): string | null {
-
     return (
       $('meta[name="author"]').attr("content") ||
       $('meta[property="article:author"]').attr("content") ||

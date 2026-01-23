@@ -1,4 +1,4 @@
-import { textCapitalizerAndSpacifier, textLowerCasifierAndHyphenator, topics } from "@/lib/utils";
+import { andToAmpersand, textCapitalizerAndSpacifier, textLowerCasifierAndHyphenator, topics } from "@/lib/utils";
 import { queryOptions } from "@tanstack/react-query";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
@@ -31,17 +31,20 @@ export const Route = createFileRoute("/_header-layout/feeds/$category")({
   beforeLoad: async ({ location, matches, context: {queryClient} }) => {
 		console.log("pathname:", location.pathname)
 		const params  = matches[matches.length - 1].params
-		console.log("params:", params)
 		// @ts-expect-error
 		const category = params.category
 		let redirectCategory = ""
-		if(topics.includes(textCapitalizerAndSpacifier(category))) {
+		let searchCategory = andToAmpersand(category)
+		if(topics.includes(textCapitalizerAndSpacifier(searchCategory))) {
 			redirectCategory = category
 		} else {
 			redirectCategory = "business"
+			searchCategory = "business"
 		}
+		console.log("redirect category:", redirectCategory)
+		console.log("search category:", searchCategory)
 		
-		const data = await queryClient.ensureQueryData(feedNamesQueryOptions(category))
+		const data = await queryClient.ensureQueryData(feedNamesQueryOptions(searchCategory))
 		const feeds: Array<string> = data?.data?.feedNames.sort()
 
     if (

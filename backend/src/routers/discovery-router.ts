@@ -9,4 +9,4 @@ router.route("/get-home-feed/:email").get(getHomeFeed)
 
 router.route("/get-feed-names/:category").get(getFeedNames)
 
-router.route("/get-discoveries/:feed").get(getDiscoveries)
+router.route("/get-discoveries/:category/:feed").get(getDiscoveries)
