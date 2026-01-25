@@ -40,85 +40,107 @@ const discoveriesQueryOptions = (category: string, feed: string) =>
 export const Route = createFileRoute("/_header-layout/feeds/$category/$feed")({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params }) => {
-		const category = andToAmpersand(params.category)
-    await queryClient.ensureQueryData(discoveriesQueryOptions(category, params.feed));
+    const category = andToAmpersand(params.category);
+    await queryClient.ensureQueryData(
+      discoveriesQueryOptions(category, params.feed)
+    );
   },
 });
 
 function RouteComponent() {
   const { category, feed } = Route.useParams();
-	const newCategory = andToAmpersand(category)
+  const newCategory = andToAmpersand(category);
   const { feeds } = useRouteContext({
     from: "/_header-layout/feeds/$category",
   });
-	const tabRef = useScrollTracking()
+  const tabRef = useScrollTracking();
 
-  const discoveriesData = useSuspenseQuery(discoveriesQueryOptions(newCategory, feed));
+  const discoveriesData = useSuspenseQuery(
+    discoveriesQueryOptions(newCategory, feed)
+  );
   const discoveries: Discovery[] = discoveriesData?.data?.data?.discoveries;
 
   return (
     <div>
-      <Tabs key={newCategory} defaultValue={newCategory} className="w-full gap-0">
-        <ScrollArea className={`w-screen whitespace-nowrap border-b-[1.5px] border-border`}>
-          <TabsList ref={tabRef} className={``}>
-            {topics.map((topic: string) => {
-              const normalizedTopic = textLowerCasifierAndHyphenator(topic);
-              const redirectTopic = ampersandToAnd(normalizedTopic);
-              return (
-                <Link
-                  key={topic}
-                  to="/feeds/$category"
-                  params={{ category: redirectTopic }}
-                  preloadDelay={750}
-                >
-                  <TabsTrigger key={topic} value={normalizedTopic} className="">
-                    {topic}
-                  </TabsTrigger>
-                </Link>
-              );
-            })}
-          </TabsList>
-          <ScrollBar orientation="horizontal" className="" />
-        </ScrollArea>
+      <Tabs
+        key={newCategory}
+        defaultValue={newCategory}
+        className="w-full gap-0"
+      >
+        <div
+          ref={tabRef}
+          className="fixed top-0 translate-y-[53.33px] left-0 z-40 transition-transform duration-350 ease-in-out data-[visible=true]:translate-y-[53.33px] data-[visible=false]:translate-y-0"
+        >
+          <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
+            <TabsList ref={tabRef} className={``}>
+              {topics.map((topic: string) => {
+                const normalizedTopic = textLowerCasifierAndHyphenator(topic);
+                const redirectTopic = ampersandToAnd(normalizedTopic);
+                return (
+                  <Link
+                    key={topic}
+                    to="/feeds/$category"
+                    params={{ category: redirectTopic }}
+                    preloadDelay={750}
+                  >
+                    <TabsTrigger
+                      key={topic}
+                      value={normalizedTopic}
+                      className=""
+                    >
+                      {topic}
+                    </TabsTrigger>
+                  </Link>
+                );
+              })}
+            </TabsList>
+            <ScrollBar orientation="horizontal" className="" />
+          </ScrollArea>
+        </div>
         {topics.map((topic: string) => {
           const normalizedTopic = textLowerCasifierAndHyphenator(topic);
           return (
             <TabsContent key={topic} value={normalizedTopic}>
               <Tabs key={feed} defaultValue={feed} className="gap-0">
-                <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
-                  <TabsList className="">
-                    {feeds.map((feed: string) => {
-                      const normalizedFeed =
-                        textLowerCasifierAndHyphenator(feed);
-                      const redirectTopic = ampersandToAnd(normalizedTopic);
-                      return (
-                        <Link
-                          key={feed}
-                          to="/feeds/$category/$feed"
-                          params={{
-                            category: redirectTopic,
-                            feed: normalizedFeed,
-                          }}
-                          preloadDelay={750}
-                        >
-                          <TabsTrigger
+                <div
+                  ref={tabRef}
+                  className="sticky top-[53.33px] translate-y-[33.5px] left-0 z-30 transition-transform duration-350 ease-in-out data-[visible=true]:translate-y-[33.5px] data-[visible=false]:-translate-y-[19.83px]"
+                >
+                  <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
+                    <TabsList className="">
+                      {feeds.map((feed: string) => {
+                        const normalizedFeed =
+                          textLowerCasifierAndHyphenator(feed);
+                        const redirectTopic = ampersandToAnd(normalizedTopic);
+                        return (
+                          <Link
                             key={feed}
-                            value={normalizedFeed}
-                            className=""
+                            to="/feeds/$category/$feed"
+                            params={{
+                              category: redirectTopic,
+                              feed: normalizedFeed,
+                            }}
+                            preloadDelay={750}
                           >
-                            {feed}
-                          </TabsTrigger>
-                        </Link>
-                      );
-                    })}
-                  </TabsList>
-                  <ScrollBar orientation="horizontal" className="" />
-                </ScrollArea>
+                            <TabsTrigger
+                              key={feed}
+                              value={normalizedFeed}
+                              className=""
+                            >
+                              {feed}
+                            </TabsTrigger>
+                          </Link>
+                        );
+                      })}
+                    </TabsList>
+                    <ScrollBar orientation="horizontal" className="" />
+                  </ScrollArea>
+                </div>
                 {feeds.map((feed: string) => {
                   const normalizedFeed = textLowerCasifierAndHyphenator(feed);
                   return (
                     <TabsContent key={feed} value={normalizedFeed}>
-                      <div className="mt-6 mx-4 flex flex-col gap-4 mb-12">
+                      <div className="pt-[67px] mt-6 mx-4 flex flex-col gap-4 mb-12">
                         {discoveries.map((discovery) => {
                           const { _id, image, siteName, title, url, excerpt } =
                             discovery;

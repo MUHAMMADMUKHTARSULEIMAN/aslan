@@ -55,11 +55,29 @@ export const textLowerCasifierAndHyphenator = (text: string): string => {
 
 export const textCapitalizerAndSpacifier = (text: string): string => {
   const textArray = text.split("-");
-	const capitalizedTextArray = []
+  const capitalizedTextArray = [];
   for (let i = 0; i < textArray.length; i++) {
-		const capitalizedText = `${textArray[i].charAt(0).toUpperCase()}${textArray[i].substring(1)}`
-		capitalizedTextArray.push(capitalizedText)
+    const capitalizedText = `${textArray[i].charAt(0).toUpperCase()}${textArray[i].substring(1)}`;
+    capitalizedTextArray.push(capitalizedText);
   }
   text = capitalizedTextArray.join(" ");
+  return text;
+};
+
+export const ampersandToAnd = (text: string) => {
+  const textArray = text.split("-");
+  for (let i = 0; i < textArray.length; i++) {
+    if (textArray[i] === "&") textArray[i] = "and";
+  }
+  text = textArray.join("-");
+  return text;
+};
+
+export const andToAmpersand = (text: string) => {
+  const textArray = text.split("-");
+  for (let i = 0; i < textArray.length; i++) {
+    if (textArray[i] === "and") textArray[i] = "&";
+  }
+  text = textArray.join("-");
   return text;
 };
