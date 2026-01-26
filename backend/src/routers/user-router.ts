@@ -54,6 +54,6 @@ router.route("/sign-up/:email/:token").post(limiter, userSignUp);
 
 router.route("/sign-in").post(limiter, userSignIn);
 
-router.route("/forgot-password").get(limiter, forgotPassword);
+router.route("/forgot-password").post(limiter, forgotPassword);
 
 router.route("/reset-password/:token").post(limiter, resetPassword);

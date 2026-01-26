@@ -6,7 +6,6 @@ import { IUser } from "../types/user";
 import Users from "../models/user-model";
 import Emails from "../models/email-model";
 import { createHash } from "crypto";
-import { promisify } from "util";
 import jwt from "jsonwebtoken";
 import { getAndDeleteLink } from "./link-controller";
 import sendEmail from "../utils/email";
@@ -396,20 +395,10 @@ export const refreshAccessToken = asyncErrorHandler(
 
 export const protectRoutes = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const JWT = req.signedCookies.jwt;
-    if (!JWT) {
-      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
-    }
+		const email = req.query.email as string
 
-    // @ts-expect-error
-    const decodedToken = await promisify(jwt.verify)(JWT, JWT_SECRET);
-    // @ts-expect-error
-    const id = decodedToken.id;
-    // @ts-expect-error
-    const iat = decodedToken.iat;
-
-    const user = await Users.findById(id);
-    if (!user || user.isPasswordModified(iat)) {
+    const user = await Users.findOne({email});
+    if (!user) {
       return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     } else {
       req.user = user;
@@ -443,6 +432,8 @@ export const restrictUsers = (level: number): RequestHandler => {
 export const forgotPassword = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
+    const returnTo = req.query.returnTo as string;
+
     if (!email) {
       const error = new CustomError(400, "Email not provided.");
       return next(error);
@@ -462,7 +453,7 @@ export const forgotPassword = asyncErrorHandler(
     } else {
       const token = await user.generateResetToken(next);
 
-      const resetURL = `${FRONTEND_BASE_URL}/reset-password/${token}`;
+      const resetURL = `${FRONTEND_BASE_URL}/reset-password/${token}?returnTo=${returnTo}`;
       const message = `Use the link below to reset your password. It expires in 10 minutes.\n\n${resetURL}\n\nIf you did not perform this action, you can safely ignore this email.\n\nAnd don't forget that we will never ask you for your password, a token or any other sensitive info. Thank you.`;
 
       sendEmail({
@@ -555,20 +546,27 @@ export const getUser = asyncErrorHandler(
       const decodedToken = jwt.verify(JWT || "", JWT_SECRET);
       // @ts-expect-error
       const id = decodedToken.id;
+      // @ts-expect-error
+      const iat = decodedToken.iat;
       const user = await Users.findById(id);
 
-      email = user?.email || null;
-      name = user?.firstName || null;
+      if (!user || user.isPasswordModified(iat)) {
+        res.clearCookie("jwt");
+        res.clearCookie("refresh");
+      } else {
+        email = user.email || null;
+        name = user.firstName || null;
+      }
     }
 
-		res.status(200).json({
-			status: "OK",
-			data: {
-				user: {
-					name,
-					email,
-				}
-			}
-		})
+    res.status(200).json({
+      status: "OK",
+      data: {
+        user: {
+          name,
+          email,
+        },
+      },
+    });
   }
 );
