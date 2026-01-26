@@ -32,14 +32,14 @@ const ArticleCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
           />
           <div className="mx-4 h-52 max-h-52 flex flex-col justify-between">
             <div className="h-35 max-h-35">
-              <h3 className="font-medium mb-2">{title}</h3>
+              <h3 className="font-medium mb-2 text-base">{title}</h3>
               <p className="mb-4 text-sm">{excerpt}</p>
             </div>
-            <div className="mb-4 flex items-center justify-between">
-              <span className="text-muted-foreground font-medium">
+            <div className="mb-4 flex items-center gap-4 justify-between">
+              <span className="text-muted-foreground text-[15px] font-medium">
                 {siteName}
               </span>
-              <Button variant="card-save" className="font-medium text-base">
+              <Button variant="card-save" className="font-medium text-[15px]">
                 Save
               </Button>
             </div>
