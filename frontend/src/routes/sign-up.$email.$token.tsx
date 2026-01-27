@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   createFileRoute,
   Link,
+  redirect,
   useNavigate,
   useSearch,
 } from "@tanstack/react-router";
@@ -17,14 +18,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import FloatingLabelPassword from "@/components/floating-label-password";
-
-const redirectSearchSchema = z.object({
-  returnTo: z.string().optional(),
-});
+import { redirectSearchSchema } from "./sign-in";
 
 export const Route = createFileRoute("/sign-up/$email/$token")({
   component: RouteComponent,
   validateSearch: (search) => redirectSearchSchema.parse(search),
+  beforeLoad: ({ context: { user }, search }) => {
+    if (user?.email) throw redirect({ to: search.returnTo || "/" });
+  },
 });
 
 function RouteComponent() {

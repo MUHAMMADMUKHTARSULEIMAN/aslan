@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import {
   createFileRoute,
   Link,
+  redirect,
   useSearch,
 } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
@@ -16,14 +17,14 @@ import ToastSuccess from "@/components/toast-success";
 import ToastError from "@/components/toast-error";
 import { ChevronRight } from "lucide-react";
 import LinkHelper from "@/components/link-helper";
-
-const redirectSearchSchema = z.object({
-  returnTo: z.string().optional(),
-});
+import { redirectSearchSchema } from "./sign-in";
 
 export const Route = createFileRoute("/register-email")({
   component: RouteComponent,
-  validateSearch: (search) => redirectSearchSchema.parse(search),
+		validateSearch: (search) => redirectSearchSchema.parse(search),
+		beforeLoad: ({context: {user}, search}) => {
+			if(user?.email) throw redirect({to: search.returnTo || "/",})
+		},
 });
 
 function RouteComponent() {

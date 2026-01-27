@@ -2,6 +2,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import {
   createFileRoute,
   Link,
+  redirect,
   useNavigate,
   useSearch,
 } from "@tanstack/react-router";
@@ -18,13 +19,16 @@ import { cn } from "@/lib/utils";
 import LinkHelper from "@/components/link-helper";
 import { ChevronRight } from "lucide-react";
 
-const redirectSearchSchema = z.object({
+export const redirectSearchSchema = z.object({
   returnTo: z.string().optional(),
 });
 
 export const Route = createFileRoute("/sign-in")({
-  component: RouteComponent,
+	component: RouteComponent,
   validateSearch: (search) => redirectSearchSchema.parse(search),
+	beforeLoad: ({context: {user}, search}) => {
+		if(user?.email) throw redirect({to: search.returnTo || "/",})
+	},
 });
 
 function RouteComponent() {

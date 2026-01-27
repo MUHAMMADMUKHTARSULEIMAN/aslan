@@ -9,20 +9,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createFileRoute,
   Link,
+  redirect,
   useNavigate,
   useSearch,
 } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod/v4";
-
-const redirectSearchSchema = z.object({
-  returnTo: z.string().optional(),
-});
+import { redirectSearchSchema } from "./sign-in";
 
 export const Route = createFileRoute("/link-account/$email")({
   component: RouteComponent,
   validateSearch: (search) => redirectSearchSchema.parse(search),
+		beforeLoad: ({context: {user}, search}) => {
+			if(user?.email) throw redirect({to: search.returnTo || "/",})
+		},
 });
 
 function RouteComponent() {

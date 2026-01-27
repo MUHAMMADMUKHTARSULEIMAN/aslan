@@ -1,16 +1,15 @@
 import LinkHelper from "@/components/link-helper";
 import { Button } from "@/components/ui/button";
-import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useSearch } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { z } from "zod/v4";
-
-const redirectSearchSchema = z.object({
-  returnTo: z.string().optional(),
-});
+import { redirectSearchSchema } from "./sign-in";
 
 export const Route = createFileRoute("/confirm-linking/$email")({
   component: RouteComponent,
   validateSearch: (search) => redirectSearchSchema.parse(search),
+		beforeLoad: ({context: {user}, search}) => {
+			if(user?.email) throw redirect({to: search.returnTo || "/",})
+		},
 });
 
 function RouteComponent() {
