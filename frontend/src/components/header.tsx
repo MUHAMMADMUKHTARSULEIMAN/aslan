@@ -10,7 +10,7 @@ import type { User } from "@/routes/__root";
 interface DefaultComponentProps
   extends React.HtmlHTMLAttributes<HTMLDivElement> {
   pathname: string;
-	user: User | null
+	user?: User | null
 }
 
 const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
@@ -39,7 +39,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
               </Link>
             </div>
             <div className="flex gap-1 items-center">
-              {user?.email ? (
+              {user !== undefined && user?.email ? (
                 ""
               ) : (
                 <Button variant="secondary" className="px-3">

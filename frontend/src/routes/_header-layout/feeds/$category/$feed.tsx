@@ -7,7 +7,7 @@ import {
   topics,
 } from "@/lib/utils";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useRouteContext } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import type { Discovery } from "../..";
 import ArticleCard from "@/components/article-card";
 import useScrollTracking from "@/hooks/use-scroll-tracking";
@@ -50,9 +50,8 @@ export const Route = createFileRoute("/_header-layout/feeds/$category/$feed")({
 function RouteComponent() {
   const { category, feed } = Route.useParams();
   const newCategory = andToAmpersand(category);
-  const { feeds } = useRouteContext({
-    from: "/_header-layout/feeds/$category",
-  });
+
+  const { feeds } = Route.useRouteContext();
   const tabRef = useScrollTracking();
 
   const discoveriesData = useSuspenseQuery(

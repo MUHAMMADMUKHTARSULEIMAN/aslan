@@ -12,11 +12,11 @@ export const Route = createFileRoute("/_header-layout")({
 function RouteComponent() {
   const { location } = useRouterState();
   const pathname = location.pathname;
-	const {user} = Route.useRouteContext()
+  const { user } = Route.useRouteContext();
 
   return (
     <div>
-      <Header pathname={pathname} user={user}/>
+      <Header pathname={pathname} user={user} />
       <Outlet />
     </div>
   );

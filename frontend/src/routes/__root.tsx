@@ -1,5 +1,5 @@
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import type { QueryClient } from "@tanstack/react-query";
+import { type QueryClient } from "@tanstack/react-query";
 import ErrorComponent from "@/components/error-component";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/app-sidebar";
@@ -7,27 +7,72 @@ import { Toaster } from "sonner";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { Interface } from "node:readline";
 
 export interface User {
-	name: string | null;
-	email: string | null;
+  name: string | null;
+  email: string | null;
 }
 
 interface RouterContext {
   queryClient: QueryClient;
-	CSRFToken: string | null
-	user: User | null
+  CSRFToken?: string;
+  user?: User;
 }
+
+const fetchCSRFToken = async () => {
+  const response = await fetch(`https://localhost:2020/api/get-csrf-token`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Something went wrong. Try again later.");
+  }
+
+  return response.json();
+};
+
+const fetchUser = async () => {
+  const response = await fetch(`https://localhost:2020/api/get-user`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Something went wrong. Try again later.");
+  }
+
+  return response.json();
+};
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
-	errorComponent: ErrorComponent
+  errorComponent: ErrorComponent,
+  beforeLoad: async () => {
+    try {
+      const CSRFTokenData = await fetchCSRFToken();
+      const userData = await fetchUser();
+
+      const CSRFToken = CSRFTokenData?.data?.token
+      const user = userData?.data?.user;
+
+      return {
+        CSRFToken,
+        user,
+      };
+    } catch (error) {
+      console.error("Failed to prime global context:", error);
+    }
+  },
 });
 
 function RootComponent() {
-	return (
-		    <>
+  return (
+    <>
       <SidebarProvider defaultOpen={false}>
         <AppSidebar />
         <Outlet />
@@ -46,5 +91,5 @@ function RootComponent() {
         />
       </SidebarProvider>
     </>
-	)
+  );
 }
