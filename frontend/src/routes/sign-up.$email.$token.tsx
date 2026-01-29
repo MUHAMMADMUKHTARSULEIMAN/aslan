@@ -145,7 +145,7 @@ function RouteComponent() {
       const data = await response.json();
       if (data.status === "OK") {
         if (data?.message) ToastSuccess(data?.message);
-        await navigate({ to: returnTo, replace: true });
+        await navigate({ to: returnTo, replace: true});
       } else {
         if (data?.message) ToastError(data?.message);
       }
@@ -162,7 +162,7 @@ function RouteComponent() {
         </Link>
       </div>
       <div className="mb-6 text-center">
-        <h1 className="font-medium text-xl">Create Sanctum Account</h1>
+        <h1 className="font-medium text-xl">Create Sanctum account</h1>
       </div>
       <div className="w-full">
         <Form {...form}>
@@ -429,7 +429,7 @@ function RouteComponent() {
                   Creating account
                 </span>
               ) : (
-                "Create Account"
+                "Create account"
               )}
             </Button>
           </form>

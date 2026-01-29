@@ -8,7 +8,6 @@ import {
 } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FcGoogle } from "react-icons/fc";
 import { z } from "zod/v4";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import FloatingLabelInput from "@/components/floating-label-input";

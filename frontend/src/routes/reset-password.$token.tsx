@@ -1,9 +1,387 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Button } from "@/components/ui/button";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+  useSearch,
+} from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod/v4";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Spinner } from "@/components/ui/spinner";
+import ToastSuccess from "@/components/toast-success";
+import ToastError from "@/components/toast-error";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
+import FloatingLabelPassword from "@/components/floating-label-password";
+import { redirectSearchSchema } from "./sign-in";
 
-export const Route = createFileRoute('/reset-password/$token')({
+export const Route = createFileRoute("/reset-password/$token")({
   component: RouteComponent,
-})
+  validateSearch: (search) => redirectSearchSchema.parse(search),
+  beforeLoad: ({ context: { user }, search }) => {
+    if (user?.email) throw redirect({ to: search.returnTo || "/" });
+  },
+});
 
 function RouteComponent() {
-  return <div>Hello "/reset-password/$token"!</div>
+  const navigate = useNavigate();
+  const { token } = Route.useParams();
+  const search = useSearch({
+    from: "/reset-password/$token",
+  });
+
+  const returnTo = search.returnTo || "/";
+
+  const hasUppercase = new RegExp(".*[A-Z].*");
+  const hasLowercase = new RegExp(".*[a-z].*");
+  const hasNumber = new RegExp(".*[0-9].*");
+  const hasSpecialCharacter = new RegExp(".*[^A-Za-z0-9].*");
+
+  const passwordConstraints = z
+    .string()
+    .min(8, " ")
+    .max(32, " ")
+    .regex(hasUppercase, " ")
+    .regex(hasLowercase, " ")
+    .regex(hasNumber, " ")
+    .regex(hasSpecialCharacter, " ")
+    .trim();
+
+  const formSchema = z
+    .object({
+      password: passwordConstraints,
+      confirmPassword: z.string().min(1, "Re-enter your password"),
+      isUpToEight: z.boolean(),
+      isUppercase: z.boolean(),
+      isLowercase: z.boolean(),
+      isNumber: z.boolean(),
+      isSpecialCharacter: z.boolean(),
+      isNotMoreThan32: z.boolean(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+      isUpToEight: false,
+      isUppercase: false,
+      isLowercase: false,
+      isNumber: false,
+      isSpecialCharacter: false,
+      isNotMoreThan32: true,
+    },
+  });
+
+  const { handleSubmit, control, formState, watch, setValue } = form;
+
+  const passwordValue = watch("password");
+  const [disableSubmitForPassword, setDisableSubmitForPassword] =
+    useState(true);
+
+  useEffect(() => {
+    const upToEightCheck = passwordValue.length >= 8;
+    const uppercaseCheck = (passwordValue.match(hasUppercase)?.length || 0) > 0;
+    const lowercaseCheck = (passwordValue.match(hasLowercase)?.length || 0) > 0;
+    const numberCheck = (passwordValue.match(hasNumber)?.length || 0) > 0;
+    const specialCharacterCheck =
+      (passwordValue.match(hasSpecialCharacter)?.length || 0) > 0;
+    const notMoreThan32Check = passwordValue.length <= 32;
+
+    setDisableSubmitForPassword(() => {
+      if (
+        upToEightCheck &&
+        uppercaseCheck &&
+        lowercaseCheck &&
+        numberCheck &&
+        specialCharacterCheck &&
+        notMoreThan32Check
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    setValue("isUpToEight", upToEightCheck);
+    setValue("isUppercase", uppercaseCheck);
+    setValue("isLowercase", lowercaseCheck);
+    setValue("isNumber", numberCheck);
+    setValue("isSpecialCharacter", specialCharacterCheck);
+    setValue("isNotMoreThan32", notMoreThan32Check);
+  }, [passwordValue, setValue, disableSubmitForPassword]);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const response = await fetch(
+        `https://localhost:2020/api/reset-password/${token}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            password: values.password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.status === "OK") {
+        if (data?.message) ToastSuccess(data?.message);
+        await navigate({ to: returnTo, replace: true});
+      } else {
+        if (data?.message) ToastError(data?.message);
+      }
+    } catch (error) {
+      ToastError("Something went wrong. Try again later.");
+    }
+  };
+
+  return (
+    <div className="w-full mx-8 my-16 flex flex-col items-center">
+      <div className="mb-6">
+        <Link to="/">
+          <img src="/images/logo.svg" alt="" className="h-12 w-12" />
+        </Link>
+      </div>
+      <div className="mb-6 text-center">
+        <h1 className="font-medium text-xl">Reset password</h1>
+      </div>
+      <div className="w-full">
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-4">
+              <FormField
+                control={control}
+                name="password"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <div>
+                          <FloatingLabelPassword
+                            label="New password"
+                            isDisabled={formState.isSubmitting}
+                            {...field}
+                            disabled={formState.isSubmitting}
+                          />
+                          <p className="text-[13px] text-center text-destructive">
+                            {formState.errors.password?.message}
+                          </p>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
+
+              {!disableSubmitForPassword ? (
+                ""
+              ) : (
+                <div className="flex flex-col gap-1">
+                  <div className="mb-1">
+                    <p className="text-sm">
+                      Your password must meet the following requirements:
+                    </p>
+                  </div>
+
+                  <FormField
+                    control={control}
+                    name="isUpToEight"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has at least eight characters
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isUppercase"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has an upper-case letter
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isLowercase"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has a lower-case character
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isNumber"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has a number
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isSpecialCharacter"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has a special character
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="isNotMoreThan32"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <div className="group flex gap-2">
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={true}
+                                className="bg-background hover:bg-card/50 dark:hover:bg-card border-2 border-border/40 dark:border-muted-foreground/30 data-[state=checked]:border-primary dark:data-[state=checked]:border-primary disabled:opacity-100 cursor-pointer"
+                              />
+                              <Label className="group-has-disabled:opacity-100!">
+                                Has not more than 32 characters
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+              )}
+
+              <FormField
+                control={control}
+                name="confirmPassword"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <div>
+                          <FloatingLabelPassword
+                            label="Confirm new password"
+                            isDisabled={formState.isSubmitting}
+                            {...field}
+                            disabled={formState.isSubmitting}
+                          />
+                          <p className="text-[13px] text-center text-destructive">
+                            {formState.errors.confirmPassword?.message}
+                          </p>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
+            </div>
+            <Button
+              variant="secondary-full"
+              disabled={formState.isSubmitting || disableSubmitForPassword}
+              className="mt-4 py-5"
+            >
+              {formState.isSubmitting ? (
+                <span className="flex justify-center items-center gap-1">
+                  <Spinner />
+                  Resetting password
+                </span>
+              ) : (
+                "Reset password"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </div>
+  );
 }

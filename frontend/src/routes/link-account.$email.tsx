@@ -21,9 +21,9 @@ import { redirectSearchSchema } from "./sign-in";
 export const Route = createFileRoute("/link-account/$email")({
   component: RouteComponent,
   validateSearch: (search) => redirectSearchSchema.parse(search),
-		beforeLoad: ({context: {user}, search}) => {
-			if(user?.email) throw redirect({to: search.returnTo || "/",})
-		},
+  beforeLoad: ({ context: { user }, search }) => {
+    if (user?.email) throw redirect({ to: search.returnTo || "/" });
+  },
 });
 
 function RouteComponent() {
@@ -67,7 +67,7 @@ function RouteComponent() {
       const data = await response.json();
       if (data.status === "OK") {
         if (data?.message) ToastSuccess(data?.message);
-        await navigate({ to: returnTo, replace: true });
+        await navigate({ to: returnTo, replace: true});
       } else {
         if (data?.message) ToastError(data?.message);
       }
@@ -129,11 +129,11 @@ function RouteComponent() {
           </form>
         </Form>
       </div>
-			<LinkHelper
+      <LinkHelper
         label="Forgot password?"
         to="/forgot-password"
         bottom="bottom-2.5"
-				className="w-fit mb-2"
+        className="w-fit mb-2"
         icon={
           <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
         }
@@ -141,7 +141,7 @@ function RouteComponent() {
       <LinkHelper
         label="Return to sign in"
         to="/sign-in"
-				search={{returnTo}}
+        search={{ returnTo }}
         bottom="bottom-2.5"
         icon={
           <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />

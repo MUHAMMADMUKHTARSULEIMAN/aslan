@@ -24,11 +24,12 @@ export const redirectSearchSchema = z.object({
 });
 
 export const Route = createFileRoute("/sign-in")({
-	component: RouteComponent,
+  component: RouteComponent,
   validateSearch: (search) => redirectSearchSchema.parse(search),
-	beforeLoad: ({context: {user}, search}) => {
-		if(user?.email) throw redirect({to: search.returnTo || "/",})
-	},
+  beforeLoad: ({ context: { user }, search }) => {
+		console.log("sign in user:", user)
+    if (user?.email) throw redirect({ to: search.returnTo || "/" });
+  },
 });
 
 function RouteComponent() {
@@ -72,7 +73,7 @@ function RouteComponent() {
 
       const data = await response.json();
       if (data.status === "OK") {
-        await navigate({ to: returnTo, replace: true });
+        await navigate({ to: returnTo, replace: true});
       } else {
         if (data?.message) ToastError(data?.message);
       }
@@ -172,15 +173,15 @@ function RouteComponent() {
             </Button>
           </form>
         </Form>
-				<LinkHelper
-        label="Forgot password?"
-        to="/forgot-password"
-        bottom="bottom-2.5"
-				className="w-fit mt-1"
-        icon={
-          <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
-        }
-      />
+        <LinkHelper
+          label="Forgot password?"
+          to="/forgot-password"
+          bottom="bottom-2.5"
+          className="w-fit mt-1"
+          icon={
+            <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
+          }
+        />
       </div>
       <div className="">
         <p className="text-sm">
