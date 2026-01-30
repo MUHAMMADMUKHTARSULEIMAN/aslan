@@ -1,5 +1,9 @@
-import type { NextFunction, Request, Response } from "express";
-import axios from "axios";
+import {
+  response,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import { format, subDays } from "date-fns";
 import asyncErrorHandler from "../utils/async-error-handler";
 import Processor from "../utils/processor";
@@ -7,7 +11,6 @@ import Feeds from "../models/feed-model";
 import CustomError from "../utils/custom-error";
 import Discoveries from "../models/discovery-model";
 import Users from "../models/user-model";
-import config from "../config/config";
 import textSpacifier from "../utils/text-spacifier";
 
 interface Discovery {
@@ -31,37 +34,35 @@ export const createFeeds = asyncErrorHandler(
       const error = new CustomError(404, "No feed was found");
       return next(error);
     }
-    let BingIotD = null;
+    let bingIotD = null;
     const date = format(subDays(new Date(), 1), "yyyy-MM-dd");
     let k = 0;
+
     for (let i = 0; i < feeds.length; i++) {
       const name = feeds[i].name;
       const url = feeds[i].url;
       const categories = feeds[i].categories;
-      console.log(i, name);
+      // console.log(i, name);
+
       const feed = await processor.fetchFeed(url);
       if (feed) {
         if (feed.items.length > 0) {
           for (let j = 0; j < feed.items.length; j++) {
             const item = feed.items[j];
-            if (typeof item.link === "string") {
+            const itemURL = item.link;
+            if (typeof itemURL === "string") {
               k++;
-              console.log(k, item.link);
-              if (
-                item.link ===
-                "https://www.theverge.com/tech/858910/linux-diary-gaming-desktop"
-              )
-                continue;
+              // console.log(k, itemURL);
 
               const existingDiscovery = await Discoveries.findOne({
-                url: item.link,
+                url: itemURL,
                 dateCreated: date,
               });
               if (existingDiscovery) continue;
 
-              const HTML = await processor.fetchHTML(item.link);
+              const HTML = await processor.fetchHTML(itemURL);
               if (HTML) {
-                const metadata = processor.findMetadata(HTML, item.link, 200);
+                const metadata = processor.findMetadata(HTML, itemURL, 200);
 
                 const title = item.title || metadata.title;
                 if (!title) continue;
@@ -82,21 +83,32 @@ export const createFeeds = asyncErrorHandler(
                   image = item.enclosure.url;
                 } else if (item.itunesImage) {
                   image = item.itunesImage.$.href;
+                }
+
+                if (
+                  image &&
+                  !(image.startsWith("https://") || image.startsWith("http://"))
+                ) {
+                  const parsedURL = new URL(itemURL);
+                  if (image.startsWith("/"))
+                    image = `${parsedURL.origin}${image}`;
+                  else image = `${parsedURL.origin}/${image}`;
                 } else if (metadata.thumbnail !== null) {
                   image = metadata.thumbnail;
                 } else {
-                  if (!BingIotD) {
-                    const fetchBingIotD = await axios(
+                  if (!bingIotD) {
+                    const bingResponse = await fetch(
                       "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US"
                     );
-                    const imageURLEnd = fetchBingIotD.data.images[0].url;
-                    BingIotD = `https://www.bing.com${imageURLEnd}`;
+                    const fetchBingIotD = await bingResponse.json();
+                    const imageURLEnd = fetchBingIotD.images[0].url;
+                    bingIotD = `https://www.bing.com${imageURLEnd}`;
                   }
-                  image = BingIotD;
+                  image = bingIotD;
                 }
 
                 const siteName =
-                  metadata.siteName || processor.getHostname(item.link);
+                  metadata.siteName || processor.getHostname(itemURL);
 
                 const publishedTime =
                   metadata.publishedTime ||
@@ -107,7 +119,7 @@ export const createFeeds = asyncErrorHandler(
                 const author = metadata.author || item.creator || null;
 
                 const discovery: Discovery = {
-                  url: item.link,
+                  url: itemURL,
                   title,
                   image,
                   excerpt,
@@ -146,7 +158,7 @@ export const createFeeds = asyncErrorHandler(
 
 export const getHomeFeed = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-		const {email} = req.params
+    const { email } = req.params;
 
     const categories = [
       "Business",
@@ -199,7 +211,7 @@ export const getHomeFeed = asyncErrorHandler(
     const recentsAggregate = await Users.aggregate([
       {
         $match: {
-          email
+          email,
         },
       },
       { $unwind: "$saves" },
@@ -259,28 +271,31 @@ export const getHomeFeed = asyncErrorHandler(
 export const getFeedNames = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const params = req.params;
-		const category = textSpacifier(params.category)
-		console.log(category)
+    const category = textSpacifier(params.category);
+    console.log(category);
 
-    const feedNamesAggregate = await Discoveries.aggregate([
-      {
-        $match: {
-          categories: category,
+    const feedNamesAggregate = await Discoveries.aggregate(
+      [
+        {
+          $match: {
+            categories: category,
+          },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          feedNames: { $addToSet: "$feedName" },
+        {
+          $group: {
+            _id: null,
+            feedNames: { $addToSet: "$feedName" },
+          },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          feedNames: 1,
+        {
+          $project: {
+            _id: 0,
+            feedNames: 1,
+          },
         },
-      },
-    ], {collation:{locale: "en", strength: 1}});
+      ],
+      { collation: { locale: "en", strength: 1 } }
+    );
 
     const feedNames =
       feedNamesAggregate.length > 0 ? feedNamesAggregate[0]?.feedNames : null;
@@ -297,46 +312,52 @@ export const getFeedNames = asyncErrorHandler(
 export const getDiscoveries = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const params = req.params;
-		const category = textSpacifier(params.category)
-		const feed = textSpacifier(params.feed)
+    const category = textSpacifier(params.category);
+    const feed = textSpacifier(params.feed);
 
-    const discoveriesAggregate = await Discoveries.aggregate([
-      {
-        $match: {
-					categories: category,
-          feedName: feed,
+    const discoveriesAggregate = await Discoveries.aggregate(
+      [
+        {
+          $match: {
+            categories: category,
+            feedName: feed,
+          },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          discoveries: {
-            $push: {
-              _id: "$_id",
-              url: "$url",
-              title: "$title",
-              image: "$image",
-              excerpt: "$excerpt",
-              siteName: "$feedName",
+        {
+          $group: {
+            _id: null,
+            discoveries: {
+              $push: {
+                _id: "$_id",
+                url: "$url",
+                title: "$title",
+                image: "$image",
+                excerpt: "$excerpt",
+                siteName: "$feedName",
+              },
             },
           },
         },
+        {
+          $project: {
+            _id: 0,
+            discoveries: 1,
+          },
+        },
+      ],
+      { collation: { locale: "en", strength: 1 } }
+    );
+
+    const discoveries =
+      discoveriesAggregate.length > 0
+        ? discoveriesAggregate[0].discoveries
+        : null;
+
+    res.status(200).json({
+      status: "OK",
+      data: {
+        discoveries,
       },
-			{
-				$project: {
-					_id: 0,
-					discoveries: 1
-				}
-			}
-    ], {collation:{locale: "en", strength: 1}});
-
-		const discoveries = discoveriesAggregate.length > 0 ? discoveriesAggregate[0].discoveries : null
-
-		res.status(200).json({
-			status: "OK",
-			data: {
-				discoveries
-			}
-		})
+    });
   }
 );

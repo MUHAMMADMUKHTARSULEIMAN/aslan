@@ -308,17 +308,16 @@ class Processor {
     $("body > article").each((_, el) => {
       articleLength += $(el).text().length;
     });
+    if (articleLength !== 0) return articleLength;
+
     $("body > div").each((_, el) => {
       divLength += $(el).text().length;
     });
-    const mainLength = $("main").text().length;
-    const bodyLength = $("body").text().length;
+    if (divLength !== 0) return divLength;
 
-    return articleLength !== 0
-      ? articleLength
-      : divLength !== 0
-      ? divLength
-      : mainLength || bodyLength || null;
+    const mainLength = $("main").text().length;
+    if (mainLength !== 0) return mainLength;
+    else return null;
   }
 
   public getHostname(url: string): string {
