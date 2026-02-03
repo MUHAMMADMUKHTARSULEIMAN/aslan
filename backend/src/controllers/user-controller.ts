@@ -94,7 +94,7 @@ export const googleAuthCallback = asyncErrorHandler(
     if (JWT || refresh) {
       return res.redirect(`${FRONTEND_BASE_URL}${returnTo}`);
     } else {
-      const user = req.user;
+      const user = await Users.findById(req.user?._id);
       if (!user) {
         return res.redirect(
           `${FRONTEND_BASE_URL}/sign-in?returnTo=${returnTo}`
@@ -135,13 +135,8 @@ export const linkAccount = asyncErrorHandler(
     }
 
     const user = await Users.findOne({ email }).select("+password");
-    if (!user) {
+    if (!user || !(await user.comparePasswords(password))) {
       const error = new CustomError(400, "Invalid credentials.");
-      return next(error);
-    }
-
-    if (!(await user.comparePasswords(password))) {
-      const error = new CustomError(400, "Incorrect password.");
       return next(error);
     }
 
@@ -395,13 +390,16 @@ export const refreshAccessToken = asyncErrorHandler(
 
 export const protectRoutes = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-		const email = req.query.email as string
+    const returnTo = (req.query.returnTo as string) || "/";
+    const email = req.query.email;
 
-    const user = await Users.findOne({email});
-    if (!user) {
-      return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
+    if (!email) {
+      return res.redirect(`${FRONTEND_BASE_URL}/sign-in?returnTo=${returnTo}`);
     } else {
-      req.user = user;
+      const user = await Users.findOne({ email });
+      if (user) {
+        req.user = user;
+      }
       next();
     }
   }
@@ -489,7 +487,7 @@ export const resetPassword = asyncErrorHandler(
         const user = await Users.findOne({
           resetToken,
           resetTokenExpiry: { $gt: Date.now() },
-        });
+        }).select("+password");
         if (!user) {
           const error = new CustomError(
             400,
@@ -497,16 +495,19 @@ export const resetPassword = asyncErrorHandler(
           );
           return next(error);
         } else {
-          const updatedUser = await user.updateOne({ password });
-          if (!updatedUser) {
+          if (await user.comparePasswords(password)) {
             const error = new CustomError(
-              500,
-              "Unable to update password. Try again later."
+              400,
+              "New password cannot be the same as previous password. Change password and try again."
             );
             return next(error);
           }
 
-          const message = `Your Sanctum password has been successfully reset and all previously signed in users have been signed out. You have also been signed into your new device.`;
+          user.password = password;
+          await user.save();
+          user.password = undefined;
+
+          const message = `Your Sanctum password has been successfully reset and all previously signed in users have been signed out. You have also been signed in to your new device.`;
           const subject = "Sanctum: Password Reset";
           const responseMessage =
             "Your Sanctum password has been successfully reset and you have been signed in.";
