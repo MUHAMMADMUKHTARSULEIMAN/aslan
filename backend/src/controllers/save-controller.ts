@@ -46,6 +46,7 @@ export const getSaves = asyncErrorHandler(
           ],
         },
       },
+			{$unwind: "$saves.save"},
       {
         $group: {
           _id: null,
@@ -241,8 +242,8 @@ export const getArchives = asyncErrorHandler(
       },
       { $unwind: "$saves" },
       {
-        $match: {
-          "saves.archived": true,
+				$match: {
+					"saves.archived": true,
         },
       },
       {
@@ -252,7 +253,7 @@ export const getArchives = asyncErrorHandler(
           foreignField: "_id",
           as: "saves.save",
           pipeline: [
-            {
+						{
               $project: {
                 url: 1,
                 title: 1,
@@ -264,9 +265,10 @@ export const getArchives = asyncErrorHandler(
           ],
         },
       },
+			{ $unwind: "$saves.save" },
       {
         $group: {
-          _id: null,
+					_id: null,
           archives: { $push: "$saves.save" },
         },
       },
@@ -304,8 +306,8 @@ export const getFavourites = asyncErrorHandler(
       },
       { $unwind: "$saves" },
       {
-        $match: {
-          "saves.favourite": true,
+				$match: {
+					"saves.favourite": true,
           "saves.archived": false,
         },
       },
@@ -328,6 +330,7 @@ export const getFavourites = asyncErrorHandler(
           ],
         },
       },
+			{ $unwind: "$saves.save" },
       {
         $group: {
           _id: null,
