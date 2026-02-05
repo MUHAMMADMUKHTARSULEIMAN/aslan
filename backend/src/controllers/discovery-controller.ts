@@ -30,10 +30,12 @@ export const createFeeds = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const processor = new Processor();
     const feeds = await Feeds.find();
+
     if (feeds.length === 0) {
       const error = new CustomError(404, "No feed was found");
       return next(error);
     }
+
     let bingIotD = null;
     const date = format(subDays(new Date(), 1), "yyyy-MM-dd");
     let k = 0;
@@ -216,8 +218,8 @@ export const getHomeFeed = asyncErrorHandler(
       },
       { $unwind: "$saves" },
       {
-        $match: {
-          "saves.archived": false,
+				$match: {
+					"saves.archived": false,
         },
       },
       { $sort: { "saves.createdAt": -1 } },
@@ -241,6 +243,7 @@ export const getHomeFeed = asyncErrorHandler(
           ],
         },
       },
+			{ $unwind: "$saves.save" },
       {
         $group: {
           _id: null,

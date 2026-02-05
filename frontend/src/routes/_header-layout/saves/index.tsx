@@ -58,17 +58,16 @@ function RouteComponent() {
   const returnTo = location.pathname;
 
   const { data } = useSuspenseQuery(postsQueryOptions(email, returnTo));
-  // const saves: Save[][] = data?.data?.saves;
+  const saves: Save[] = data?.data?.saves;
   console.log("data:", data);
 
   return (
     <section>
       <div className="flex flex-col gap-4 w-full">
-				<h1>Welcome</h1>
-        {/* {saves && saves.length === 0
-          ? ""
+        {saves && saves.length === 0
+          ? <h1 className="text-2xl font-semibold text-center">You currently do not have any article saved.</h1>
           : saves.map((save) => {
-              const { _id, image, length, siteName, title, url } = save[0];
+              const { _id, image, length, siteName, title, url } = save;
               return (
                 <SaveCard
                   key={title}
@@ -80,7 +79,7 @@ function RouteComponent() {
                   url={url}
                 />
               );
-            })} */}
+            })}
       </div>
     </section>
   );

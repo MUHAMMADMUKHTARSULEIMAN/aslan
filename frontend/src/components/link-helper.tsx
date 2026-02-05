@@ -20,6 +20,7 @@ const LinkHelper = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
         ref={ref}
       >
         <Link
+				// @ts-expect-error
           to={to}
           search={search}
           className={cn(

@@ -39,7 +39,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
               </Link>
             </div>
             <div className="flex gap-1 items-center">
-              {user !== undefined && user?.email ? (
+              {user === undefined || user?.email ? (
                 ""
               ) : (
                 <Button variant="secondary" className="px-3">
