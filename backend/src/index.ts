@@ -20,6 +20,7 @@ import helmet from "helmet";
 import {
   getCSRFToken,
   getUser,
+  protectRoutes,
   refreshAccessToken,
 } from "./controllers/user-controller";
 import compression from "compression";
@@ -77,12 +78,14 @@ app.use(
   })
 );
 app.options("{/*path}", cors());
+
 app.use(compression());
 app.use(helmet());
 app.use(hpp());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(COOKIE_SECRET));
+
 app.use(
   session({
     secret: SESSION_SECRET,
@@ -99,6 +102,7 @@ app.use(
     }),
   })
 );
+
 initializeGooglePassport();
 
 app.use("/api", userRouter);
@@ -112,10 +116,10 @@ app.get("/api/get-user", getUser);
 app.use("/api", discoveryRouter);
 app.use("/api", feedRouter);
 
-app.use("/api/saves", saveRouter);
-app.use("/api/tags", tagRouter);
-app.use("/api/highlights", highlightRouter);
-app.use("/api/collections", collectionRouter);
+app.use("/api/saves", protectRoutes, saveRouter);
+app.use("/api/tags", protectRoutes, tagRouter);
+app.use("/api/highlights", protectRoutes, highlightRouter);
+app.use("/api/collections", protectRoutes, collectionRouter);
 
 app.all("{/*path}", (req: Request, res: Response, next: NextFunction) => {
   const error = new CustomError(
