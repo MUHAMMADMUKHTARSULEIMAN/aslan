@@ -15,6 +15,13 @@ export const getSaves = asyncErrorHandler(
     if (!userId) {
       return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
+
+    // @ts-expect-error
+    const sort: 1 | -1 = parseInt(req.query.sort as "1" | "-1");
+    const page = parseInt(req.query.page as string);
+    const limit = parseInt(req.query.limit as string);
+    const skip = (page - 1) * limit;
+
     const savesAggregate = await Users.aggregate([
       {
         $match: {
@@ -27,6 +34,9 @@ export const getSaves = asyncErrorHandler(
           "saves.archived": false,
         },
       },
+      { $sort: { "saves.createdAt": sort } },
+      { $skip: skip },
+      { $limit: limit },
       {
         $lookup: {
           from: "saves",
@@ -46,7 +56,7 @@ export const getSaves = asyncErrorHandler(
           ],
         },
       },
-			{$unwind: "$saves.save"},
+      { $unwind: "$saves.save" },
       {
         $group: {
           _id: null,
@@ -234,6 +244,13 @@ export const getArchives = asyncErrorHandler(
     if (!userId) {
       return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
+
+    // @ts-expect-error
+    const sort: 1 | -1 = parseInt(req.query.sort as "1" | "-1");
+    const page = parseInt(req.query.page as string);
+    const limit = parseInt(req.query.limit as string);
+    const skip = (page - 1) * limit;
+
     const archivesAggregate = await Users.aggregate([
       {
         $match: {
@@ -242,10 +259,13 @@ export const getArchives = asyncErrorHandler(
       },
       { $unwind: "$saves" },
       {
-				$match: {
-					"saves.archived": true,
+        $match: {
+          "saves.archived": true,
         },
       },
+      { $sort: { "saves.createdAt": sort } },
+      { $skip: skip },
+      { $limit: limit },
       {
         $lookup: {
           from: "saves",
@@ -253,7 +273,7 @@ export const getArchives = asyncErrorHandler(
           foreignField: "_id",
           as: "saves.save",
           pipeline: [
-						{
+            {
               $project: {
                 url: 1,
                 title: 1,
@@ -265,10 +285,10 @@ export const getArchives = asyncErrorHandler(
           ],
         },
       },
-			{ $unwind: "$saves.save" },
+      { $unwind: "$saves.save" },
       {
         $group: {
-					_id: null,
+          _id: null,
           archives: { $push: "$saves.save" },
         },
       },
@@ -298,6 +318,13 @@ export const getFavourites = asyncErrorHandler(
     if (!userId) {
       return res.redirect(`${FRONTEND_BASE_URL}/sign-in`);
     }
+
+    // @ts-expect-error
+    const sort: 1 | -1 = parseInt(req.query.sort as "1" | "-1");
+    const page = parseInt(req.query.page as string);
+    const limit = parseInt(req.query.limit as string);
+    const skip = (page - 1) * limit;
+
     const favouritesAggregate = await Users.aggregate([
       {
         $match: {
@@ -306,11 +333,14 @@ export const getFavourites = asyncErrorHandler(
       },
       { $unwind: "$saves" },
       {
-				$match: {
-					"saves.favourite": true,
+        $match: {
+          "saves.favourite": true,
           "saves.archived": false,
         },
       },
+      { $sort: { "saves.createdAt": sort } },
+      { $skip: skip },
+      { $limit: limit },
       {
         $lookup: {
           from: "saves",
@@ -330,7 +360,7 @@ export const getFavourites = asyncErrorHandler(
           ],
         },
       },
-			{ $unwind: "$saves.save" },
+      { $unwind: "$saves.save" },
       {
         $group: {
           _id: null,
@@ -409,18 +439,14 @@ export const addSave = asyncErrorHandler(
       if (!reqHTML) {
         html = await processor.fetchHTML(url);
       }
-			const metadata = processor.findMetadata(reqHTML || html || "", url, 200)
-      const title =
-        metadata.title||
-        processor.getHostname(url);
+      const metadata = processor.findMetadata(reqHTML || html || "", url, 200);
+      const title = metadata.title || processor.getHostname(url);
       const image = metadata.thumbnail;
-      const siteName =
-        metadata.siteName ||
-        processor.getHostname(url);
-      const length = metadata.length
-      const description = metadata.description
-      const publishedTime = metadata.publishedTime
-      const author = metadata.author
+      const siteName = metadata.siteName || processor.getHostname(url);
+      const length = metadata.length;
+      const description = metadata.description;
+      const publishedTime = metadata.publishedTime;
+      const author = metadata.author;
 
       const packet = {
         url,
@@ -508,7 +534,8 @@ export const updateSaves = asyncErrorHandler(
     }
 
     if (updates.matchedCount !== updates.modifiedCount) {
-      const error = new CustomError(404, "Not all articles were updated.");
+      const error = new CustomError(404, "Not all articles were updated. Try again later.");
+			return next(error)
     }
 
     return res.status(200).json({
