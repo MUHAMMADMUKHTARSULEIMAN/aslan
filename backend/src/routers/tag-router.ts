@@ -12,7 +12,7 @@ export const router = express.Router();
 
 router.route("/").get(getAllTags);
 
-router.route("/:tagName").get(getAllSavesWithSpecificTag);
+router.route("/tag/:tagName").get(getAllSavesWithSpecificTag);
 
 router.route("/add-tags").patch(addTagstoSaves);
 

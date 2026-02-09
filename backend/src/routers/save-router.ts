@@ -14,11 +14,11 @@ export const router = express.Router();
 
 router.route("/").get(getSaves);
 
-router.route("/:saveId").get(getSave);
+router.route("/save/:saveId").get(getSave);
 
 router.route("/search").get(searchSaves);
 
-router.route("/archived").get(getArchives);
+router.route("/archives").get(getArchives);
 
 router.route("/favourites").get(getFavourites);
 

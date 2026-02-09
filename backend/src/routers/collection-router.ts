@@ -12,7 +12,7 @@ export const router = express.Router();
 
 router.route("/").get(getAllCollections);
 
-router.route("/:collectionName").get(getAllSavesInACollection);
+router.route("/collection/:collectionName").get(getAllSavesInACollection);
 
 router.route("/create-collection").post(createCollection);
 
