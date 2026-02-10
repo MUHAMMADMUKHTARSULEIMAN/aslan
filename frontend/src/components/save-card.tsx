@@ -22,6 +22,7 @@ interface DefaultComponentProps
 const SaveCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
   ({ _id, image, length, siteName, title, url }, ref) => {
 		title = textTrimmer(title, true, 50)
+		siteName = textTrimmer(siteName, false, 30)
     const [open, setOpen] = useState(false);
     return (
       <div ref={ref}>
@@ -34,14 +35,14 @@ const SaveCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
                 alt=""
               />
               <div className="aspect-15/8">
-                <h3 className="font-semibold text-sm">
+                <h3 className="font-medium text-sm">
                   {title}
                 </h3>
               </div>
             </div>
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
-                <h3 className="font-semibold text-muted-foreground text-sm">
+                <h3 className="font-medium text-muted-foreground text-sm">
                   {siteName}
                 </h3>
                 <h3 className="text-muted-foreground text-sm">{Math.round(length/(250 * 10))} min</h3>
