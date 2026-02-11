@@ -1,11 +1,8 @@
 import SaveCard from "@/components/save-card";
-import {
-  queryOptions,
-  useInfiniteQuery,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   createFileRoute,
+  Link,
   redirect,
   useRouterState,
 } from "@tanstack/react-router";
@@ -13,7 +10,7 @@ import type { Save } from "..";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
-const fetchPosts = async (
+const fetchSaves = async (
   email: string | null,
   returnTo: string,
   sort: "1" | "-1",
@@ -74,9 +71,10 @@ function RouteComponent() {
   } = useInfiniteQuery({
     queryKey: ["saves"],
     queryFn: ({ pageParam }) =>
-      fetchPosts(email, returnTo, "-1", pageParam, "20"),
+      fetchSaves(email, returnTo, "-1", pageParam, "20"),
     initialPageParam: 1,
     getNextPageParam: (currentPage) => currentPage.nextPage,
+		staleTime: Infinity
   });
 
   useEffect(() => {
@@ -104,17 +102,20 @@ function RouteComponent() {
     page.data.data?.saves.forEach((save: Save) => saves.push(save));
   });
 
-  console.log("saves:", saves);
-
   return (
     <section>
-      <div className="flex flex-col gap-4 w-full">
-        {saves && saves.length === 0 ? (
-          <h1 className="text-2xl font-semibold text-center">
+      {saves && saves.length === 0 ? (
+        <div>
+          <h1 className="text-2xl font-medium text-center mb-6">
             You currently do not have any article saved.
           </h1>
-        ) : (
-          saves.map((save) => {
+					<Link to="/feeds">
+          <Button variant="secondary-full">Discover new articles</Button>
+					</Link>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4 w-full">
+          {saves.map((save) => {
             const { _id, image, length, siteName, title, url } = save;
             return (
               <SaveCard
@@ -127,15 +128,17 @@ function RouteComponent() {
                 url={url}
               />
             );
-          })
-        )}
-      </div>
-      <div ref={sentinelRef} className="py-10 flex justify-center items-center">
+          })}
+        </div>
+      )}
+      <div ref={sentinelRef} className="flex justify-center items-center">
         {isFetchingNextPage ? (
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+					<div className="py-6">
+						<div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+					</div>
         ) : isFetchNextPageError ? (
-          <div className="flex flex-col gap-6">
-            <p>Unable to load more article. Please try again.</p>
+          <div className="flex flex-col gap-6 py-6">
+            <p>Unable to load more articles. Please try again.</p>
             <Button variant="secondary" onClick={() => fetchNextPage}>
               Try again
             </Button>
