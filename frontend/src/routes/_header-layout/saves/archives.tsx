@@ -33,7 +33,6 @@ export const fetchArchive = async (
 
   const data = await response.json();
 
-	console.log("data from function:", data)
   return {
     data,
     nextPage:
@@ -98,8 +97,6 @@ function RouteComponent() {
     return <div className="p-4 text-red-500">Error loading data</div>;
 
   const archives: Save[] = [];
-
-	console.log("data;", data)
 
   data.pages.forEach((page) => {
     page.data.data?.archives.forEach((archive: Save) => archives.push(archive));

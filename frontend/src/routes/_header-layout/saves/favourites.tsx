@@ -101,7 +101,6 @@ function RouteComponent() {
   data.pages.forEach((page) => {
     page.data.data?.favourites.forEach((favourite: Save) => favourites.push(favourite));
   });
-	console.log("data:", data)
 
   return (
     <section>
