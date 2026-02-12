@@ -27,7 +27,7 @@ import { Route as HeaderLayoutCollectionsRouteImport } from './routes/_header-la
 import { Route as HeaderLayoutSavesIndexRouteImport } from './routes/_header-layout/saves/index'
 import { Route as SignUpEmailTokenRouteImport } from './routes/sign-up.$email.$token'
 import { Route as HeaderLayoutSavesFavouritesRouteImport } from './routes/_header-layout/saves/favourites'
-import { Route as HeaderLayoutSavesArchiveRouteImport } from './routes/_header-layout/saves/archive'
+import { Route as HeaderLayoutSavesArchivesRouteImport } from './routes/_header-layout/saves/archives'
 import { Route as HeaderLayoutFeedsCategoryRouteImport } from './routes/_header-layout/feeds/$category'
 import { Route as HeaderLayoutFeedsCategoryFeedRouteImport } from './routes/_header-layout/feeds/$category/$feed'
 
@@ -121,10 +121,10 @@ const HeaderLayoutSavesFavouritesRoute =
     path: '/favourites',
     getParentRoute: () => HeaderLayoutSavesRoute,
   } as any)
-const HeaderLayoutSavesArchiveRoute =
-  HeaderLayoutSavesArchiveRouteImport.update({
-    id: '/archive',
-    path: '/archive',
+const HeaderLayoutSavesArchivesRoute =
+  HeaderLayoutSavesArchivesRouteImport.update({
+    id: '/archives',
+    path: '/archives',
     getParentRoute: () => HeaderLayoutSavesRoute,
   } as any)
 const HeaderLayoutFeedsCategoryRoute =
@@ -156,7 +156,7 @@ export interface FileRoutesByFullPath {
   '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/': typeof HeaderLayoutIndexRoute
   '/feeds/$category': typeof HeaderLayoutFeedsCategoryRouteWithChildren
-  '/saves/archive': typeof HeaderLayoutSavesArchiveRoute
+  '/saves/archives': typeof HeaderLayoutSavesArchivesRoute
   '/saves/favourites': typeof HeaderLayoutSavesFavouritesRoute
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
   '/saves/': typeof HeaderLayoutSavesIndexRoute
@@ -177,7 +177,7 @@ export interface FileRoutesByTo {
   '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/': typeof HeaderLayoutIndexRoute
   '/feeds/$category': typeof HeaderLayoutFeedsCategoryRouteWithChildren
-  '/saves/archive': typeof HeaderLayoutSavesArchiveRoute
+  '/saves/archives': typeof HeaderLayoutSavesArchivesRoute
   '/saves/favourites': typeof HeaderLayoutSavesFavouritesRoute
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
   '/saves': typeof HeaderLayoutSavesIndexRoute
@@ -201,7 +201,7 @@ export interface FileRoutesById {
   '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/_header-layout/': typeof HeaderLayoutIndexRoute
   '/_header-layout/feeds/$category': typeof HeaderLayoutFeedsCategoryRouteWithChildren
-  '/_header-layout/saves/archive': typeof HeaderLayoutSavesArchiveRoute
+  '/_header-layout/saves/archives': typeof HeaderLayoutSavesArchivesRoute
   '/_header-layout/saves/favourites': typeof HeaderLayoutSavesFavouritesRoute
   '/sign-up/$email/$token': typeof SignUpEmailTokenRoute
   '/_header-layout/saves/': typeof HeaderLayoutSavesIndexRoute
@@ -225,7 +225,7 @@ export interface FileRouteTypes {
     | '/reset-password/$token'
     | '/'
     | '/feeds/$category'
-    | '/saves/archive'
+    | '/saves/archives'
     | '/saves/favourites'
     | '/sign-up/$email/$token'
     | '/saves/'
@@ -246,7 +246,7 @@ export interface FileRouteTypes {
     | '/reset-password/$token'
     | '/'
     | '/feeds/$category'
-    | '/saves/archive'
+    | '/saves/archives'
     | '/saves/favourites'
     | '/sign-up/$email/$token'
     | '/saves'
@@ -269,7 +269,7 @@ export interface FileRouteTypes {
     | '/reset-password/$token'
     | '/_header-layout/'
     | '/_header-layout/feeds/$category'
-    | '/_header-layout/saves/archive'
+    | '/_header-layout/saves/archives'
     | '/_header-layout/saves/favourites'
     | '/sign-up/$email/$token'
     | '/_header-layout/saves/'
@@ -415,11 +415,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HeaderLayoutSavesFavouritesRouteImport
       parentRoute: typeof HeaderLayoutSavesRoute
     }
-    '/_header-layout/saves/archive': {
-      id: '/_header-layout/saves/archive'
-      path: '/archive'
-      fullPath: '/saves/archive'
-      preLoaderRoute: typeof HeaderLayoutSavesArchiveRouteImport
+    '/_header-layout/saves/archives': {
+      id: '/_header-layout/saves/archives'
+      path: '/archives'
+      fullPath: '/saves/archives'
+      preLoaderRoute: typeof HeaderLayoutSavesArchivesRouteImport
       parentRoute: typeof HeaderLayoutSavesRoute
     }
     '/_header-layout/feeds/$category': {
@@ -465,13 +465,13 @@ const HeaderLayoutFeedsRouteWithChildren =
   HeaderLayoutFeedsRoute._addFileChildren(HeaderLayoutFeedsRouteChildren)
 
 interface HeaderLayoutSavesRouteChildren {
-  HeaderLayoutSavesArchiveRoute: typeof HeaderLayoutSavesArchiveRoute
+  HeaderLayoutSavesArchivesRoute: typeof HeaderLayoutSavesArchivesRoute
   HeaderLayoutSavesFavouritesRoute: typeof HeaderLayoutSavesFavouritesRoute
   HeaderLayoutSavesIndexRoute: typeof HeaderLayoutSavesIndexRoute
 }
 
 const HeaderLayoutSavesRouteChildren: HeaderLayoutSavesRouteChildren = {
-  HeaderLayoutSavesArchiveRoute: HeaderLayoutSavesArchiveRoute,
+  HeaderLayoutSavesArchivesRoute: HeaderLayoutSavesArchivesRoute,
   HeaderLayoutSavesFavouritesRoute: HeaderLayoutSavesFavouritesRoute,
   HeaderLayoutSavesIndexRoute: HeaderLayoutSavesIndexRoute,
 }
