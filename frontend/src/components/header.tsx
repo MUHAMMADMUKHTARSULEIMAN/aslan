@@ -27,7 +27,7 @@ const Header = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
       >
         <div className="pl-4 pr-2 py-2">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="p-2 rounded-lg hover:bg-foreground/10">
               <Link to="/">
                 <img
                   src="/images/logo.svg"
