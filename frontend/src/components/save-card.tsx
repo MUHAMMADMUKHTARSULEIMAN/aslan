@@ -6,8 +6,10 @@ import {
   DropdownMenuItem,
   DropdownMenuContent,
 } from "./ui/dropdown-menu";
-import React, { useState } from "react";
+import React from "react";
 import { textTrimmer } from "@/lib/utils";
+import { useAtom } from "jotai";
+import { savesCardDropdownAtom } from "@/store/atoms";
 
 interface DefaultComponentProps
   extends React.HtmlHTMLAttributes<HTMLDivElement> {
@@ -23,7 +25,7 @@ const SaveCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
   ({ _id, image, length, siteName, title, url }, ref) => {
 		title = textTrimmer(title, true, 50)
 		siteName = textTrimmer(siteName, false, 30)
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useAtom(savesCardDropdownAtom);
     return (
       <div ref={ref}>
         <Card className="m-0 p-3 border-none">
