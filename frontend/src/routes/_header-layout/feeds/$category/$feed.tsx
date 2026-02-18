@@ -1,20 +1,24 @@
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  ampersandToAnd,
-  andToAmpersand,
-  textLowerCasifierAndHyphenator,
-  topics,
-} from "@/lib/utils";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { andToAmpersand, dummiesCreator } from "@/lib/utils";
+import { infiniteQueryOptions, useInfiniteQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import type { Discovery } from "../..";
 import ArticleCard from "@/components/article-card";
-import useScrollTracking from "@/hooks/use-scroll-tracking";
+import ArticleCardSkeleton from "@/components/article-card-skeleton";
+import QueryError from "@/components/query-error";
+import { useRef } from "react";
+import useInfiniteSentinel from "@/hooks/use-infinite-sentinel";
+import useIsFetchNextPageError from "@/hooks/use-is-fetch-next-page-error";
+import InfiniteLoader from "@/components/infinite-loader";
 
-const fetchDiscoveries = async (category: string, feed: string) => {
+const fetchDiscoveries = async (
+  category: string,
+  feed: string,
+  sort: "1" | "-1",
+  page: number = 1,
+  limit: string
+) => {
   const response = await fetch(
-    `https://localhost:2020/api/get-discoveries/${category}/${feed}`,
+    `https://localhost:2020/api/discoveries/get-discoveries/${category}/${feed}?sort=${sort}&page=${page.toString()}&limit=${limit}`,
     {
       method: "GET",
       credentials: "include",
@@ -27,13 +31,26 @@ const fetchDiscoveries = async (category: string, feed: string) => {
     throw new Error("Something went wrong. Try again later.");
   }
 
-  return await response.json();
+  const data = await response.json();
+  return {
+    data,
+    nextPage:
+      data?.data?.discoveries.length === parseInt(limit) ? page + 1 : undefined,
+  };
 };
 
-const discoveriesQueryOptions = (category: string, feed: string) =>
-  queryOptions({
+const infiniteDiscoveriesQueryOptions = (
+  category: string,
+  feed: string,
+  sort: "1" | "-1",
+  limit: string
+) =>
+  infiniteQueryOptions({
     queryKey: ["discoveries", feed],
-    queryFn: () => fetchDiscoveries(category, feed),
+    queryFn: ({ pageParam }) =>
+      fetchDiscoveries(category, feed, sort, pageParam, limit),
+    initialPageParam: 1,
+    getNextPageParam: (currentPage) => currentPage.nextPage,
     staleTime: Infinity,
   });
 
@@ -41,129 +58,107 @@ export const Route = createFileRoute("/_header-layout/feeds/$category/$feed")({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params }) => {
     const category = andToAmpersand(params.category);
-    await queryClient.ensureQueryData(
-      discoveriesQueryOptions(category, params.feed)
+    const feed = andToAmpersand(params.feed);
+    queryClient.ensureInfiniteQueryData(
+      infiniteDiscoveriesQueryOptions(category, feed, "-1", "20")
     );
   },
 });
 
 function RouteComponent() {
-  const { category, feed } = Route.useParams();
-  const newCategory = andToAmpersand(category);
+  let { category, feed } = Route.useParams();
+  category = andToAmpersand(category);
+  feed = andToAmpersand(feed);
 
-  const { feeds } = Route.useRouteContext();
-  const tabRef = useScrollTracking();
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  const discoveriesData = useSuspenseQuery(
-    discoveriesQueryOptions(newCategory, feed)
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    status,
+    refetch,
+    error,
+  } = useInfiniteQuery(
+    infiniteDiscoveriesQueryOptions(category, feed, "-1", "20")
   );
-  const discoveries: Discovery[] = discoveriesData?.data?.data?.discoveries;
+
+  const booly = useIsFetchNextPageError(isFetchNextPageError);
+
+  useInfiniteSentinel(
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    sentinelRef
+  );
+
+  const dummies = dummiesCreator(20);
+
+  if (status === "pending") {
+    return (
+      <div className="flex flex-col gap-4 mx-4 mt-22">
+        {dummies.map((dummy: number) => {
+          return <ArticleCardSkeleton key={dummy} />;
+        })}
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    if (error?.name === "AbortError") {
+      return (
+        <QueryError
+          refetch={refetch}
+          message="Your request timed out. Check your internet connection and try
+            again."
+          marginTop="mt-22"
+        />
+      );
+    } else {
+      return (
+        <QueryError
+          refetch={refetch}
+          message="Something went wrong. Check your internet connection and try again."
+          marginTop="mt-22"
+        />
+      );
+    }
+  }
+
+  const discoveries: Discovery[] = [];
+
+  data.pages.forEach((page) => {
+    page.data.data?.discoveries.forEach((discovery: Discovery) =>
+      discoveries.push(discovery)
+    );
+  });
 
   return (
-    <div>
-      <Tabs
-        key={newCategory}
-        defaultValue={newCategory}
-        className="w-full gap-0"
-      >
-        <div
-          ref={tabRef}
-          className="fixed top-0 translate-y-[53.33px] left-0 z-40 transition-transform duration-350 ease-in-out data-[visible=true]:translate-y-[53.33px] data-[visible=false]:translate-y-0"
-        >
-          <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
-            <TabsList ref={tabRef} className={``}>
-              {topics.map((topic: string) => {
-                const normalizedTopic = textLowerCasifierAndHyphenator(topic);
-                const redirectTopic = ampersandToAnd(normalizedTopic);
-                return (
-                  <Link
-                    key={topic}
-                    to="/feeds/$category"
-                    params={{ category: redirectTopic }}
-                    preloadDelay={750}
-                  >
-                    <TabsTrigger
-                      key={topic}
-                      value={normalizedTopic}
-                      className=""
-                    >
-                      {topic}
-                    </TabsTrigger>
-                  </Link>
-                );
-              })}
-            </TabsList>
-            <ScrollBar orientation="horizontal" className="" />
-          </ScrollArea>
-        </div>
-        {topics.map((topic: string) => {
-          const normalizedTopic = textLowerCasifierAndHyphenator(topic);
+    <section>
+      <div className="mt-22 mx-4 flex flex-col gap-4 mb-12">
+        {discoveries.map((discovery) => {
+          const { _id, image, siteName, title, url, excerpt } = discovery;
           return (
-            <TabsContent key={topic} value={normalizedTopic}>
-              <Tabs key={feed} defaultValue={feed} className="gap-0">
-                <div
-                  ref={tabRef}
-                  className="sticky top-[53.33px] translate-y-[33.5px] left-0 z-30 transition-transform duration-350 ease-in-out data-[visible=true]:translate-y-[33.5px] data-[visible=false]:-translate-y-[19.83px]"
-                >
-                  <ScrollArea className="w-screen whitespace-nowrap border-b-[1.5px] border-border">
-                    <TabsList className="">
-                      {feeds.map((feed: string) => {
-                        const normalizedFeed =
-                          textLowerCasifierAndHyphenator(feed);
-                        const redirectTopic = ampersandToAnd(normalizedTopic);
-                        return (
-                          <Link
-                            key={feed}
-                            to="/feeds/$category/$feed"
-                            params={{
-                              category: redirectTopic,
-                              feed: normalizedFeed,
-                            }}
-                            preloadDelay={750}
-                          >
-                            <TabsTrigger
-                              key={feed}
-                              value={normalizedFeed}
-                              className=""
-                            >
-                              {feed}
-                            </TabsTrigger>
-                          </Link>
-                        );
-                      })}
-                    </TabsList>
-                    <ScrollBar orientation="horizontal" className="" />
-                  </ScrollArea>
-                </div>
-                {feeds.map((feed: string) => {
-                  const normalizedFeed = textLowerCasifierAndHyphenator(feed);
-                  return (
-                    <TabsContent key={feed} value={normalizedFeed}>
-                      <div className="pt-[67px] mt-6 mx-4 flex flex-col gap-4 mb-12">
-                        {discoveries.map((discovery) => {
-                          const { _id, image, siteName, title, url, excerpt } =
-                            discovery;
-                          return (
-                            <ArticleCard
-                              key={_id}
-                              _id={_id}
-                              excerpt={excerpt}
-                              image={image}
-                              siteName={siteName}
-                              title={title}
-                              url={url}
-                            />
-                          );
-                        })}
-                      </div>
-                    </TabsContent>
-                  );
-                })}
-              </Tabs>
-            </TabsContent>
+            <ArticleCard
+              key={_id}
+              _id={_id}
+              excerpt={excerpt}
+              image={image}
+              siteName={siteName}
+              title={title}
+              url={url}
+            />
           );
         })}
-      </Tabs>
-    </div>
+      </div>
+      <InfiniteLoader
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        isFetchNextPageError={booly}
+        sentinelRef={sentinelRef}
+      />
+    </section>
   );
 }
