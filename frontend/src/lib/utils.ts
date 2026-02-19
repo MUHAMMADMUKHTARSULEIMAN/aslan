@@ -81,3 +81,16 @@ export const andToAmpersand = (text: string) => {
   text = textArray.join("-");
   return text;
 };
+
+export const dummiesCreator = (amount: number): number[] => {
+  const dummies: number[] = [];
+
+  for (let i = 0; i < amount; i++) {
+    dummies.push(i + 1);
+  }
+
+  return dummies;
+};
+
+export const delay = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
