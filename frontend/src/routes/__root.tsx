@@ -1,5 +1,5 @@
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { type QueryClient } from "@tanstack/react-query";
+import { queryOptions, type QueryClient } from "@tanstack/react-query";
 import ErrorComponent from "@/components/error-component";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/app-sidebar";
@@ -49,13 +49,24 @@ const fetchUser = async () => {
   return response.json();
 };
 
+const CSRFTokenQueryOptions = () => queryOptions({
+	queryKey: ["CSRF-token"],
+	queryFn: fetchCSRFToken,
+	staleTime: 0
+})
+const userQueryOptions = () => queryOptions({
+	queryKey: ["user"],
+	queryFn: fetchUser,
+	staleTime: 0
+})
+
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
   errorComponent: ErrorComponent,
-  beforeLoad: async () => {
+  beforeLoad: async ({context: {queryClient}}) => {
     try {
-      const CSRFTokenData = await fetchCSRFToken();
-      const userData = await fetchUser();
+      const CSRFTokenData = await queryClient.fetchQuery(CSRFTokenQueryOptions());
+      const userData = await queryClient.fetchQuery(userQueryOptions());
 
       const CSRFToken = CSRFTokenData?.data?.token
       const user = userData?.data?.user;
