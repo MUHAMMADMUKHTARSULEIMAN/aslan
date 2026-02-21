@@ -1,39 +1,42 @@
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "./ui/button";
 import { Link, RegisteredRouter } from "@tanstack/react-router";
-import React from "react";
+import { forwardRef } from "react";
 
 interface DefaultComponentProps
   extends React.HtmlHTMLAttributes<HTMLDivElement> {
   label: string;
-  to: keyof RegisteredRouter["routesByPath"];
-  icon?: React.ReactNode;
   bottom: string;
+  to: keyof RegisteredRouter["routesByPath"];
+  params?: {};
   search?: {};
+  icon?: React.ReactNode;
 }
 
-const LinkHelper = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
-  ({ className, icon: Icon, label, to, search, bottom }, ref) => {
+const LinkHelper = forwardRef<HTMLDivElement, DefaultComponentProps>(
+  ({ className, icon: Icon, label, to, params, search, bottom }, ref) => {
     return (
-      <div
-        className={cn("group p-0 m-0 flex gap-0 items-baseline")}
-        ref={ref}
-      >
+      <div ref={ref}>
         <Link
-				// @ts-expect-error
+          // @ts-expect-error
           to={to}
+					params={params}
           search={search}
           className={cn(
             buttonVariants({ variant: "link" }),
-            `relative p-0 m-0 ${className}`
+            `group relative p-0 m-0 w-full ${className}`
           )}
         >
-          {label}
-          <span
-            className={`absolute ${bottom} left-0 w-full h-[0.5px] bg-primary scale-x-0 transition-transform group-hover:scale-x-100`}
-          ></span>
+          <div className="w-full">
+            <div className="w-fit p-0 m-0 flex gap-0 items-baseline relative">
+                  <span>{label}</span>
+                  <span
+                    className={`absolute ${bottom} left-0 w-[calc(100%-4.9px)] h-[0.5px] bg-primary scale-x-0 transition-transform group-hover:scale-x-100`}
+                  ></span>
+                <span>{Icon}</span>
+            </div>
+          </div>
         </Link>
-        <span>{Icon}</span>
       </div>
     );
   }
