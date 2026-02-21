@@ -171,7 +171,7 @@ function RouteComponent() {
               label="Sign in"
               to="/sign-in"
               search={{ returnTo }}
-              bottom="bottom-2.5"
+              bottom="bottom-0.5"
               icon={
                 <ChevronRight className="h-4.5! max-w-0 group-hover:max-w-4.5 -mb-[3.5px] text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto" />
               }
