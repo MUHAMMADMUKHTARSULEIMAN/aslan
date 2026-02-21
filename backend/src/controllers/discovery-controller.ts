@@ -160,8 +160,6 @@ export const createFeeds = asyncErrorHandler(
 
 export const getHomeFeed = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { email } = req.params;
-
     const categories = [
       "Business",
       "Technology",
@@ -210,6 +208,19 @@ export const getHomeFeed = asyncErrorHandler(
 
     const articles = feedAggregate.length > 0 ? feedAggregate : null;
 
+    res.status(200).json({
+      status: "OK",
+      data: {
+        articles,
+      },
+    });
+  }
+);
+
+export const getRecents = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.params;
+
     const recentsAggregate = await Users.aggregate([
       {
         $match: {
@@ -218,8 +229,8 @@ export const getHomeFeed = asyncErrorHandler(
       },
       { $unwind: "$saves" },
       {
-				$match: {
-					"saves.archived": false,
+        $match: {
+          "saves.archived": false,
         },
       },
       { $sort: { "saves.createdAt": -1 } },
@@ -243,7 +254,7 @@ export const getHomeFeed = asyncErrorHandler(
           ],
         },
       },
-			{ $unwind: "$saves.save" },
+      { $unwind: "$saves.save" },
       {
         $group: {
           _id: null,
@@ -264,7 +275,6 @@ export const getHomeFeed = asyncErrorHandler(
     res.status(200).json({
       status: "OK",
       data: {
-        articles,
         recents,
       },
     });
@@ -318,6 +328,12 @@ export const getDiscoveries = asyncErrorHandler(
     const category = textSpacifier(params.category);
     const feed = textSpacifier(params.feed);
 
+    // @ts-expect-error
+    const sort: 1 | -1 = parseInt(req.query.sort as "1" | "-1");
+    const page = parseInt(req.query.page as string);
+    const limit = parseInt(req.query.limit as string);
+    const skip = (page - 1) * limit;
+
     const discoveriesAggregate = await Discoveries.aggregate(
       [
         {
@@ -326,6 +342,9 @@ export const getDiscoveries = asyncErrorHandler(
             feedName: feed,
           },
         },
+        { $sort: { publishedTime: sort } },
+        { $skip: skip },
+        { $limit: limit },
         {
           $group: {
             _id: null,
