@@ -1,4 +1,4 @@
-import { Ellipsis } from "lucide-react";
+import { Archive, Ellipsis, Folder, Star, Tag, Trash } from "lucide-react";
 import { Card } from "./ui/card";
 import {
   DropdownMenu,
@@ -6,10 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuContent,
 } from "./ui/dropdown-menu";
-import React from "react";
+import React, { useState } from "react";
 import { textTrimmer } from "@/lib/utils";
-import { useAtom } from "jotai";
-import { savesCardDropdownAtom } from "@/store/atoms";
 
 interface DefaultComponentProps
   extends React.HtmlHTMLAttributes<HTMLDivElement> {
@@ -25,7 +23,7 @@ const SaveCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
   ({ _id, image, length, siteName, title, url }, ref) => {
 		title = textTrimmer(title, true, 50)
 		siteName = textTrimmer(siteName, false, 30)
-    const [open, setOpen] = useAtom(savesCardDropdownAtom);
+    const [open, setOpen] = useState(false);
     return (
       <div ref={ref}>
         <Card className="m-0 p-3 border-none">
@@ -53,15 +51,15 @@ const SaveCard = React.forwardRef<HTMLDivElement, DefaultComponentProps>(
                 <DropdownMenuTrigger asChild>
                   <Ellipsis
                     data-open={open}
-                    className="hover:text-accent data-[open=true]:text-secondary"
+                    className="hover:text-emerald-600 dark:hover:text-emerald-300 cursor-pointer"
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="mx-4 ">
-                  <DropdownMenuItem>Archive</DropdownMenuItem>
-                  <DropdownMenuItem>Favourite</DropdownMenuItem>
-                  <DropdownMenuItem>Add Tags</DropdownMenuItem>
-                  <DropdownMenuItem>Add to Collection</DropdownMenuItem>
-                  <DropdownMenuItem>Delete</DropdownMenuItem>
+                  <DropdownMenuItem><Archive />Archive</DropdownMenuItem>
+                  <DropdownMenuItem><Star />Add to Favourites</DropdownMenuItem>
+                  <DropdownMenuItem><Tag />Add tags</DropdownMenuItem>
+                  <DropdownMenuItem><Folder />Add to Collection</DropdownMenuItem>
+                  <DropdownMenuItem><Trash />Delete</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

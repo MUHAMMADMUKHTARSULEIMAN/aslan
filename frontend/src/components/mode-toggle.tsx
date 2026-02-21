@@ -1,4 +1,4 @@
-import { Moon, Sun } from "lucide-react"
+import { MonitorCog, Moon, Sun} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -21,14 +21,17 @@ export function ModeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-background border-[1.5px]">
-        <DropdownMenuItem className="focus:bg-primary focus:text-primary-foreground cursor-pointer" onClick={() => setTheme("light")}>
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem onClick={() => setTheme("light")}>
+					<Sun />
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem className="focus:bg-primary focus:text-primary-foreground cursor-pointer" onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
+					<Moon />
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem className="focus:bg-primary focus:text-primary-foreground cursor-pointer" onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
+					<MonitorCog />
           System
         </DropdownMenuItem>
       </DropdownMenuContent>
