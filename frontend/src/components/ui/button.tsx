@@ -20,7 +20,7 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary font-normal cursor-pointer",
-				"first-icon": "p-0 bg-inherit hover:bg-foreground/10 text-inherit focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 cursor-pointer",
+				"first-icon": "p-0 bg-inherit text-inherit hover:text-emerald-600 dark:hover:text-emerald-300 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 cursor-pointer",
 				first: "bg-emerald-200 text-emerald-950 dark:bg-emerald-950/75 dark:text-emerald-200 hover:bg-emerald-200/60 dark:hover:bg-emerald-950/50 shadow-xs cursor-pointer",
 				"sign-on": "bg-card/50 hover:bg-card/90 dark:hover:bg-card/20 text-inherit border-2 border-input/50 dark:border-input/20 rounded-xl shadow-xs cursor-pointer",
 				"nav-icon": "hover:text-emerald-800 dark:hover:text-emerald-200 bg-background text-foreground",
