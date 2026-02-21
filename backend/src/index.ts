@@ -113,8 +113,8 @@ app.use(doubleCsrfProtection);
 app.get("/api/get-csrf-token", getCSRFToken);
 app.get("/api/get-user", getUser);
 
-app.use("/api", discoveryRouter);
-app.use("/api", feedRouter);
+app.use("/api/discoveries", discoveryRouter);
+app.use("/api/feeds", feedRouter);
 
 app.use("/api/saves", protectRoutes, saveRouter);
 app.use("/api/tags", protectRoutes, tagRouter);
